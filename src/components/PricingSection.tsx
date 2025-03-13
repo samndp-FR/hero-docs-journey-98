@@ -1,11 +1,10 @@
 
-import React, { useState } from 'react';
-import { CheckCircle2, Package, BadgeCheck } from 'lucide-react';
+import React from 'react';
+import { CheckCircle2, Package } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
 
 const PricingSection = () => {
-  const [isYearly, setIsYearly] = useState(false);
-
   return (
     <section id="pricing" className="py-20 bg-eldo-soft-blue/30">
       <div className="container mx-auto px-6">
@@ -20,14 +19,14 @@ const PricingSection = () => {
         </div>
 
         <div className="max-w-5xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {/* Standard Plan */}
-            <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-eldo-light/50 transition-all duration-300 hover:shadow-2xl transform hover:-translate-y-1">
+          <div className="flex justify-center">
+            {/* Single Pricing Plan */}
+            <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-eldo-light/50 transition-all duration-300 hover:shadow-2xl transform hover:-translate-y-1 max-w-md w-full">
               <div className="p-8">
                 <div className="flex items-center justify-between mb-6">
                   <div>
-                    <h3 className="text-2xl font-bold mb-1">Standard</h3>
-                    <p className="text-eldo-dark/60 text-sm">Single Application</p>
+                    <h3 className="text-2xl font-bold mb-1">Express Entry Copilot</h3>
+                    <p className="text-eldo-dark/60 text-sm">Complete Application Solution</p>
                   </div>
                   <div className="p-3 bg-eldo-blue/10 rounded-full">
                     <Package className="w-6 h-6 text-eldo-blue" />
@@ -37,6 +36,7 @@ const PricingSection = () => {
                 <div className="mb-6">
                   <div className="text-4xl font-bold">CAD $179</div>
                   <div className="text-eldo-dark/60 text-sm">One-time payment</div>
+                  <div className="text-sm text-eldo-purple font-medium mt-2">Or pay in 3 installments of CAD $59.67</div>
                 </div>
 
                 <div className="space-y-4 mb-8">
@@ -54,65 +54,22 @@ const PricingSection = () => {
                   ))}
                 </div>
 
-                <button className="w-full py-3 px-6 bg-eldo-blue text-white rounded-xl font-semibold shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-0.5">
+                <Button className="w-full py-3 px-6 bg-eldo-blue text-white rounded-xl font-semibold shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-0.5">
                   Get Started
-                </button>
+                </Button>
                 
-                <div className="mt-4 text-center text-sm text-eldo-dark/60">
-                  Or pay in 3 installments of CAD $59.67
-                </div>
-              </div>
-            </div>
-
-            {/* Premium Plan */}
-            <div className="bg-gradient-to-br from-eldo-dark to-eldo-dark/90 rounded-2xl shadow-xl overflow-hidden border border-eldo-purple/20 transition-all duration-300 hover:shadow-2xl transform hover:-translate-y-1 relative">
-              <div className="absolute top-5 right-5">
-                <span className="px-3 py-1 bg-eldo-purple text-white text-xs font-semibold rounded-full shadow-md">
-                  POPULAR
-                </span>
-              </div>
-              
-              <div className="p-8">
-                <div className="flex items-center justify-between mb-6">
-                  <div>
-                    <h3 className="text-2xl font-bold mb-1 text-white">Premium</h3>
-                    <p className="text-white/60 text-sm">Unlimited Applications</p>
+                <div className="mt-6 p-4 bg-eldo-soft-blue rounded-xl">
+                  <h4 className="text-lg font-semibold mb-2 text-eldo-blue">Unlimited Applications Add-on</h4>
+                  <p className="text-sm text-eldo-dark/80 mb-3">
+                    For candidates with medium chances who might need multiple applications:
+                  </p>
+                  <div className="flex items-baseline mb-2">
+                    <span className="text-xl font-bold">CAD $9.99</span>
+                    <span className="text-eldo-dark/60 text-sm ml-1">/month</span>
                   </div>
-                  <div className="p-3 bg-eldo-purple/20 rounded-full">
-                    <BadgeCheck className="w-6 h-6 text-eldo-purple" />
-                  </div>
-                </div>
-                
-                <div className="mb-6">
-                  <div className="flex items-baseline">
-                    <div className="text-4xl font-bold text-white">CAD $9.99</div>
-                    <div className="text-white/60 text-sm ml-2">/month</div>
-                  </div>
-                  <div className="text-white/60 text-sm">+ Standard plan (CAD $179)</div>
-                </div>
-
-                <div className="space-y-4 mb-8">
-                  {[
-                    "Everything in Standard plan",
-                    "Unlimited personal applications",
-                    "Priority document processing",
-                    "Advanced timeline predictions",
-                    "Email notifications & updates",
-                    "Dedicated support"
-                  ].map((feature, i) => (
-                    <div key={i} className="flex items-start">
-                      <CheckCircle2 className="w-5 h-5 text-eldo-purple mt-0.5 mr-3 flex-shrink-0" />
-                      <span className="text-white/80">{feature}</span>
-                    </div>
-                  ))}
-                </div>
-
-                <button className="w-full py-3 px-6 bg-eldo-purple text-white rounded-xl font-semibold shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-0.5 btn-shine">
-                  Get Premium
-                </button>
-                
-                <div className="mt-4 text-center text-sm text-white/60">
-                  Cancel anytime, no long-term commitment
+                  <p className="text-xs text-eldo-dark/70">
+                    Add this subscription for unlimited personal applications, perfect for those who may need to apply multiple times.
+                  </p>
                 </div>
               </div>
             </div>
