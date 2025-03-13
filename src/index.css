@@ -1,5 +1,5 @@
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Smokum&family=Outfit:wght@400;500;600&family=Inter:wght@300;400;500&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -36,6 +36,10 @@
     --ring: 222.2 84% 4.9%;
 
     --radius: 0.75rem;
+
+    --pale-blue: 206 100% 97%;
+    --primary-blue: 225 73% 57%;
+    --shadow-color: 225 73% 57% / 0.1;
 
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
@@ -92,7 +96,7 @@
   }
 
   body {
-    @apply bg-background text-foreground font-sans antialiased;
+    @apply bg-pale-blue text-foreground font-sans antialiased;
     font-family: 'Inter', system-ui, sans-serif;
   }
 
@@ -155,14 +159,85 @@
   }
 
   .gradient-text {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-eldo-blue to-eldo-purple;
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-primary-blue to-primary-blue/70;
   }
 
   .gradient-bg {
-    @apply bg-gradient-to-r from-eldo-blue to-eldo-purple;
+    @apply bg-gradient-to-r from-primary-blue to-primary-blue/70;
   }
 
   .smooth-shadow {
     box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.1);
+  }
+  
+  .eldo-text {
+    font-family: 'Smokum', cursive;
+    color: hsl(var(--primary-blue));
+  }
+  
+  .agent-text {
+    font-family: 'Outfit', sans-serif;
+    background: linear-gradient(
+      90deg,
+      hsl(var(--primary-blue)) 0%,
+      hsl(var(--primary-blue) / 0.8) 25%,
+      hsl(var(--primary-blue) / 0.9) 50%,
+      hsl(var(--primary-blue) / 0.7) 75%,
+      hsl(var(--primary-blue)) 100%
+    );
+    background-size: 200% auto;
+    color: transparent;
+    -webkit-background-clip: text;
+    background-clip: text;
+    animation: silverShine 4s linear infinite;
+  }
+  
+  @keyframes silverShine {
+    0% {
+      background-position: -100%;
+    }
+    100% {
+      background-position: 200%;
+    }
+  }
+
+  @keyframes borderShine {
+    0% {
+      border-image-source: linear-gradient(
+        90deg,
+        #a3c2c2 0%,
+        #e6f2f2 25%,
+        #b8d8d8 50%,
+        #86b3b3 75%,
+        #a3c2c2 100%
+      );
+    }
+    100% {
+      border-image-source: linear-gradient(
+        90deg,
+        #e6f2f2 0%,
+        #b8d8d8 25%,
+        #86b3b3 50%,
+        #a3c2c2 75%,
+        #e6f2f2 100%
+      );
+    }
+  }
+  
+  .highlight-text {
+    color: #F4D03F;
+  }
+  
+  .highlight-text-two {
+    color: white;
+  }
+  
+  .save-text {
+    font-size: 0.8em;
+    margin-top: 5px;
+    text-align: center;
+    color: #F4D03F;
+    font-weight: bold;
+    line-height: 1.2;
   }
 }

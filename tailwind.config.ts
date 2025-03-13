@@ -29,6 +29,9 @@ export default {
 				ring: 'hsl(var(--ring))',
 				background: 'hsl(var(--background))',
 				foreground: 'hsl(var(--foreground))',
+				'pale-blue': 'hsl(var(--pale-blue))',
+				'primary-blue': 'hsl(var(--primary-blue))',
+				'shadow-color': 'hsl(var(--shadow-color))',
 				primary: {
 					DEFAULT: 'hsl(var(--primary))',
 					foreground: 'hsl(var(--primary-foreground))'
@@ -77,6 +80,11 @@ export default {
 					'soft-gray': '#8E9196'
 				}
 			},
+			fontFamily: {
+				'smokum': ['Smokum', 'cursive'],
+				'outfit': ['Outfit', 'sans-serif'],
+				'sans': ['Inter', 'sans-serif'],
+			},
 			borderRadius: {
 				lg: 'var(--radius)',
 				md: 'calc(var(--radius) - 2px)',
@@ -118,6 +126,10 @@ export default {
 				'bg-shine': {
 					'0%': { backgroundPosition: '0% 50%' },
 					'100%': { backgroundPosition: '100% 50%' }
+				},
+				'silver-shine': {
+					'0%': { backgroundPosition: '-100%' },
+					'100%': { backgroundPosition: '200%' }
 				}
 			},
 			animation: {
@@ -129,7 +141,8 @@ export default {
 				'scale-in': 'scale-in 0.5s ease-out forwards',
 				'float': 'float 6s ease-in-out infinite',
 				'pulse': 'pulse 3s ease-in-out infinite',
-				'bg-shine': 'bg-shine 3s ease infinite alternate'
+				'bg-shine': 'bg-shine 3s ease infinite alternate',
+				'silver-shine': 'silver-shine 4s linear infinite'
 			}
 		}
 	},

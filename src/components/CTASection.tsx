@@ -1,10 +1,11 @@
 
 import React from 'react';
 import { ArrowRight } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 const CTASection = () => {
   return (
-    <section className="py-20 bg-gradient-to-br from-eldo-blue to-eldo-purple text-white">
+    <section className="py-20 bg-gradient-to-br from-primary-blue to-primary-blue/80 text-white">
       <div className="container mx-auto px-6">
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-6">Ready to Fast-Track Your Canadian Dream?</h2>
@@ -13,13 +14,13 @@ const CTASection = () => {
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button className="px-8 py-4 bg-white text-eldo-blue rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 flex items-center justify-center group">
+            <Button className="px-8 py-6 bg-white text-primary-blue rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 flex items-center justify-center group">
               Start Your Application
               <ArrowRight className="ml-2 w-5 h-5 transform group-hover:translate-x-1 transition-transform" />
-            </button>
-            <button className="px-8 py-4 bg-transparent border border-white/30 text-white rounded-xl font-semibold hover:bg-white/10 transition-all duration-300">
+            </Button>
+            <Button variant="outline" className="px-8 py-6 bg-transparent border border-white/30 text-white rounded-xl font-semibold hover:bg-white/10 transition-all duration-300">
               Schedule a Demo
-            </button>
+            </Button>
           </div>
           
           <div className="mt-10 flex flex-col md:flex-row items-center justify-center gap-8">
