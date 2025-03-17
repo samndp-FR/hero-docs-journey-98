@@ -24,7 +24,7 @@ const Header = () => {
     >
       <div className="container mx-auto flex items-center justify-between">
         <div className="flex items-center">
-          <span className="font-smokum text-3xl text-primary-blue">eldo</span>
+          <span className="font-smokum text-3xl text-primary-blue">Eldo</span>
         </div>
         
         <nav className="hidden md:flex items-center space-x-8">
@@ -34,7 +34,7 @@ const Header = () => {
         </nav>
         
         <div>
-          <Button className="bg-primary-blue hover:bg-primary-blue/90 text-white font-medium px-6 py-2 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1">
+          <Button className="bg-[#F4D040] hover:bg-[#F4D040]/90 text-white font-medium px-6 py-2 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1">
             Start Now
           </Button>
         </div>
