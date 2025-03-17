@@ -1,7 +1,8 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { cn } from '@/lib/utils';
-import { FileText, FileUp, Brain, FileCheck, Send, Mic, Activity, Timer } from 'lucide-react';
+import { FileText, FileUp, Brain, FileCheck, Send, Mic, Activity, Timer, ClipboardCheck } from 'lucide-react';
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface Step {
   number: number;
@@ -14,15 +15,16 @@ interface Step {
 
 const ProcessSection = () => {
   const [activeStep, setActiveStep] = useState(1);
+  const [isVisible, setIsVisible] = useState(false);
   const sectionRef = useRef<HTMLDivElement>(null);
   const observerRef = useRef<IntersectionObserver | null>(null);
 
   const steps: Step[] = [
     {
       number: 1,
-      title: "Answer a 5 min Form",
+      title: "Answer a 5 min questionnaire",
       description: "Assess your initial points and predict your chances and timeline. Don't like writing? You can also talk.",
-      icon: <FileText size={28} />,
+      icon: <ClipboardCheck size={28} />,
       color: "bg-sky-400",
       animation: "animate-pulse"
     },
@@ -62,6 +64,7 @@ const ProcessSection = () => {
     observerRef.current = new IntersectionObserver(
       (entries) => {
         if (entries[0].isIntersecting) {
+          setIsVisible(true);
           const interval = setInterval(() => {
             setActiveStep((prev) => (prev < steps.length ? prev + 1 : 1));
           }, 3000);
@@ -138,113 +141,304 @@ const ProcessSection = () => {
             </div>
           </div>
           
-          {/* Visual representation */}
+          {/* Visual representation - Now with animations */}
           <div className="order-1 lg:order-2">
-            <div className="relative bg-gradient-to-br from-eldo-soft-blue/50 to-eldo-light-purple/30 rounded-2xl p-6 md:p-10 aspect-square max-w-md mx-auto">
-              <div className="absolute inset-0 flex items-center justify-center">
+            <div className="relative bg-gradient-to-br from-eldo-soft-blue/50 to-eldo-light-purple/30 rounded-2xl p-6 md:p-10 aspect-square max-w-md mx-auto overflow-hidden">
+              <div 
+                className={cn(
+                  "absolute inset-0 flex items-center justify-center transition-opacity duration-500",
+                  isVisible ? "opacity-100" : "opacity-0"
+                )}
+              >
                 {activeStep === 1 && (
                   <div className="animate-fade-in glass-card rounded-xl p-6 w-full max-w-xs">
-                    <div className="h-6 w-32 bg-sky-400/20 rounded mb-4"></div>
-                    <div className="space-y-3 mb-4">
-                      <div className="flex items-center gap-2">
-                        <Activity className="text-sky-500" size={16} />
-                        <div className="h-4 w-32 bg-sky-400/20 rounded"></div>
-                        <div className="h-6 w-16 bg-green-500/20 rounded text-center text-xs text-green-600 flex items-center justify-center">High</div>
+                    <div className="h-6 w-44 bg-sky-400/20 rounded mb-4 flex items-center px-2">
+                      <span className="text-xs text-sky-700">Questionnaire Progress</span>
+                    </div>
+                    <div className="space-y-4 mb-6">
+                      <div className="animate-fade-in" style={{ animationDelay: "0.1s" }}>
+                        <div className="h-5 w-full bg-sky-400/10 rounded-md mb-2"></div>
+                        <div className="flex gap-2">
+                          <div className="h-8 w-16 bg-sky-400/20 rounded flex items-center justify-center">
+                            <span className="text-xs text-sky-700">Yes</span>
+                          </div>
+                          <div className="h-8 w-16 bg-sky-400/20 rounded flex items-center justify-center">
+                            <span className="text-xs text-sky-700">No</span>
+                          </div>
+                        </div>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <Timer className="text-sky-500" size={16} />
-                        <div className="h-4 w-32 bg-sky-400/20 rounded"></div>
-                        <div className="h-6 w-24 bg-amber-500/20 rounded text-center text-xs text-amber-600 flex items-center justify-center">3-6 months</div>
+                      
+                      <div className="animate-fade-in" style={{ animationDelay: "0.3s" }}>
+                        <div className="flex items-center gap-2 mb-2">
+                          <Activity className="text-sky-500" size={16} />
+                          <div className="text-xs text-sky-700">Your chances</div>
+                        </div>
+                        <div className="h-6 w-full bg-sky-400/10 rounded-full overflow-hidden">
+                          <div className="h-full w-3/4 bg-green-500 animate-pulse rounded-full"></div>
+                        </div>
+                        <div className="text-right text-xs text-green-600 font-medium mt-1">High</div>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <Mic className="text-sky-500 animate-pulse" size={16} />
-                        <div className="h-4 w-48 bg-sky-400/10 rounded"></div>
+                      
+                      <div className="animate-fade-in" style={{ animationDelay: "0.5s" }}>
+                        <div className="flex items-center gap-2 mb-2">
+                          <Timer className="text-sky-500" size={16} />
+                          <div className="text-xs text-sky-700">Timeline</div>
+                        </div>
+                        <div className="h-6 w-full bg-sky-400/10 rounded-full overflow-hidden">
+                          <div className="h-full w-1/2 bg-amber-500 animate-pulse rounded-full"></div>
+                        </div>
+                        <div className="text-right text-xs text-amber-600 font-medium mt-1">3-6 months</div>
+                      </div>
+                      
+                      <div className="animate-fade-in" style={{ animationDelay: "0.7s" }}>
+                        <div className="flex items-center gap-2">
+                          <Mic className="text-sky-500 animate-pulse" size={16} />
+                          <div className="h-4 w-full bg-sky-400/10 rounded"></div>
+                        </div>
                       </div>
                     </div>
-                    <div className="flex justify-between">
-                      <div className="text-xs text-eldo-dark/60">5 min assessment</div>
-                      <div className="h-8 w-20 bg-sky-400 rounded flex items-center justify-center text-white text-xs">Next</div>
+                    <div className="flex justify-between animate-fade-in" style={{ animationDelay: "0.9s" }}>
+                      <div className="text-xs text-eldo-dark/60">2/5 completed</div>
+                      <div className="h-8 w-20 bg-sky-400 rounded flex items-center justify-center text-white text-xs hover:bg-sky-500 transition-colors cursor-pointer">Next</div>
                     </div>
                   </div>
                 )}
                 
                 {activeStep === 2 && (
                   <div className="animate-fade-in glass-card rounded-xl p-6 w-full max-w-xs">
-                    <div className="h-6 w-24 bg-eldo-blue/20 rounded mb-4"></div>
-                    <div className="flex gap-4 mb-4">
-                      <div className="h-20 w-1/3 bg-eldo-blue/10 rounded flex items-center justify-center">
-                        <FileUp className="text-eldo-blue" />
-                      </div>
-                      <div className="h-20 w-2/3 bg-eldo-light-purple/10 rounded flex flex-col justify-center p-2">
-                        <div className="h-3 w-full bg-gray-200 rounded-full mb-2">
-                          <div className="h-3 w-2/5 bg-eldo-blue rounded-full"></div>
+                    <div className="h-6 w-36 bg-eldo-blue/20 rounded mb-6 flex items-center px-2">
+                      <span className="text-xs text-eldo-blue">Upload Documents</span>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4 mb-6">
+                      <div className="animate-fade-in" style={{ animationDelay: "0.1s" }}>
+                        <div className="h-24 bg-eldo-blue/10 rounded-lg border-2 border-dashed border-eldo-blue/30 flex flex-col items-center justify-center cursor-pointer hover:bg-eldo-blue/20 transition-colors">
+                          <FileText className="text-eldo-blue mb-2" size={20} />
+                          <span className="text-xs text-eldo-blue">Passport</span>
+                          <span className="text-[10px] text-eldo-blue/70 mt-1">Completed</span>
                         </div>
-                        <div className="h-3 w-3/4 bg-gray-200 rounded-full">
-                          <div className="h-3 w-1/2 bg-eldo-purple rounded-full"></div>
+                      </div>
+                      <div className="animate-fade-in" style={{ animationDelay: "0.2s" }}>
+                        <div className="h-24 bg-eldo-blue/10 rounded-lg border-2 border-dashed border-eldo-blue/30 flex flex-col items-center justify-center cursor-pointer hover:bg-eldo-blue/20 transition-colors">
+                          <FileUp className="text-eldo-blue mb-2" size={20} />
+                          <span className="text-xs text-eldo-blue">Education</span>
+                          <span className="text-[10px] text-eldo-blue/70 mt-1">Click to upload</span>
+                        </div>
+                      </div>
+                      <div className="animate-fade-in" style={{ animationDelay: "0.3s" }}>
+                        <div className="h-24 bg-eldo-blue/10 rounded-lg border-2 border-dashed border-eldo-blue/30 flex flex-col items-center justify-center cursor-pointer hover:bg-eldo-blue/20 transition-colors">
+                          <FileUp className="text-eldo-blue mb-2" size={20} />
+                          <span className="text-xs text-eldo-blue">Work Experience</span>
+                          <span className="text-[10px] text-eldo-blue/70 mt-1">Click to upload</span>
+                        </div>
+                      </div>
+                      <div className="animate-fade-in" style={{ animationDelay: "0.4s" }}>
+                        <div className="h-24 bg-eldo-blue/10 rounded-lg border-2 border-dashed border-eldo-blue/30 flex flex-col items-center justify-center cursor-pointer hover:bg-eldo-blue/20 transition-colors">
+                          <FileUp className="text-eldo-blue mb-2" size={20} />
+                          <span className="text-xs text-eldo-blue">Language Test</span>
+                          <span className="text-[10px] text-eldo-blue/70 mt-1">Click to upload</span>
                         </div>
                       </div>
                     </div>
-                    <div className="flex justify-end">
-                      <div className="h-8 w-20 bg-eldo-blue rounded flex items-center justify-center text-white text-xs">Upload</div>
+                    <div className="flex justify-between animate-fade-in" style={{ animationDelay: "0.5s" }}>
+                      <div className="h-8 w-20 bg-gray-200 rounded flex items-center justify-center text-gray-700 text-xs hover:bg-gray-300 transition-colors cursor-pointer">Back</div>
+                      <div className="h-8 w-20 bg-eldo-blue rounded flex items-center justify-center text-white text-xs hover:bg-eldo-blue/80 transition-colors cursor-pointer">Continue</div>
                     </div>
                   </div>
                 )}
                 
                 {activeStep === 3 && (
                   <div className="animate-fade-in glass-card rounded-xl p-6 w-full max-w-xs">
-                    <div className="h-6 w-32 bg-eldo-purple/20 rounded mb-4"></div>
-                    <div className="h-4 w-full bg-gray-200 rounded-full mb-2">
-                      <div className="h-4 w-3/4 bg-eldo-purple rounded-full animate-pulse"></div>
+                    <div className="h-6 w-40 bg-eldo-purple/20 rounded mb-4 flex items-center px-2">
+                      <span className="text-xs text-eldo-purple">AI Document Analysis</span>
                     </div>
-                    <div className="text-xs text-right text-eldo-dark/60 mb-4">75% Analyzed</div>
-                    <div className="space-y-2">
-                      <div className="h-4 w-full bg-eldo-blue/10 rounded"></div>
-                      <div className="h-4 w-full bg-eldo-blue/10 rounded"></div>
-                      <div className="h-4 w-2/3 bg-eldo-blue/10 rounded"></div>
+                    <div className="animate-fade-in" style={{ animationDelay: "0.1s" }}>
+                      <div className="h-4 w-full bg-gray-200 rounded-full mb-1">
+                        <div className="h-4 w-3/4 bg-eldo-purple rounded-full relative">
+                          <div className="absolute top-0 right-0 h-4 w-10 bg-eldo-purple animate-pulse rounded-full"></div>
+                        </div>
+                      </div>
+                      <div className="text-xs text-right text-eldo-dark/60 mb-6">75% Analyzed</div>
                     </div>
-                    <div className="mt-4 flex items-center justify-center">
-                      <Brain className="text-eldo-purple animate-pulse" />
+                    
+                    <div className="space-y-3 mb-6">
+                      <div className="flex items-center gap-2 animate-fade-in" style={{ animationDelay: "0.2s" }}>
+                        <div className="h-10 w-10 rounded-full bg-eldo-purple/20 flex items-center justify-center">
+                          <FileText size={16} className="text-eldo-purple" />
+                        </div>
+                        <div className="flex-1">
+                          <div className="h-3 w-full bg-eldo-purple/10 rounded"></div>
+                          <div className="h-2 w-2/3 bg-eldo-purple/10 rounded mt-1"></div>
+                        </div>
+                        <div className="h-6 w-6 rounded-full bg-green-100 flex items-center justify-center">
+                          <svg className="w-3 h-3 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                          </svg>
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-center gap-2 animate-fade-in" style={{ animationDelay: "0.3s" }}>
+                        <div className="h-10 w-10 rounded-full bg-eldo-purple/20 flex items-center justify-center">
+                          <FileText size={16} className="text-eldo-purple" />
+                        </div>
+                        <div className="flex-1">
+                          <div className="h-3 w-full bg-eldo-purple/10 rounded"></div>
+                          <div className="h-2 w-3/4 bg-eldo-purple/10 rounded mt-1"></div>
+                        </div>
+                        <div className="h-6 w-6 rounded-full bg-green-100 flex items-center justify-center">
+                          <svg className="w-3 h-3 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                          </svg>
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-center gap-2 animate-fade-in" style={{ animationDelay: "0.4s" }}>
+                        <div className="h-10 w-10 rounded-full bg-eldo-purple/20 flex items-center justify-center">
+                          <FileText size={16} className="text-eldo-purple" />
+                        </div>
+                        <div className="flex-1">
+                          <Skeleton className="h-3 w-full" />
+                          <Skeleton className="h-2 w-1/2 mt-1" />
+                        </div>
+                        <div className="h-6 w-6 rounded-full">
+                          <Skeleton className="h-6 w-6 rounded-full" />
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-center gap-2 animate-fade-in" style={{ animationDelay: "0.5s" }}>
+                        <div className="h-10 w-10 rounded-full bg-eldo-purple/20 flex items-center justify-center">
+                          <FileText size={16} className="text-eldo-purple" />
+                        </div>
+                        <div className="flex-1">
+                          <Skeleton className="h-3 w-full" />
+                          <Skeleton className="h-2 w-3/5 mt-1" />
+                        </div>
+                        <div className="h-6 w-6 rounded-full">
+                          <Skeleton className="h-6 w-6 rounded-full" />
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center justify-center animate-fade-in" style={{ animationDelay: "0.6s" }}>
+                      <Brain className="text-eldo-purple animate-pulse mr-2" size={20} />
+                      <span className="text-xs text-eldo-purple">Processing...</span>
                     </div>
                   </div>
                 )}
                 
                 {activeStep === 4 && (
                   <div className="animate-fade-in glass-card rounded-xl p-6 w-full max-w-xs">
-                    <div className="h-6 w-40 bg-green-500/20 rounded mb-4"></div>
-                    <div className="space-y-3 mb-4">
-                      <div className="flex items-center">
-                        <div className="h-4 w-24 bg-eldo-dark/10 rounded mr-2"></div>
-                        <div className="h-6 flex-1 bg-green-500/10 rounded"></div>
+                    <div className="h-6 w-44 bg-green-500/20 rounded mb-6 flex items-center px-2">
+                      <span className="text-xs text-green-700">Form Auto-Completion</span>
+                    </div>
+                    <div className="space-y-3 mb-6">
+                      <div className="animate-fade-in" style={{ animationDelay: "0.1s" }}>
+                        <div className="flex items-center">
+                          <div className="h-4 w-28 bg-eldo-dark/10 rounded mr-2"></div>
+                          <div className="h-8 flex-1 bg-green-500/10 rounded border border-green-500/30 px-2 flex items-center">
+                            <span className="text-xs text-green-700 animate-pulse">Auto-filling...</span>
+                          </div>
+                        </div>
                       </div>
-                      <div className="flex items-center">
-                        <div className="h-4 w-24 bg-eldo-dark/10 rounded mr-2"></div>
-                        <div className="h-6 flex-1 bg-green-500/10 rounded"></div>
+                      
+                      <div className="animate-fade-in" style={{ animationDelay: "0.2s" }}>
+                        <div className="flex items-center">
+                          <div className="h-4 w-28 bg-eldo-dark/10 rounded mr-2"></div>
+                          <div className="h-8 flex-1 bg-green-500/10 rounded border border-green-500/30 px-2 flex items-center">
+                            <span className="text-xs text-green-700 overflow-hidden whitespace-nowrap" style={{ 
+                              animation: 'typing 2s steps(20, end) infinite',
+                              width: '100%'
+                            }}>John Smith</span>
+                          </div>
+                        </div>
                       </div>
-                      <div className="flex items-center">
-                        <div className="h-4 w-24 bg-eldo-dark/10 rounded mr-2"></div>
-                        <div className="h-6 flex-1 bg-green-500/10 rounded"></div>
+                      
+                      <div className="animate-fade-in" style={{ animationDelay: "0.3s" }}>
+                        <div className="flex items-center">
+                          <div className="h-4 w-28 bg-eldo-dark/10 rounded mr-2"></div>
+                          <div className="h-8 flex-1 bg-green-500/10 rounded border border-green-500/30 px-2 flex items-center">
+                            <span className="text-xs text-green-700 overflow-hidden whitespace-nowrap" style={{ 
+                              animation: 'typing 2s steps(20, end) infinite',
+                              animationDelay: '0.5s',
+                              width: '100%'
+                            }}>123 Main St, Vancouver</span>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div className="animate-fade-in" style={{ animationDelay: "0.4s" }}>
+                        <div className="flex items-center">
+                          <div className="h-4 w-28 bg-eldo-dark/10 rounded mr-2"></div>
+                          <div className="h-8 flex-1 bg-green-500/10 rounded border border-green-500/30 px-2 flex items-center">
+                            <span className="text-xs text-green-700 overflow-hidden whitespace-nowrap" style={{ 
+                              animation: 'typing 2s steps(20, end) infinite',
+                              animationDelay: '1s',
+                              width: '100%'
+                            }}>john.smith@example.com</span>
+                          </div>
+                        </div>
                       </div>
                     </div>
-                    <div className="flex justify-between">
-                      <div className="text-xs text-eldo-dark/60">Auto-filling...</div>
-                      <div className="h-3 w-3 rounded-full bg-green-500 animate-pulse"></div>
+                    
+                    <div className="flex justify-between animate-fade-in" style={{ animationDelay: "0.5s" }}>
+                      <div className="text-xs text-eldo-dark/60 flex items-center">
+                        <div className="h-3 w-3 rounded-full bg-green-500 animate-pulse mr-2"></div>
+                        Auto-filling in progress
+                      </div>
+                      <div className="h-8 w-16 bg-gray-200 rounded flex items-center justify-center text-gray-600 text-xs">72%</div>
                     </div>
                   </div>
                 )}
                 
                 {activeStep === 5 && (
                   <div className="animate-fade-in glass-card rounded-xl p-6 w-full max-w-xs">
-                    <div className="h-6 w-36 bg-amber-500/20 rounded mb-4"></div>
-                    <div className="flex justify-center items-center mb-4">
-                      <div className="h-16 w-16 rounded-full bg-green-100 flex items-center justify-center">
-                        <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <div className="h-6 w-36 bg-amber-500/20 rounded mb-4 flex items-center px-2">
+                      <span className="text-xs text-amber-700">Ready to Submit</span>
+                    </div>
+                    
+                    <div className="flex justify-center items-center mb-6 animate-fade-in" style={{ animationDelay: "0.1s" }}>
+                      <div className="h-20 w-20 rounded-full bg-green-100 flex items-center justify-center">
+                        <svg className="w-12 h-12 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                         </svg>
                       </div>
                     </div>
-                    <div className="text-center text-sm text-eldo-dark/80 mb-4">Ready for submission</div>
-                    <div className="flex justify-center">
-                      <div className="h-8 w-28 bg-amber-500 rounded flex items-center justify-center text-white text-xs">Submit</div>
+                    
+                    <div className="text-center text-sm text-eldo-dark/80 mb-6 animate-fade-in" style={{ animationDelay: "0.2s" }}>
+                      <p className="font-medium">Application Complete!</p>
+                      <p className="text-xs mt-2">All required forms have been filled and are ready for your review before submission.</p>
+                    </div>
+                    
+                    <div className="animate-fade-in" style={{ animationDelay: "0.3s" }}>
+                      <div className="flex items-center gap-2 mb-4">
+                        <FileCheck className="text-green-600" size={16} />
+                        <div className="text-xs text-eldo-dark">Express Entry Profile</div>
+                        <div className="ml-auto">
+                          <div className="h-5 w-5 rounded-full bg-green-100 flex items-center justify-center">
+                            <svg className="w-3 h-3 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                            </svg>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-center gap-2 mb-4">
+                        <FileCheck className="text-green-600" size={16} />
+                        <div className="text-xs text-eldo-dark">Personal Information</div>
+                        <div className="ml-auto">
+                          <div className="h-5 w-5 rounded-full bg-green-100 flex items-center justify-center">
+                            <svg className="w-3 h-3 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                            </svg>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="flex justify-center animate-fade-in" style={{ animationDelay: "0.4s" }}>
+                      <div className="h-10 w-full bg-amber-500 rounded-lg flex items-center justify-center text-white text-sm font-medium hover:bg-amber-600 transition-colors cursor-pointer shadow-lg shadow-amber-500/30">
+                        <Send className="mr-2" size={16} />
+                        Submit Application
+                      </div>
                     </div>
                   </div>
                 )}
@@ -253,6 +447,13 @@ const ProcessSection = () => {
           </div>
         </div>
       </div>
+      
+      <style jsx>{`
+        @keyframes typing {
+          from { width: 0 }
+          to { width: 100% }
+        }
+      `}</style>
     </section>
   );
 };
