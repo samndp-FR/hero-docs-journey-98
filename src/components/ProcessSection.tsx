@@ -1,9 +1,10 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { cn } from '@/lib/utils';
-import { FileText, FileUp, Brain, FileCheck, Send, Mic, Activity, Timer, ClipboardCheck, MessageCircle, AlertTriangle, Loader, ChevronRight, ChevronLeft } from 'lucide-react';
+import { FileText, FileUp, Brain, FileCheck, Send, Mic, Activity, Timer, ClipboardCheck, MessageCircle, AlertTriangle, Loader, ChevronRight, ChevronLeft, BarChart } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Progress } from '@/components/ui/progress';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 
 interface Step {
   number: number;
@@ -173,15 +174,29 @@ const ProcessSection = () => {
                     </div>
                     <div className="space-y-4 mb-6">
                       <div className="animate-fade-in" style={{ animationDelay: "0.1s" }}>
-                        <div className="h-5 w-full bg-sky-400/10 rounded-md mb-2"></div>
-                        <div className="flex gap-2">
+                        <div className="h-5 w-full bg-sky-400/10 rounded-md mb-2 flex items-center px-2">
+                          <span className="text-xs text-sky-700">Are you currently in Canada?</span>
+                        </div>
+                        <div className="flex gap-2 items-center">
                           <div className="h-8 w-16 bg-sky-400/20 rounded flex items-center justify-center">
                             <span className="text-xs text-sky-700">Yes</span>
                           </div>
                           <div className="h-8 w-16 bg-sky-400/20 rounded flex items-center justify-center">
                             <span className="text-xs text-sky-700">No</span>
                           </div>
+                          <Mic size={16} className="text-sky-500 animate-pulse ml-2" />
                         </div>
+                      </div>
+                      
+                      <div className="animate-fade-in" style={{ animationDelay: "0.2s" }}>
+                        <div className="flex items-center gap-2 mb-2">
+                          <BarChart className="text-sky-500" size={16} />
+                          <div className="text-xs text-sky-700">Your points: 490</div>
+                        </div>
+                        <div className="h-6 w-full bg-sky-400/10 rounded-full overflow-hidden">
+                          <div className="h-full w-[97%] bg-green-500 animate-pulse rounded-full"></div>
+                        </div>
+                        <div className="text-right text-xs text-green-600 font-medium mt-1">Top 3% of applicants</div>
                       </div>
                       
                       <div className="animate-fade-in" style={{ animationDelay: "0.3s" }}>
@@ -195,7 +210,7 @@ const ProcessSection = () => {
                         <div className="text-right text-xs text-green-600 font-medium mt-1">High</div>
                       </div>
                       
-                      <div className="animate-fade-in" style={{ animationDelay: "0.5s" }}>
+                      <div className="animate-fade-in" style={{ animationDelay: "0.4s" }}>
                         <div className="flex items-center gap-2 mb-2">
                           <Timer className="text-sky-500" size={16} />
                           <div className="text-xs text-sky-700">Timeline</div>
@@ -205,18 +220,11 @@ const ProcessSection = () => {
                         </div>
                         <div className="text-right text-xs text-amber-600 font-medium mt-1">3-6 months</div>
                       </div>
-                      
-                      <div className="animate-fade-in" style={{ animationDelay: "0.7s" }}>
-                        <div className="flex items-center gap-2">
-                          <Mic className="text-sky-500 animate-pulse" size={16} />
-                          <div className="h-4 w-full bg-sky-400/10 rounded"></div>
-                        </div>
-                      </div>
                     </div>
-                    <div className="flex justify-between animate-fade-in" style={{ animationDelay: "0.9s" }}>
+                    <div className="flex justify-between animate-fade-in" style={{ animationDelay: "0.5s" }}>
                       <div className="flex items-center gap-2">
-                        <MessageCircle size={16} className="text-sky-500" />
-                        <span className="text-xs text-sky-700">Voice input</span>
+                        <Mic size={16} className="text-sky-500" />
+                        <span className="text-xs text-sky-700">Voice enabled</span>
                       </div>
                       <div className="h-8 w-20 bg-sky-400 rounded flex items-center justify-center text-white text-xs hover:bg-sky-500 transition-colors cursor-pointer" onClick={goToNextStep}>
                         Next
@@ -492,12 +500,14 @@ const ProcessSection = () => {
         </div>
       </div>
       
-      <style jsx>{`
-        @keyframes typing {
-          from { width: 0 }
-          to { width: 100% }
-        }
-      `}</style>
+      <style>
+        {`
+          @keyframes typing {
+            from { width: 0 }
+            to { width: 100% }
+          }
+        `}
+      </style>
     </section>
   );
 };
