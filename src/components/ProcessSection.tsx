@@ -1,8 +1,9 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { cn } from '@/lib/utils';
-import { FileText, FileUp, Brain, FileCheck, Send, Mic, Activity, Timer, ClipboardCheck } from 'lucide-react';
+import { FileText, FileUp, Brain, FileCheck, Send, Mic, Activity, Timer, ClipboardCheck, MessageCircle, AlertTriangle, Loader, ChevronRight, ChevronLeft } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Progress } from '@/components/ui/progress';
 
 interface Step {
   number: number;
@@ -58,6 +59,18 @@ const ProcessSection = () => {
     }
   ];
 
+  const goToNextStep = () => {
+    setActiveStep((prev) => (prev < steps.length ? prev + 1 : prev));
+  };
+
+  const goToPreviousStep = () => {
+    setActiveStep((prev) => (prev > 1 ? prev - 1 : prev));
+  };
+
+  const goToStep = (stepNumber: number) => {
+    setActiveStep(stepNumber);
+  };
+
   useEffect(() => {
     if (!sectionRef.current) return;
     
@@ -112,6 +125,8 @@ const ProcessSection = () => {
                     "flex mb-12 last:mb-0 relative transition-all duration-500",
                     activeStep === step.number ? "opacity-100" : "opacity-50"
                   )}
+                  onClick={() => goToStep(step.number)}
+                  style={{ cursor: 'pointer' }}
                 >
                   <div 
                     className={cn(
@@ -120,6 +135,7 @@ const ProcessSection = () => {
                         ? `${step.color} shadow-lg shadow-${step.color}/20 ${step.animation || ''}` 
                         : "bg-white text-eldo-dark/60 border border-eldo-light-purple/40"
                     )}
+                    style={{ background: activeStep !== step.number ? 'white' : undefined }}
                   >
                     {activeStep === step.number ? step.icon : <span className="font-bold text-xl">{step.number}</span>}
                   </div>
@@ -131,7 +147,7 @@ const ProcessSection = () => {
                     <p className="text-eldo-dark/80">{step.description}</p>
                     {step.number === 1 && activeStep === 1 && (
                       <div className="flex items-center gap-2 mt-2 text-sky-500">
-                        <Mic size={16} className="animate-pulse" />
+                        <MessageCircle size={16} className="animate-pulse" />
                         <span className="text-sm font-medium">Voice input available</span>
                       </div>
                     )}
@@ -141,7 +157,7 @@ const ProcessSection = () => {
             </div>
           </div>
           
-          {/* Visual representation - Now with animations */}
+          {/* Visual representation with animations */}
           <div className="order-1 lg:order-2">
             <div className="relative bg-gradient-to-br from-eldo-soft-blue/50 to-eldo-light-purple/30 rounded-2xl p-6 md:p-10 aspect-square max-w-md mx-auto overflow-hidden">
               <div 
@@ -198,8 +214,14 @@ const ProcessSection = () => {
                       </div>
                     </div>
                     <div className="flex justify-between animate-fade-in" style={{ animationDelay: "0.9s" }}>
-                      <div className="text-xs text-eldo-dark/60">2/5 completed</div>
-                      <div className="h-8 w-20 bg-sky-400 rounded flex items-center justify-center text-white text-xs hover:bg-sky-500 transition-colors cursor-pointer">Next</div>
+                      <div className="flex items-center gap-2">
+                        <MessageCircle size={16} className="text-sky-500" />
+                        <span className="text-xs text-sky-700">Voice input</span>
+                      </div>
+                      <div className="h-8 w-20 bg-sky-400 rounded flex items-center justify-center text-white text-xs hover:bg-sky-500 transition-colors cursor-pointer" onClick={goToNextStep}>
+                        Next
+                        <ChevronRight size={14} className="ml-1" />
+                      </div>
                     </div>
                   </div>
                 )}
@@ -240,8 +262,14 @@ const ProcessSection = () => {
                       </div>
                     </div>
                     <div className="flex justify-between animate-fade-in" style={{ animationDelay: "0.5s" }}>
-                      <div className="h-8 w-20 bg-gray-200 rounded flex items-center justify-center text-gray-700 text-xs hover:bg-gray-300 transition-colors cursor-pointer">Back</div>
-                      <div className="h-8 w-20 bg-eldo-blue rounded flex items-center justify-center text-white text-xs hover:bg-eldo-blue/80 transition-colors cursor-pointer">Continue</div>
+                      <div className="h-8 w-20 bg-gray-200 rounded flex items-center justify-center text-gray-700 text-xs hover:bg-gray-300 transition-colors cursor-pointer" onClick={goToPreviousStep}>
+                        <ChevronLeft size={14} className="mr-1" />
+                        Back
+                      </div>
+                      <div className="h-8 w-20 bg-eldo-blue rounded flex items-center justify-center text-white text-xs hover:bg-eldo-blue/80 transition-colors cursor-pointer" onClick={goToNextStep}>
+                        Next
+                        <ChevronRight size={14} className="ml-1" />
+                      </div>
                     </div>
                   </div>
                 )}
@@ -266,8 +294,8 @@ const ProcessSection = () => {
                           <FileText size={16} className="text-eldo-purple" />
                         </div>
                         <div className="flex-1">
-                          <div className="h-3 w-full bg-eldo-purple/10 rounded"></div>
-                          <div className="h-2 w-2/3 bg-eldo-purple/10 rounded mt-1"></div>
+                          <div className="text-xs font-medium text-eldo-dark">Letter of Employment</div>
+                          <div className="text-[10px] text-eldo-dark/60">Processing document data</div>
                         </div>
                         <div className="h-6 w-6 rounded-full bg-green-100 flex items-center justify-center">
                           <svg className="w-3 h-3 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -281,8 +309,8 @@ const ProcessSection = () => {
                           <FileText size={16} className="text-eldo-purple" />
                         </div>
                         <div className="flex-1">
-                          <div className="h-3 w-full bg-eldo-purple/10 rounded"></div>
-                          <div className="h-2 w-3/4 bg-eldo-purple/10 rounded mt-1"></div>
+                          <div className="text-xs font-medium text-eldo-dark">Common-Law Certificate</div>
+                          <div className="text-[10px] text-eldo-dark/60">Validating information</div>
                         </div>
                         <div className="h-6 w-6 rounded-full bg-green-100 flex items-center justify-center">
                           <svg className="w-3 h-3 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -296,11 +324,14 @@ const ProcessSection = () => {
                           <FileText size={16} className="text-eldo-purple" />
                         </div>
                         <div className="flex-1">
-                          <Skeleton className="h-3 w-full" />
-                          <Skeleton className="h-2 w-1/2 mt-1" />
+                          <div className="text-xs font-medium text-eldo-dark">Police Checker</div>
+                          <div className="text-[10px] text-red-600 flex items-center">
+                            <AlertTriangle size={10} className="mr-1 text-red-600 animate-pulse" />
+                            Dates aren't compliant
+                          </div>
                         </div>
-                        <div className="h-6 w-6 rounded-full">
-                          <Skeleton className="h-6 w-6 rounded-full" />
+                        <div className="h-6 w-6 rounded-full bg-red-100 flex items-center justify-center animate-pulse">
+                          <AlertTriangle size={14} className="text-red-600" />
                         </div>
                       </div>
                       
@@ -312,15 +343,21 @@ const ProcessSection = () => {
                           <Skeleton className="h-3 w-full" />
                           <Skeleton className="h-2 w-3/5 mt-1" />
                         </div>
-                        <div className="h-6 w-6 rounded-full">
-                          <Skeleton className="h-6 w-6 rounded-full" />
+                        <div className="h-6 w-6 rounded-full flex items-center justify-center">
+                          <Loader size={14} className="text-eldo-purple animate-spin" />
                         </div>
                       </div>
                     </div>
                     
-                    <div className="flex items-center justify-center animate-fade-in" style={{ animationDelay: "0.6s" }}>
-                      <Brain className="text-eldo-purple animate-pulse mr-2" size={20} />
-                      <span className="text-xs text-eldo-purple">Processing...</span>
+                    <div className="flex justify-between animate-fade-in" style={{ animationDelay: "0.6s" }}>
+                      <div className="h-8 w-20 bg-gray-200 rounded flex items-center justify-center text-gray-700 text-xs hover:bg-gray-300 transition-colors cursor-pointer" onClick={goToPreviousStep}>
+                        <ChevronLeft size={14} className="mr-1" />
+                        Back
+                      </div>
+                      <div className="h-8 w-20 bg-eldo-purple rounded flex items-center justify-center text-white text-xs hover:bg-eldo-purple/80 transition-colors cursor-pointer" onClick={goToNextStep}>
+                        Next
+                        <ChevronRight size={14} className="ml-1" />
+                      </div>
                     </div>
                   </div>
                 )}
@@ -380,11 +417,14 @@ const ProcessSection = () => {
                     </div>
                     
                     <div className="flex justify-between animate-fade-in" style={{ animationDelay: "0.5s" }}>
-                      <div className="text-xs text-eldo-dark/60 flex items-center">
-                        <div className="h-3 w-3 rounded-full bg-green-500 animate-pulse mr-2"></div>
-                        Auto-filling in progress
+                      <div className="h-8 w-20 bg-gray-200 rounded flex items-center justify-center text-gray-700 text-xs hover:bg-gray-300 transition-colors cursor-pointer" onClick={goToPreviousStep}>
+                        <ChevronLeft size={14} className="mr-1" />
+                        Back
                       </div>
-                      <div className="h-8 w-16 bg-gray-200 rounded flex items-center justify-center text-gray-600 text-xs">72%</div>
+                      <div className="h-8 w-20 bg-green-500 rounded flex items-center justify-center text-white text-xs hover:bg-green-600 transition-colors cursor-pointer" onClick={goToNextStep}>
+                        Next
+                        <ChevronRight size={14} className="ml-1" />
+                      </div>
                     </div>
                   </div>
                 )}
@@ -434,10 +474,14 @@ const ProcessSection = () => {
                       </div>
                     </div>
                     
-                    <div className="flex justify-center animate-fade-in" style={{ animationDelay: "0.4s" }}>
-                      <div className="h-10 w-full bg-amber-500 rounded-lg flex items-center justify-center text-white text-sm font-medium hover:bg-amber-600 transition-colors cursor-pointer shadow-lg shadow-amber-500/30">
+                    <div className="flex justify-between animate-fade-in" style={{ animationDelay: "0.4s" }}>
+                      <div className="h-8 w-20 bg-gray-200 rounded flex items-center justify-center text-gray-700 text-xs hover:bg-gray-300 transition-colors cursor-pointer" onClick={goToPreviousStep}>
+                        <ChevronLeft size={14} className="mr-1" />
+                        Back
+                      </div>
+                      <div className="h-10 w-28 bg-amber-500 rounded-lg flex items-center justify-center text-white text-sm font-medium hover:bg-amber-600 transition-colors cursor-pointer shadow-lg shadow-amber-500/30">
                         <Send className="mr-2" size={16} />
-                        Submit Application
+                        Submit
                       </div>
                     </div>
                   </div>
