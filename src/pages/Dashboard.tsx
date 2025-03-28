@@ -1,6 +1,21 @@
-
 import React, { useState } from 'react';
-import { ChartBarIcon, FileTextIcon, SearchIcon, FileSearchIcon, ArrowRightIcon, AlertCircleIcon, CheckCircleIcon, LockIcon } from 'lucide-react';
+import { 
+  ChartBarIcon, 
+  FileTextIcon, 
+  SearchIcon, 
+  FileSearchIcon, 
+  ArrowRightIcon, 
+  AlertCircleIcon, 
+  CheckCircleIcon, 
+  LockIcon,
+  HomeIcon,
+  BookOpenIcon,
+  GraduationCapIcon,
+  FileIcon,
+  CalendarIcon,
+  ComputerIcon,
+  PlaneIcon
+} from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -16,7 +31,10 @@ import {
   SidebarHeader,
   SidebarFooter,
   SidebarTrigger,
-  SidebarInset
+  SidebarInset,
+  SidebarMenuSub,
+  SidebarMenuSubItem,
+  SidebarMenuSubButton
 } from '@/components/ui/sidebar';
 
 const Dashboard = () => {
@@ -57,69 +75,143 @@ const Dashboard = () => {
     { name: 'Application Tracker', icon: SearchIcon, value: 'tracker', isFree: false },
   ];
 
+  const getNavIcon = (itemValue) => {
+    switch (itemValue) {
+      case 'score':
+        return <ChartBarIcon className="h-5 w-5" />;
+      case 'scanning':
+        return <FileSearchIcon className="h-5 w-5" />;
+      case 'form1':
+        return <FileIcon className="h-5 w-5" />;
+      case 'form2':
+        return <FileTextIcon className="h-5 w-5" />;
+      case 'tracker':
+        return <SearchIcon className="h-5 w-5" />;
+      default:
+        return <ChartBarIcon className="h-5 w-5" />;
+    }
+  };
+
+  const getPlatformBadge = (platform) => {
+    if (platform.includes('Eldo')) {
+      return 'bg-eldo-blue/20 text-eldo-blue';
+    } else if (platform.includes('Chrome')) {
+      return 'bg-eldo-purple/20 text-eldo-purple';
+    } else {
+      return 'bg-gray-200 text-gray-700';
+    }
+  };
+
+  const getPlatformIcon = (platform) => {
+    if (platform.includes('Eldo')) {
+      return <HomeIcon className="h-3 w-3 mr-1" />;
+    } else if (platform.includes('Chrome')) {
+      return <ComputerIcon className="h-3 w-3 mr-1" />;
+    } else {
+      return <GraduationCapIcon className="h-3 w-3 mr-1" />;
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Dashboard Header */}
-      <header className="bg-white shadow-sm py-4 px-6 fixed top-0 left-0 right-0 z-40">
-        <div className="container mx-auto flex items-center justify-between">
-          <div className="flex items-center">
-            <span className="font-smokum text-3xl text-primary-blue mr-8">Eldo</span>
-            <h1 className="text-xl md:text-2xl font-bold text-gray-800">Express Entry Journey</h1>
-          </div>
-          <div className="flex items-center gap-3">
-            <span className="text-sm font-medium hidden md:block">John Smith</span>
-            <div className="h-9 w-9 rounded-full bg-eldo-blue text-white flex items-center justify-center">
-              JS
-            </div>
-          </div>
-        </div>
-      </header>
-
       <SidebarProvider defaultOpen={true}>
         <div className="flex w-full pt-16">
           <Sidebar side="left" variant="sidebar">
-            <SidebarHeader className="flex items-center justify-between p-4">
+            <SidebarHeader className="flex items-center justify-between p-4 bg-white border-b">
               <div className="flex flex-col">
-                <span className="text-sm font-semibold">Express Entry</span>
-                <span className="text-xs text-gray-500">Dashboard</span>
+                <span className="text-sm font-semibold text-gray-800">Express Entry</span>
+                <span className="text-xs text-gray-500">Immigration Dashboard</span>
               </div>
               <SidebarTrigger />
             </SidebarHeader>
             
-            <SidebarContent>
-              <SidebarMenu>
-                {navItems.map((item) => (
-                  <SidebarMenuItem key={item.value}>
-                    <SidebarMenuButton 
-                      isActive={activeTab === item.value} 
-                      onClick={() => setActiveTab(item.value)}
-                      className="relative"
+            <SidebarContent className="py-4">
+              <div className="px-4 mb-4">
+                <div className="text-xs uppercase font-semibold text-gray-500 mb-2 tracking-wider">Journey Progress</div>
+                <Progress value={((currentStep + 1) / journeySteps.length) * 100} className="h-1.5 mb-2" />
+                <div className="flex justify-between text-xs text-gray-600">
+                  <span>Step {currentStep + 1}/{journeySteps.length}</span>
+                  <span>{Math.round((currentStep + 1) / journeySteps.length * 100)}% Complete</span>
+                </div>
+              </div>
+              
+              <div className="mb-6 px-4">
+                <div className="text-xs uppercase font-semibold text-gray-500 mb-3 tracking-wider">Navigation</div>
+                <SidebarMenu>
+                  {navItems.map((item) => (
+                    <SidebarMenuItem key={item.value}>
+                      <SidebarMenuButton 
+                        isActive={activeTab === item.value} 
+                        onClick={() => setActiveTab(item.value)}
+                        className="relative"
+                      >
+                        {getNavIcon(item.value)}
+                        <span>{item.name}</span>
+                        {item.isFree === false && (
+                          <span className="absolute right-2 text-[10px] bg-eldo-purple text-white rounded-full px-1.5 py-0.5 flex items-center">
+                            Premium
+                          </span>
+                        )}
+                        {item.isFree === 'limited' && (
+                          <span className="absolute right-2 text-[10px] bg-amber-500 text-white rounded-full px-1.5 py-0.5 flex items-center">
+                            Limited
+                          </span>
+                        )}
+                        {item.isFree === true && (
+                          <span className="absolute right-2 text-[10px] bg-green-500 text-white rounded-full px-1.5 py-0.5 flex items-center">
+                            Free
+                          </span>
+                        )}
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  ))}
+                </SidebarMenu>
+              </div>
+              
+              <div className="px-4">
+                <div className="text-xs uppercase font-semibold text-gray-500 mb-3 tracking-wider">Journey Steps</div>
+                <div className="space-y-1 mb-2">
+                  {journeySteps.map((step, index) => (
+                    <div key={index} 
+                      className={`flex items-center gap-2 px-2 py-1.5 rounded-md text-sm transition-colors ${
+                        index === currentStep ? 'bg-blue-50 border border-blue-100' : 'hover:bg-gray-100'
+                      }`}
                     >
-                      <item.icon className="mr-2" />
-                      <span>{item.name}</span>
-                      {item.isFree === false && (
-                        <span className="absolute right-2 text-xs bg-eldo-purple text-white rounded-full px-2 py-0.5">
-                          Premium
-                        </span>
-                      )}
-                      {item.isFree === 'limited' && (
-                        <span className="absolute right-2 text-xs bg-amber-500 text-white rounded-full px-2 py-0.5">
-                          Limited
-                        </span>
-                      )}
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                ))}
-              </SidebarMenu>
+                      <div className={`w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 ${
+                        step.completed ? 'bg-green-100 text-green-600' : 
+                        index === currentStep ? 'bg-blue-100 text-blue-600' : 'bg-gray-100 text-gray-400'
+                      }`}>
+                        {step.completed ? (
+                          <CheckCircleIcon className="w-3 h-3" />
+                        ) : (
+                          <span className="text-xs font-medium">{index + 1}</span>
+                        )}
+                      </div>
+                      <div className="flex flex-col min-w-0">
+                        <div className="flex items-center gap-1">
+                          <p className="font-medium text-xs truncate">{step.name}</p>
+                          {!step.isFree && (
+                            <LockIcon className="w-3 h-3 text-eldo-purple flex-shrink-0" />
+                          )}
+                        </div>
+                        <div className={`text-[10px] mt-0.5 px-1.5 py-0.5 rounded-sm inline-flex items-center ${getPlatformBadge(step.platform)}`}>
+                          {getPlatformIcon(step.platform)}
+                          <span>{step.platform}</span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </SidebarContent>
             
-            <SidebarFooter className="p-4 border-t">
+            <SidebarFooter className="p-4 border-t bg-white mt-auto">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-xs font-medium">Free Plan</p>
-                  <p className="text-xs text-gray-500">Upgrade for premium features</p>
+                  <p className="text-xs text-gray-500">3 of 11 steps free</p>
                 </div>
-                <Button variant="outline" size="sm" className="text-xs border-eldo-purple text-eldo-purple" onClick={handlePremiumFeatureClick}>
+                <Button variant="outline" size="sm" className="text-xs border-eldo-purple text-eldo-purple hover:bg-eldo-purple/10" onClick={handlePremiumFeatureClick}>
                   Upgrade
                 </Button>
               </div>
@@ -127,52 +219,9 @@ const Dashboard = () => {
           </Sidebar>
 
           <SidebarInset>
-            <main className="flex-1 p-6">
-              {/* Journey Progress */}
-              <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-                <div className="mb-4">
-                  <h2 className="text-lg font-semibold mb-4">Your Express Entry Journey</h2>
-                  <Progress value={((currentStep + 1) / journeySteps.length) * 100} className="h-2 mb-4" />
-                </div>
-                
-                {/* Journey Steps */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {journeySteps.map((step, index) => (
-                    <div key={index} className={`flex items-start gap-3 p-3 rounded-lg ${index === currentStep ? 'bg-blue-50 border border-blue-200' : ''}`}>
-                      <div className={`w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 ${
-                        step.completed ? 'bg-green-100 text-green-600' : 
-                        index === currentStep ? 'bg-blue-100 text-blue-600' : 'bg-gray-100 text-gray-400'
-                      }`}>
-                        {step.completed ? (
-                          <CheckCircleIcon className="w-4 h-4" />
-                        ) : (
-                          <span className="text-xs font-medium">{index + 1}</span>
-                        )}
-                      </div>
-                      <div>
-                        <div className="flex items-center gap-1">
-                          <p className="font-medium text-sm">{step.name}</p>
-                          {!step.isFree && (
-                            <LockIcon className="w-3 h-3 text-eldo-purple" />
-                          )}
-                        </div>
-                        <div className="flex items-center mt-1">
-                          <span className={`text-xs px-2 py-0.5 rounded ${
-                            step.platform.includes('Eldo') ? 'bg-eldo-blue/20 text-eldo-blue' : 
-                            step.platform.includes('Chrome') ? 'bg-eldo-purple/20 text-eldo-purple' : 
-                            'bg-gray-200 text-gray-700'
-                          }`}>
-                            {step.platform}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
+            <main className="flex-1 p-6 overflow-auto">
               {/* Main Dashboard Content - Tab panels */}
-              <Tabs value={activeTab} onValueChange={setActiveTab}>
+              <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
                 <TabsContent value="score">
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <Card className="md:col-span-2">
