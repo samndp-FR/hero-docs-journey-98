@@ -172,279 +172,281 @@ const Dashboard = () => {
               </div>
 
               {/* Main Dashboard Content - Tab panels */}
-              <TabsContent value="score" className={activeTab === "score" ? "block" : "hidden"}>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  <Card className="md:col-span-2">
-                    <CardHeader>
-                      <CardTitle>CRS Score Assessment</CardTitle>
-                      <CardDescription>
-                        Complete the questionnaire to calculate your Comprehensive Ranking System (CRS) points
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="space-y-6">
-                        <div className="bg-gray-100 rounded-lg p-6">
-                          <h3 className="font-medium mb-4">Personal Information</h3>
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div className="space-y-1">
-                              <p className="text-sm text-gray-500">Age</p>
-                              <p className="font-medium">32 years</p>
+              <Tabs value={activeTab} onValueChange={setActiveTab}>
+                <TabsContent value="score">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <Card className="md:col-span-2">
+                      <CardHeader>
+                        <CardTitle>CRS Score Assessment</CardTitle>
+                        <CardDescription>
+                          Complete the questionnaire to calculate your Comprehensive Ranking System (CRS) points
+                        </CardDescription>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="space-y-6">
+                          <div className="bg-gray-100 rounded-lg p-6">
+                            <h3 className="font-medium mb-4">Personal Information</h3>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                              <div className="space-y-1">
+                                <p className="text-sm text-gray-500">Age</p>
+                                <p className="font-medium">32 years</p>
+                              </div>
+                              <div className="space-y-1">
+                                <p className="text-sm text-gray-500">Education</p>
+                                <p className="font-medium">Master's Degree</p>
+                              </div>
+                              <div className="space-y-1">
+                                <p className="text-sm text-gray-500">First Language</p>
+                                <p className="font-medium">English (CLB 9)</p>
+                              </div>
+                              <div className="space-y-1">
+                                <p className="text-sm text-gray-500">Work Experience</p>
+                                <p className="font-medium">5+ years</p>
+                              </div>
                             </div>
-                            <div className="space-y-1">
-                              <p className="text-sm text-gray-500">Education</p>
-                              <p className="font-medium">Master's Degree</p>
-                            </div>
-                            <div className="space-y-1">
-                              <p className="text-sm text-gray-500">First Language</p>
-                              <p className="font-medium">English (CLB 9)</p>
-                            </div>
-                            <div className="space-y-1">
-                              <p className="text-sm text-gray-500">Work Experience</p>
-                              <p className="font-medium">5+ years</p>
-                            </div>
+                            <Button className="mt-4 bg-eldo-blue hover:bg-eldo-blue/90">
+                              Update Information
+                            </Button>
                           </div>
-                          <Button className="mt-4 bg-eldo-blue hover:bg-eldo-blue/90">
-                            Update Information
-                          </Button>
-                        </div>
 
-                        <div>
-                          <h3 className="font-medium mb-3">Are you currently in Canada?</h3>
-                          <div className="flex items-center space-x-4">
-                            <Button variant="outline" className="border-eldo-blue text-eldo-blue hover:bg-eldo-blue/10">Yes</Button>
-                            <Button variant="outline" className="border-eldo-blue text-eldo-blue hover:bg-eldo-blue/10">No</Button>
+                          <div>
+                            <h3 className="font-medium mb-3">Are you currently in Canada?</h3>
+                            <div className="flex items-center space-x-4">
+                              <Button variant="outline" className="border-eldo-blue text-eldo-blue hover:bg-eldo-blue/10">Yes</Button>
+                              <Button variant="outline" className="border-eldo-blue text-eldo-blue hover:bg-eldo-blue/10">No</Button>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    </CardContent>
-                    <CardFooter>
-                      <p className="text-sm text-gray-500">
-                        Based on your answers, we've calculated your CRS score. <a href="#" className="text-eldo-blue underline">Learn how scores are calculated</a>
-                      </p>
-                    </CardFooter>
-                  </Card>
-                  
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>Your Results</CardTitle>
-                      <CardDescription>
-                        Based on your profile information
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-6">
-                      <div className="text-center">
-                        <div className="text-4xl font-bold text-eldo-blue mb-2">Your points: {userScore}</div>
-                        <div className="text-sm text-gray-500 mb-4">
-                          You're in the top {percentile}% of applicants
-                        </div>
-                        <div className="w-full bg-gray-200 rounded-full h-2.5 mb-4">
-                          <div className="bg-eldo-blue h-2.5 rounded-full" style={{ width: `${percentile}%` }}></div>
-                        </div>
-                        <p className="text-sm font-medium text-gray-600">
-                          Latest draw: 488 points
+                      </CardContent>
+                      <CardFooter>
+                        <p className="text-sm text-gray-500">
+                          Based on your answers, we've calculated your CRS score. <a href="#" className="text-eldo-blue underline">Learn how scores are calculated</a>
                         </p>
-                      </div>
-
-                      <div className="space-y-4">
-                        <div className="flex justify-between items-center">
-                          <h4 className="font-medium">Your chances:</h4>
-                          <span className="text-green-600 font-medium">Excellent</span>
-                        </div>
-                        <div className="flex justify-between items-center">
-                          <h4 className="font-medium">Estimated timeline:</h4>
-                          <span className="font-medium">{estimatedTimeline}</span>
-                        </div>
-                      </div>
-                    </CardContent>
-                    <CardFooter>
-                      <Button className="w-full bg-eldo-blue hover:bg-eldo-blue/90" onClick={() => setActiveTab('scanning')}>
-                        Next Steps <ArrowRightIcon className="w-4 h-4 ml-2" />
-                      </Button>
-                    </CardFooter>
-                  </Card>
-                </div>
-              </TabsContent>
-
-              <TabsContent value="scanning" className={activeTab === "scanning" ? "block" : "hidden"}>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  <Card className="md:col-span-2">
-                    <CardHeader>
-                      <CardTitle>Document Center</CardTitle>
-                      <CardDescription>
-                        Upload your documents for verification and automatic form filling
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-6">
-                        <p className="text-sm text-amber-700 flex items-start gap-2">
-                          <AlertCircleIcon className="w-5 h-5 flex-shrink-0" />
-                          <span>Free plan includes scanning of 1 document. Upgrade to Premium for unlimited document scanning.</span>
-                        </p>
-                      </div>
-                      
-                      <div className="space-y-6">
-                        <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
-                          <div className="mx-auto w-12 h-12 rounded-full bg-eldo-blue/10 flex items-center justify-center mb-4">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-eldo-blue">
-                              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                              <polyline points="7 10 12 15 17 10"></polyline>
-                              <line x1="12" y1="15" x2="12" y2="3"></line>
-                            </svg>
+                      </CardFooter>
+                    </Card>
+                    
+                    <Card>
+                      <CardHeader>
+                        <CardTitle>Your Results</CardTitle>
+                        <CardDescription>
+                          Based on your profile information
+                        </CardDescription>
+                      </CardHeader>
+                      <CardContent className="space-y-6">
+                        <div className="text-center">
+                          <div className="text-4xl font-bold text-eldo-blue mb-2">Your points: {userScore}</div>
+                          <div className="text-sm text-gray-500 mb-4">
+                            You're in the top {percentile}% of applicants
                           </div>
-                          <h3 className="text-lg font-medium mb-2">Drag and drop your documents</h3>
-                          <p className="text-gray-500 mb-4">or click to browse files (PDF, JPG, PNG)</p>
-                          <Button className="bg-eldo-blue hover:bg-eldo-blue/90">Upload Documents</Button>
+                          <div className="w-full bg-gray-200 rounded-full h-2.5 mb-4">
+                            <div className="bg-eldo-blue h-2.5 rounded-full" style={{ width: `${percentile}%` }}></div>
+                          </div>
+                          <p className="text-sm font-medium text-gray-600">
+                            Latest draw: 488 points
+                          </p>
                         </div>
 
-                        <div>
-                          <h3 className="font-medium mb-4">Required Documents</h3>
-                          <div className="space-y-3">
-                            <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                              <div className="flex items-center">
-                                <CheckCircleIcon className="w-5 h-5 text-green-500 mr-3" />
-                                <span>Passport</span>
-                              </div>
-                              <span className="text-sm text-green-500">Verified</span>
-                            </div>
-                            <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                              <div className="flex items-center">
-                                <AlertCircleIcon className="w-5 h-5 text-amber-500 mr-3" />
-                                <span>Educational Certificates</span>
-                              </div>
-                              <span className="text-sm text-amber-500">Pending</span>
-                            </div>
-                            <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                              <div className="flex items-center">
-                                <AlertCircleIcon className="w-5 h-5 text-amber-500 mr-3" />
-                                <span>Language Test Results</span>
-                              </div>
-                              <div className="flex items-center">
-                                <span className="text-sm text-amber-500 mr-2">Pending</span>
-                                <LockIcon className="w-4 h-4 text-eldo-purple" />
-                              </div>
-                            </div>
-                            <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                              <div className="flex items-center">
-                                <AlertCircleIcon className="w-5 h-5 text-amber-500 mr-3" />
-                                <span>Work Experience Letters</span>
-                              </div>
-                              <div className="flex items-center">
-                                <span className="text-sm text-amber-500 mr-2">Pending</span>
-                                <LockIcon className="w-4 h-4 text-eldo-purple" />
-                              </div>
-                            </div>
+                        <div className="space-y-4">
+                          <div className="flex justify-between items-center">
+                            <h4 className="font-medium">Your chances:</h4>
+                            <span className="text-green-600 font-medium">Excellent</span>
+                          </div>
+                          <div className="flex justify-between items-center">
+                            <h4 className="font-medium">Estimated timeline:</h4>
+                            <span className="font-medium">{estimatedTimeline}</span>
                           </div>
                         </div>
-                      </div>
-                    </CardContent>
-                  </Card>
+                      </CardContent>
+                      <CardFooter>
+                        <Button className="w-full bg-eldo-blue hover:bg-eldo-blue/90" onClick={() => setActiveTab('scanning')}>
+                          Next Steps <ArrowRightIcon className="w-4 h-4 ml-2" />
+                        </Button>
+                      </CardFooter>
+                    </Card>
+                  </div>
+                </TabsContent>
 
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>Document Features</CardTitle>
-                      <CardDescription>Services to simplify your application</CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-6">
-                      <div className="space-y-4">
-                        <div className="flex items-start space-x-3">
-                          <CheckCircleIcon className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
+                <TabsContent value="scanning">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <Card className="md:col-span-2">
+                      <CardHeader>
+                        <CardTitle>Document Center</CardTitle>
+                        <CardDescription>
+                          Upload your documents for verification and automatic form filling
+                        </CardDescription>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-6">
+                          <p className="text-sm text-amber-700 flex items-start gap-2">
+                            <AlertCircleIcon className="w-5 h-5 flex-shrink-0" />
+                            <span>Free plan includes scanning of 1 document. Upgrade to Premium for unlimited document scanning.</span>
+                          </p>
+                        </div>
+                        
+                        <div className="space-y-6">
+                          <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+                            <div className="mx-auto w-12 h-12 rounded-full bg-eldo-blue/10 flex items-center justify-center mb-4">
+                              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-eldo-blue">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                <polyline points="7 10 12 15 17 10"></polyline>
+                                <line x1="12" y1="15" x2="12" y2="3"></line>
+                              </svg>
+                            </div>
+                            <h3 className="text-lg font-medium mb-2">Drag and drop your documents</h3>
+                            <p className="text-gray-500 mb-4">or click to browse files (PDF, JPG, PNG)</p>
+                            <Button className="bg-eldo-blue hover:bg-eldo-blue/90">Upload Documents</Button>
+                          </div>
+
                           <div>
-                            <h4 className="font-medium">Basic Document Scan</h4>
-                            <p className="text-sm text-gray-500">One free document scan included</p>
+                            <h3 className="font-medium mb-4">Required Documents</h3>
+                            <div className="space-y-3">
+                              <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                                <div className="flex items-center">
+                                  <CheckCircleIcon className="w-5 h-5 text-green-500 mr-3" />
+                                  <span>Passport</span>
+                                </div>
+                                <span className="text-sm text-green-500">Verified</span>
+                              </div>
+                              <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                                <div className="flex items-center">
+                                  <AlertCircleIcon className="w-5 h-5 text-amber-500 mr-3" />
+                                  <span>Educational Certificates</span>
+                                </div>
+                                <span className="text-sm text-amber-500">Pending</span>
+                              </div>
+                              <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                                <div className="flex items-center">
+                                  <AlertCircleIcon className="w-5 h-5 text-amber-500 mr-3" />
+                                  <span>Language Test Results</span>
+                                </div>
+                                <div className="flex items-center">
+                                  <span className="text-sm text-amber-500 mr-2">Pending</span>
+                                  <LockIcon className="w-4 h-4 text-eldo-purple" />
+                                </div>
+                              </div>
+                              <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                                <div className="flex items-center">
+                                  <AlertCircleIcon className="w-5 h-5 text-amber-500 mr-3" />
+                                  <span>Work Experience Letters</span>
+                                </div>
+                                <div className="flex items-center">
+                                  <span className="text-sm text-amber-500 mr-2">Pending</span>
+                                  <LockIcon className="w-4 h-4 text-eldo-purple" />
+                                </div>
+                              </div>
+                            </div>
                           </div>
                         </div>
-                        <div className="flex items-start space-x-3 opacity-60">
-                          <LockIcon className="w-5 h-5 text-eldo-purple flex-shrink-0 mt-0.5" />
-                          <div>
-                            <h4 className="font-medium">Unlimited Scanning</h4>
-                            <p className="text-sm text-gray-500">Scan all your documents</p>
-                            <span className="text-xs text-eldo-purple font-medium">Premium Feature</span>
+                      </CardContent>
+                    </Card>
+
+                    <Card>
+                      <CardHeader>
+                        <CardTitle>Document Features</CardTitle>
+                        <CardDescription>Services to simplify your application</CardDescription>
+                      </CardHeader>
+                      <CardContent className="space-y-6">
+                        <div className="space-y-4">
+                          <div className="flex items-start space-x-3">
+                            <CheckCircleIcon className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
+                            <div>
+                              <h4 className="font-medium">Basic Document Scan</h4>
+                              <p className="text-sm text-gray-500">One free document scan included</p>
+                            </div>
+                          </div>
+                          <div className="flex items-start space-x-3 opacity-60">
+                            <LockIcon className="w-5 h-5 text-eldo-purple flex-shrink-0 mt-0.5" />
+                            <div>
+                              <h4 className="font-medium">Unlimited Scanning</h4>
+                              <p className="text-sm text-gray-500">Scan all your documents</p>
+                              <span className="text-xs text-eldo-purple font-medium">Premium Feature</span>
+                            </div>
+                          </div>
+                          <div className="flex items-start space-x-3 opacity-60">
+                            <LockIcon className="w-5 h-5 text-eldo-purple flex-shrink-0 mt-0.5" />
+                            <div>
+                              <h4 className="font-medium">Auto-fill Forms</h4>
+                              <p className="text-sm text-gray-500">Your document data is automatically extracted</p>
+                              <span className="text-xs text-eldo-purple font-medium">Premium Feature</span>
+                            </div>
                           </div>
                         </div>
-                        <div className="flex items-start space-x-3 opacity-60">
-                          <LockIcon className="w-5 h-5 text-eldo-purple flex-shrink-0 mt-0.5" />
-                          <div>
-                            <h4 className="font-medium">Auto-fill Forms</h4>
-                            <p className="text-sm text-gray-500">Your document data is automatically extracted</p>
-                            <span className="text-xs text-eldo-purple font-medium">Premium Feature</span>
-                          </div>
-                        </div>
-                      </div>
-                    </CardContent>
-                    <CardFooter>
-                      <Button className="w-full" variant="outline" onClick={handlePremiumFeatureClick}>
+                      </CardContent>
+                      <CardFooter>
+                        <Button className="w-full" variant="outline" onClick={handlePremiumFeatureClick}>
+                          Upgrade to Premium
+                        </Button>
+                      </CardFooter>
+                    </Card>
+                  </div>
+                </TabsContent>
+
+                <TabsContent value="form1">
+                  <div className="bg-white rounded-lg shadow-md p-10 text-center">
+                    <div className="w-16 h-16 bg-eldo-purple/10 rounded-full mx-auto flex items-center justify-center mb-4">
+                      <LockIcon className="w-8 h-8 text-eldo-purple" />
+                    </div>
+                    <h2 className="text-2xl font-bold mb-2">Premium Feature</h2>
+                    <p className="text-gray-500 max-w-md mx-auto mb-6">
+                      Create your Express Entry profile with our Chrome Extension that automatically fills IRCC forms with your data.
+                    </p>
+                    <div className="flex justify-center gap-4">
+                      <Button variant="outline" className="border-eldo-purple text-eldo-purple hover:bg-eldo-purple/10"
+                        onClick={handlePremiumFeatureClick}>
                         Upgrade to Premium
                       </Button>
-                    </CardFooter>
-                  </Card>
-                </div>
-              </TabsContent>
+                      <Button className="bg-eldo-blue hover:bg-eldo-blue/90"
+                        onClick={() => setActiveTab('score')}>
+                        Back to Score Assessment
+                      </Button>
+                    </div>
+                  </div>
+                </TabsContent>
 
-              <TabsContent value="form1" className={activeTab === "form1" ? "block" : "hidden"}>
-                <div className="bg-white rounded-lg shadow-md p-10 text-center">
-                  <div className="w-16 h-16 bg-eldo-purple/10 rounded-full mx-auto flex items-center justify-center mb-4">
-                    <LockIcon className="w-8 h-8 text-eldo-purple" />
+                <TabsContent value="form2">
+                  <div className="bg-white rounded-lg shadow-md p-10 text-center">
+                    <div className="w-16 h-16 bg-eldo-purple/10 rounded-full mx-auto flex items-center justify-center mb-4">
+                      <LockIcon className="w-8 h-8 text-eldo-purple" />
+                    </div>
+                    <h2 className="text-2xl font-bold mb-2">Premium Feature</h2>
+                    <p className="text-gray-500 max-w-md mx-auto mb-6">
+                      Complete your application forms after receiving your ITA with our Chrome Extension to automate form filling on the IRCC website.
+                    </p>
+                    <div className="flex justify-center gap-4">
+                      <Button variant="outline" className="border-eldo-purple text-eldo-purple hover:bg-eldo-purple/10"
+                        onClick={handlePremiumFeatureClick}>
+                        Upgrade to Premium
+                      </Button>
+                      <Button className="bg-eldo-blue hover:bg-eldo-blue/90"
+                        onClick={() => setActiveTab('score')}>
+                        Back to Score Assessment
+                      </Button>
+                    </div>
                   </div>
-                  <h2 className="text-2xl font-bold mb-2">Premium Feature</h2>
-                  <p className="text-gray-500 max-w-md mx-auto mb-6">
-                    Create your Express Entry profile with our Chrome Extension that automatically fills IRCC forms with your data.
-                  </p>
-                  <div className="flex justify-center gap-4">
-                    <Button variant="outline" className="border-eldo-purple text-eldo-purple hover:bg-eldo-purple/10"
-                      onClick={handlePremiumFeatureClick}>
-                      Upgrade to Premium
-                    </Button>
-                    <Button className="bg-eldo-blue hover:bg-eldo-blue/90"
-                      onClick={() => setActiveTab('score')}>
-                      Back to Score Assessment
-                    </Button>
-                  </div>
-                </div>
-              </TabsContent>
+                </TabsContent>
 
-              <TabsContent value="form2" className={activeTab === "form2" ? "block" : "hidden"}>
-                <div className="bg-white rounded-lg shadow-md p-10 text-center">
-                  <div className="w-16 h-16 bg-eldo-purple/10 rounded-full mx-auto flex items-center justify-center mb-4">
-                    <LockIcon className="w-8 h-8 text-eldo-purple" />
+                <TabsContent value="tracker">
+                  <div className="bg-white rounded-lg shadow-md p-10 text-center">
+                    <div className="w-16 h-16 bg-eldo-purple/10 rounded-full mx-auto flex items-center justify-center mb-4">
+                      <LockIcon className="w-8 h-8 text-eldo-purple" />
+                    </div>
+                    <h2 className="text-2xl font-bold mb-2">Premium Feature</h2>
+                    <p className="text-gray-500 max-w-md mx-auto mb-6">
+                      Track your application progress with detailed timeline and receive notifications about your application status.
+                    </p>
+                    <div className="flex justify-center gap-4">
+                      <Button variant="outline" className="border-eldo-purple text-eldo-purple hover:bg-eldo-purple/10"
+                        onClick={handlePremiumFeatureClick}>
+                        Upgrade to Premium
+                      </Button>
+                      <Button className="bg-eldo-blue hover:bg-eldo-blue/90"
+                        onClick={() => setActiveTab('score')}>
+                        Back to Score Assessment
+                      </Button>
+                    </div>
                   </div>
-                  <h2 className="text-2xl font-bold mb-2">Premium Feature</h2>
-                  <p className="text-gray-500 max-w-md mx-auto mb-6">
-                    Complete your application forms after receiving your ITA with our Chrome Extension to automate form filling on the IRCC website.
-                  </p>
-                  <div className="flex justify-center gap-4">
-                    <Button variant="outline" className="border-eldo-purple text-eldo-purple hover:bg-eldo-purple/10"
-                      onClick={handlePremiumFeatureClick}>
-                      Upgrade to Premium
-                    </Button>
-                    <Button className="bg-eldo-blue hover:bg-eldo-blue/90"
-                      onClick={() => setActiveTab('score')}>
-                      Back to Score Assessment
-                    </Button>
-                  </div>
-                </div>
-              </TabsContent>
-
-              <TabsContent value="tracker" className={activeTab === "tracker" ? "block" : "hidden"}>
-                <div className="bg-white rounded-lg shadow-md p-10 text-center">
-                  <div className="w-16 h-16 bg-eldo-purple/10 rounded-full mx-auto flex items-center justify-center mb-4">
-                    <LockIcon className="w-8 h-8 text-eldo-purple" />
-                  </div>
-                  <h2 className="text-2xl font-bold mb-2">Premium Feature</h2>
-                  <p className="text-gray-500 max-w-md mx-auto mb-6">
-                    Track your application progress with detailed timeline and receive notifications about your application status.
-                  </p>
-                  <div className="flex justify-center gap-4">
-                    <Button variant="outline" className="border-eldo-purple text-eldo-purple hover:bg-eldo-purple/10"
-                      onClick={handlePremiumFeatureClick}>
-                      Upgrade to Premium
-                    </Button>
-                    <Button className="bg-eldo-blue hover:bg-eldo-blue/90"
-                      onClick={() => setActiveTab('score')}>
-                      Back to Score Assessment
-                    </Button>
-                  </div>
-                </div>
-              </TabsContent>
+                </TabsContent>
+              </Tabs>
             </main>
           </SidebarInset>
         </div>
