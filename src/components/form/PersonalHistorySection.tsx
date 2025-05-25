@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -7,6 +6,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Plus, Trash2 } from 'lucide-react';
+import TravelHistoryTable from './TravelHistoryTable';
 
 interface Address {
   street: string;
@@ -34,6 +34,7 @@ const PersonalHistorySection: React.FC<PersonalHistorySectionProps> = ({ data, o
       toDate: '',
       current: true
     }],
+    travelHistory: data.travelHistory || [],
     criminalHistory: data.criminalHistory || 'no',
     criminalDetails: data.criminalDetails || '',
     immigrationHistory: data.immigrationHistory || 'no',
@@ -81,10 +82,16 @@ const PersonalHistorySection: React.FC<PersonalHistorySectionProps> = ({ data, o
     onUpdate(newData);
   };
 
+  const handleTravelHistoryUpdate = (travelData: any) => {
+    const newData = { ...historyData, ...travelData };
+    setHistoryData(newData);
+    onUpdate(newData);
+  };
+
   return (
     <div className="space-y-6">
       <div className="text-center text-muted-foreground">
-        <p>Provide information about your personal history including addresses, legal, and immigration background.</p>
+        <p>Provide information about your personal history including addresses, travel, legal, and immigration background.</p>
       </div>
 
       <Card>
@@ -193,6 +200,11 @@ const PersonalHistorySection: React.FC<PersonalHistorySectionProps> = ({ data, o
           </Button>
         </CardContent>
       </Card>
+
+      <TravelHistoryTable 
+        data={historyData}
+        onUpdate={handleTravelHistoryUpdate}
+      />
 
       <Card>
         <CardContent className="p-6">
