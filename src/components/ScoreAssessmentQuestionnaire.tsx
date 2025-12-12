@@ -1,17 +1,146 @@
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Calculator, FileText, Award } from 'lucide-react';
+import { Calculator, FileText, Award, TrendingUp, Zap } from 'lucide-react';
+import { Progress } from '@/components/ui/progress';
 
 interface ScoreAssessmentQuestionnaireProps {
   onComplete: (results: any) => void;
   onCancel: () => void;
 }
 
+// CRS Points reference data
+const CRS_POINTS = {
+  age: {
+    label: 'Age',
+    maxPoints: 110,
+    options: {
+      '17': { points: 0, label: '17 or under' },
+      '18': { points: 99, label: '18' },
+      '19': { points: 105, label: '19' },
+      '20': { points: 110, label: '20-29' },
+      '30': { points: 105, label: '30-35' },
+      '36': { points: 77, label: '36-40' },
+      '41': { points: 44, label: '41-45' },
+      '46': { points: 0, label: '46 or older' },
+    }
+  },
+  education: {
+    label: 'Education',
+    maxPoints: 150,
+    options: {
+      'A': { points: 0, label: 'Less than secondary' },
+      'B': { points: 30, label: 'Secondary diploma' },
+      'C': { points: 90, label: 'One-year program' },
+      'D': { points: 98, label: 'Two-year program' },
+      'E': { points: 120, label: "Bachelor's degree" },
+      'F': { points: 128, label: 'Two+ credentials' },
+      'G': { points: 135, label: "Master's degree" },
+      'H': { points: 150, label: 'Doctoral degree' },
+    }
+  },
+  canadianExp: {
+    label: 'Canadian Experience',
+    maxPoints: 80,
+    options: {
+      'A': { points: 0, label: 'None/less than 1 year' },
+      'B': { points: 40, label: '1 year' },
+      'C': { points: 53, label: '2 years' },
+      'D': { points: 64, label: '3 years' },
+      'E': { points: 72, label: '4 years' },
+      'F': { points: 80, label: '5+ years' },
+    }
+  },
+  foreignExp: {
+    label: 'Foreign Experience',
+    maxPoints: 50,
+    options: {
+      'A': { points: 0, label: 'None/less than 1 year' },
+      'B': { points: 13, label: '1 year' },
+      'C': { points: 25, label: '2 years' },
+      'D': { points: 50, label: '3+ years' },
+    }
+  },
+  provincialNom: {
+    label: 'Provincial Nomination',
+    maxPoints: 600,
+    options: {
+      'A': { points: 0, label: 'No' },
+      'B': { points: 600, label: 'Yes' },
+    }
+  }
+};
+
+interface ScoreIndicatorProps {
+  current: number;
+  max: number;
+  label: string;
+  isAnswered: boolean;
+}
+
+const ScoreIndicator: React.FC<ScoreIndicatorProps> = ({ current, max, label, isAnswered }) => {
+  const percentage = max > 0 ? (current / max) * 100 : 0;
+  
+  const getPerformanceColor = () => {
+    if (!isAnswered) return 'bg-muted';
+    if (percentage >= 80) return 'bg-emerald-500';
+    if (percentage >= 50) return 'bg-amber-500';
+    return 'bg-rose-400';
+  };
+
+  const getPerformanceLabel = () => {
+    if (!isAnswered) return 'Not answered';
+    if (percentage >= 80) return 'Excellent';
+    if (percentage >= 50) return 'Good';
+    if (percentage > 0) return 'Room to improve';
+    return 'No points';
+  };
+
+  return (
+    <div className="mt-3 p-3 rounded-lg bg-muted/30 border border-border/50">
+      <div className="flex items-center justify-between mb-2">
+        <div className="flex items-center gap-2">
+          <Zap className={`h-4 w-4 ${isAnswered ? 'text-primary' : 'text-muted-foreground'}`} />
+          <span className="text-xs font-medium text-muted-foreground">Point Contribution</span>
+        </div>
+        <Badge 
+          variant={isAnswered ? "secondary" : "outline"} 
+          className={`text-xs ${isAnswered && percentage >= 80 ? 'bg-emerald-100 text-emerald-700 border-emerald-200' : ''} ${isAnswered && percentage < 80 && percentage >= 50 ? 'bg-amber-100 text-amber-700 border-amber-200' : ''} ${isAnswered && percentage < 50 && percentage > 0 ? 'bg-rose-100 text-rose-700 border-rose-200' : ''}`}
+        >
+          {getPerformanceLabel()}
+        </Badge>
+      </div>
+      
+      <div className="flex items-center gap-3">
+        <div className="flex-1">
+          <div className="h-2 bg-muted rounded-full overflow-hidden">
+            <div 
+              className={`h-full transition-all duration-500 ease-out rounded-full ${getPerformanceColor()}`}
+              style={{ width: `${percentage}%` }}
+            />
+          </div>
+        </div>
+        <div className="text-right min-w-[80px]">
+          <span className={`text-lg font-bold ${isAnswered ? 'text-foreground' : 'text-muted-foreground'}`}>
+            {isAnswered ? current : '—'}
+          </span>
+          <span className="text-muted-foreground text-sm"> / {max}</span>
+        </div>
+      </div>
+      
+      {isAnswered && percentage < 100 && (
+        <div className="mt-2 flex items-center gap-1 text-xs text-muted-foreground">
+          <TrendingUp className="h-3 w-3" />
+          <span>+{max - current} points potential</span>
+        </div>
+      )}
+    </div>
+  );
+};
+
 const ScoreAssessmentQuestionnaire: React.FC<ScoreAssessmentQuestionnaireProps> = ({ onComplete, onCancel }) => {
-  // State to hold form data
   const [formData, setFormData] = useState({
     q1: '',
     q2i: '',
@@ -47,6 +176,25 @@ const ScoreAssessmentQuestionnaire: React.FC<ScoreAssessmentQuestionnaireProps> 
     q12iiWriting: '',
   });
 
+  // Calculate running score based on current answers
+  const currentScores = useMemo(() => {
+    return {
+      age: formData.q3 ? (CRS_POINTS.age.options[formData.q3 as keyof typeof CRS_POINTS.age.options]?.points || 0) : 0,
+      education: formData.q4 ? (CRS_POINTS.education.options[formData.q4 as keyof typeof CRS_POINTS.education.options]?.points || 0) : 0,
+      canadianExp: formData.q6i ? (CRS_POINTS.canadianExp.options[formData.q6i as keyof typeof CRS_POINTS.canadianExp.options]?.points || 0) : 0,
+      foreignExp: formData.q6ii ? (CRS_POINTS.foreignExp.options[formData.q6ii as keyof typeof CRS_POINTS.foreignExp.options]?.points || 0) : 0,
+      provincialNom: formData.q9 ? (CRS_POINTS.provincialNom.options[formData.q9 as keyof typeof CRS_POINTS.provincialNom.options]?.points || 0) : 0,
+    };
+  }, [formData]);
+
+  const totalCurrentScore = useMemo(() => {
+    return Object.values(currentScores).reduce((sum, score) => sum + score, 0);
+  }, [currentScores]);
+
+  const totalMaxScore = useMemo(() => {
+    return CRS_POINTS.age.maxPoints + CRS_POINTS.education.maxPoints + CRS_POINTS.canadianExp.maxPoints + CRS_POINTS.foreignExp.maxPoints + CRS_POINTS.provincialNom.maxPoints;
+  }, []);
+
   const handleInputChange = (e: React.ChangeEvent<HTMLSelectElement | HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
@@ -54,7 +202,7 @@ const ScoreAssessmentQuestionnaire: React.FC<ScoreAssessmentQuestionnaireProps> 
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onComplete(formData);
+    onComplete({ ...formData, calculatedScores: currentScores, totalScore: totalCurrentScore });
   };
 
   return (
@@ -62,10 +210,10 @@ const ScoreAssessmentQuestionnaire: React.FC<ScoreAssessmentQuestionnaireProps> 
       {/* Header Section */}
       <div className="text-center space-y-4">
         <div className="flex items-center justify-center gap-3">
-          <Calculator className="h-8 w-8 text-primary-blue" />
-          <h1 className="text-3xl font-bold text-gray-900">CRS Score Calculator</h1>
+          <Calculator className="h-8 w-8 text-primary" />
+          <h1 className="text-3xl font-bold text-foreground">CRS Score Calculator</h1>
         </div>
-        <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+        <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
           Calculate your Comprehensive Ranking System (CRS) score for Express Entry based on your personal information and qualifications.
         </p>
         <div className="flex items-center justify-center gap-4">
@@ -80,6 +228,39 @@ const ScoreAssessmentQuestionnaire: React.FC<ScoreAssessmentQuestionnaireProps> 
         </div>
       </div>
 
+      {/* Live Score Tracker */}
+      <Card className="border-primary/20 bg-gradient-to-br from-primary/5 to-primary/10 sticky top-20 z-10">
+        <CardContent className="p-6">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-primary/10 rounded-lg">
+                <TrendingUp className="h-5 w-5 text-primary" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-foreground">Running Score</h3>
+                <p className="text-xs text-muted-foreground">Based on your current answers</p>
+              </div>
+            </div>
+            <div className="text-right">
+              <div className="text-3xl font-bold text-primary">{totalCurrentScore}</div>
+              <div className="text-sm text-muted-foreground">of {totalMaxScore} possible</div>
+            </div>
+          </div>
+          <Progress value={(totalCurrentScore / totalMaxScore) * 100} className="h-3" />
+          <div className="mt-3 flex flex-wrap gap-2">
+            {Object.entries(currentScores).map(([key, score]) => (
+              <Badge 
+                key={key} 
+                variant="outline" 
+                className={`text-xs ${score > 0 ? 'bg-primary/10 border-primary/30' : ''}`}
+              >
+                {CRS_POINTS[key as keyof typeof CRS_POINTS]?.label}: {score}
+              </Badge>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+
       {/* Legal Disclaimer */}
       <Card className="border-amber-200 bg-amber-50">
         <CardHeader>
@@ -90,7 +271,7 @@ const ScoreAssessmentQuestionnaire: React.FC<ScoreAssessmentQuestionnaireProps> 
         </CardHeader>
         <CardContent className="text-amber-700 space-y-2">
           <p>This tool is intended solely for general guidance and reference purposes.</p>
-          <p>In the event of any discrepancy between the results of this questionnaire and that provided by the Express Entry electronic system, the results provided by the system shall govern, in accordance with provisions of the Immigration and Refugee Protection Act, the Immigration and Refugee Protection Regulations, and Minister's Instructions issued under IRPA s.10.3.</p>
+          <p>In the event of any discrepancy between the results of this questionnaire and that provided by the Express Entry electronic system, the results provided by the system shall govern.</p>
         </CardContent>
       </Card>
 
@@ -100,17 +281,17 @@ const ScoreAssessmentQuestionnaire: React.FC<ScoreAssessmentQuestionnaireProps> 
           <form onSubmit={handleSubmit} className="space-y-8">
             {/* Personal Information Section */}
             <div className="space-y-6">
-              <h3 className="text-xl font-semibold text-gray-900 border-b pb-2">Personal Information</h3>
+              <h3 className="text-xl font-semibold text-foreground border-b border-border pb-2">Personal Information</h3>
               
               {/* Question 1 - Marital Status */}
               <div className="space-y-2">
-                <label htmlFor="q1" className="text-sm font-medium text-gray-700">
+                <label htmlFor="q1" className="text-sm font-medium text-foreground">
                   1) What is your marital status?
                 </label>
                 <select 
                   id="q1" 
                   name="q1" 
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-blue focus:border-transparent"
+                  className="w-full px-3 py-2 border border-input bg-background rounded-md focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
                   value={formData.q1} 
                   onChange={handleInputChange}
                 >
@@ -127,13 +308,13 @@ const ScoreAssessmentQuestionnaire: React.FC<ScoreAssessmentQuestionnaireProps> 
 
               {/* Question 2i - Spouse Citizenship */}
               <div className="space-y-2">
-                <label htmlFor="q2i" className="text-sm font-medium text-gray-700">
+                <label htmlFor="q2i" className="text-sm font-medium text-foreground">
                   2) i. Is your spouse or common-law partner a citizen or permanent resident of Canada?
                 </label>
                 <select 
                   id="q2i" 
                   name="q2i" 
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-blue focus:border-transparent"
+                  className="w-full px-3 py-2 border border-input bg-background rounded-md focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
                   value={formData.q2i} 
                   onChange={handleInputChange}
                 >
@@ -145,13 +326,13 @@ const ScoreAssessmentQuestionnaire: React.FC<ScoreAssessmentQuestionnaireProps> 
 
               {/* Question 2ii - Spouse Coming to Canada */}
               <div className="space-y-2">
-                <label htmlFor="q2ii" className="text-sm font-medium text-gray-700">
+                <label htmlFor="q2ii" className="text-sm font-medium text-foreground">
                   2) ii. Will your spouse or common-law partner come with you to Canada?
                 </label>
                 <select 
                   id="q2ii" 
                   name="q2ii" 
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-blue focus:border-transparent"
+                  className="w-full px-3 py-2 border border-input bg-background rounded-md focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
                   value={formData.q2ii} 
                   onChange={handleInputChange}
                 >
@@ -163,10 +344,10 @@ const ScoreAssessmentQuestionnaire: React.FC<ScoreAssessmentQuestionnaireProps> 
 
               {/* Question 3 - Age */}
               <div className="space-y-2">
-                <label htmlFor="q3" className="text-sm font-medium text-gray-700">
+                <label htmlFor="q3" className="text-sm font-medium text-foreground">
                   3) How old are you?
                 </label>
-                <div className="text-sm text-gray-600 mb-2">
+                <div className="text-sm text-muted-foreground mb-2">
                   <p>Choose the best answer:</p>
                   <ul className="list-disc list-inside space-y-1 ml-4">
                     <li>If you've been invited to apply, enter your age on the date you were invited.</li>
@@ -176,7 +357,7 @@ const ScoreAssessmentQuestionnaire: React.FC<ScoreAssessmentQuestionnaireProps> 
                 <select 
                   id="q3" 
                   name="q3" 
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-blue focus:border-transparent"
+                  className="w-full px-3 py-2 border border-input bg-background rounded-md focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
                   value={formData.q3} 
                   onChange={handleInputChange}
                 >
@@ -190,19 +371,25 @@ const ScoreAssessmentQuestionnaire: React.FC<ScoreAssessmentQuestionnaireProps> 
                   <option value="41">41-45</option>
                   <option value="46">46 or older</option>
                 </select>
+                <ScoreIndicator 
+                  current={currentScores.age} 
+                  max={CRS_POINTS.age.maxPoints} 
+                  label="Age Points"
+                  isAnswered={!!formData.q3}
+                />
               </div>
             </div>
 
             {/* Education Section */}
             <div className="space-y-6">
-              <h3 className="text-xl font-semibold text-gray-900 border-b pb-2">Education</h3>
+              <h3 className="text-xl font-semibold text-foreground border-b border-border pb-2">Education</h3>
               
               {/* Question 4 - Education Level */}
               <div className="space-y-2">
-                <label htmlFor="q4" className="text-sm font-medium text-gray-700">
+                <label htmlFor="q4" className="text-sm font-medium text-foreground">
                   4) What is your level of education?
                 </label>
-                <div className="text-sm text-gray-600 mb-2">
+                <div className="text-sm text-muted-foreground mb-2">
                   <p>Enter the highest level of education for which you:</p>
                   <ul className="list-disc list-inside space-y-1 ml-4">
                     <li>earned a <strong>Canadian degree, diploma or certificate</strong> or</li>
@@ -212,7 +399,7 @@ const ScoreAssessmentQuestionnaire: React.FC<ScoreAssessmentQuestionnaireProps> 
                 <select 
                   id="q4" 
                   name="q4" 
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-blue focus:border-transparent"
+                  className="w-full px-3 py-2 border border-input bg-background rounded-md focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
                   value={formData.q4} 
                   onChange={handleInputChange}
                 >
@@ -226,22 +413,28 @@ const ScoreAssessmentQuestionnaire: React.FC<ScoreAssessmentQuestionnaireProps> 
                   <option value="G">Master's degree</option>
                   <option value="H">Doctoral level university degree (PhD)</option>
                 </select>
+                <ScoreIndicator 
+                  current={currentScores.education} 
+                  max={CRS_POINTS.education.maxPoints} 
+                  label="Education Points"
+                  isAnswered={!!formData.q4}
+                />
               </div>
             </div>
 
             {/* Language Skills Section */}
             <div className="space-y-6">
-              <h3 className="text-xl font-semibold text-gray-900 border-b pb-2">Language Skills</h3>
+              <h3 className="text-xl font-semibold text-foreground border-b border-border pb-2">Language Skills</h3>
               
               {/* Question 5i - Test Results */}
               <div className="space-y-2">
-                <label htmlFor="q5i" className="text-sm font-medium text-gray-700">
+                <label htmlFor="q5i" className="text-sm font-medium text-foreground">
                   5) i. Are your test results less than two years old?
                 </label>
                 <select 
                   id="q5i" 
                   name="q5i" 
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-blue focus:border-transparent"
+                  className="w-full px-3 py-2 border border-input bg-background rounded-md focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
                   value={formData.q5i} 
                   onChange={handleInputChange}
                 >
@@ -253,13 +446,13 @@ const ScoreAssessmentQuestionnaire: React.FC<ScoreAssessmentQuestionnaireProps> 
 
               {/* Question 5ia - Language Test Type */}
               <div className="space-y-2">
-                <label htmlFor="q5i-a" className="text-sm font-medium text-gray-700">
+                <label htmlFor="q5i-a" className="text-sm font-medium text-foreground">
                   ii. Which language test did you take for your first official language?
                 </label>
                 <select 
                   id="q5i-a" 
                   name="q5ia" 
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-blue focus:border-transparent"
+                  className="w-full px-3 py-2 border border-input bg-background rounded-md focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
                   value={formData.q5ia} 
                   onChange={handleInputChange}
                 >
@@ -275,20 +468,20 @@ const ScoreAssessmentQuestionnaire: React.FC<ScoreAssessmentQuestionnaireProps> 
 
             {/* Work Experience Section */}
             <div className="space-y-6">
-              <h3 className="text-xl font-semibold text-gray-900 border-b pb-2">Work Experience</h3>
+              <h3 className="text-xl font-semibold text-foreground border-b border-border pb-2">Work Experience</h3>
               
               {/* Question 6i - Canadian Work Experience */}
               <div className="space-y-2">
-                <label htmlFor="q6i" className="text-sm font-medium text-gray-700">
+                <label htmlFor="q6i" className="text-sm font-medium text-foreground">
                   6) i. In the last 10 years, how many years of skilled work experience in Canada do you have?
                 </label>
-                <div className="text-sm text-gray-600 mb-2">
+                <div className="text-sm text-muted-foreground mb-2">
                   <p>It must have been paid and full-time (or an equal amount in part-time).</p>
                 </div>
                 <select 
                   id="q6i" 
                   name="q6i" 
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-blue focus:border-transparent"
+                  className="w-full px-3 py-2 border border-input bg-background rounded-md focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
                   value={formData.q6i} 
                   onChange={handleInputChange}
                 >
@@ -300,17 +493,23 @@ const ScoreAssessmentQuestionnaire: React.FC<ScoreAssessmentQuestionnaireProps> 
                   <option value="E">4 years</option>
                   <option value="F">5 years or more</option>
                 </select>
+                <ScoreIndicator 
+                  current={currentScores.canadianExp} 
+                  max={CRS_POINTS.canadianExp.maxPoints} 
+                  label="Canadian Experience Points"
+                  isAnswered={!!formData.q6i}
+                />
               </div>
 
               {/* Question 6ii - Foreign Work Experience */}
               <div className="space-y-2">
-                <label htmlFor="q6ii" className="text-sm font-medium text-gray-700">
+                <label htmlFor="q6ii" className="text-sm font-medium text-foreground">
                   ii. In the last 10 years, how many total years of foreign skilled work experience do you have?
                 </label>
                 <select 
                   id="q6ii" 
                   name="q6ii" 
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-blue focus:border-transparent"
+                  className="w-full px-3 py-2 border border-input bg-background rounded-md focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
                   value={formData.q6ii} 
                   onChange={handleInputChange}
                 >
@@ -320,22 +519,28 @@ const ScoreAssessmentQuestionnaire: React.FC<ScoreAssessmentQuestionnaireProps> 
                   <option value="C">2 years</option>
                   <option value="D">3 years or more</option>
                 </select>
+                <ScoreIndicator 
+                  current={currentScores.foreignExp} 
+                  max={CRS_POINTS.foreignExp.maxPoints} 
+                  label="Foreign Experience Points"
+                  isAnswered={!!formData.q6ii}
+                />
               </div>
             </div>
 
             {/* Additional Qualifications Section */}
             <div className="space-y-6">
-              <h3 className="text-xl font-semibold text-gray-900 border-b pb-2">Additional Points</h3>
+              <h3 className="text-xl font-semibold text-foreground border-b border-border pb-2">Additional Points</h3>
               
               {/* Question 9 - Provincial Nomination */}
               <div className="space-y-2">
-                <label htmlFor="q9" className="text-sm font-medium text-gray-700">
+                <label htmlFor="q9" className="text-sm font-medium text-foreground">
                   9) Do you have a nomination certificate from a province or territory?
                 </label>
                 <select 
                   id="q9" 
                   name="q9" 
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-blue focus:border-transparent"
+                  className="w-full px-3 py-2 border border-input bg-background rounded-md focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
                   value={formData.q9} 
                   onChange={handleInputChange}
                 >
@@ -343,14 +548,20 @@ const ScoreAssessmentQuestionnaire: React.FC<ScoreAssessmentQuestionnaireProps> 
                   <option value="A">No</option>
                   <option value="B">Yes</option>
                 </select>
+                <ScoreIndicator 
+                  current={currentScores.provincialNom} 
+                  max={CRS_POINTS.provincialNom.maxPoints} 
+                  label="Provincial Nomination Points"
+                  isAnswered={!!formData.q9}
+                />
               </div>
             </div>
 
             {/* Action Buttons */}
-            <div className="flex gap-4 pt-6 border-t">
+            <div className="flex gap-4 pt-6 border-t border-border">
               <Button 
                 type="submit" 
-                className="flex-1 bg-primary-blue hover:bg-primary-blue/90 text-white font-medium py-3"
+                className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground font-medium py-3"
               >
                 <Calculator className="h-5 w-5 mr-2" />
                 Calculate Your Score
