@@ -70,6 +70,16 @@ const CRS_POINTS = {
       'A': { points: 0, label: 'No' },
       'B': { points: 600, label: 'Yes' },
     }
+  },
+  spouse: {
+    label: 'Spouse',
+    maxPoints: 40,
+    options: {
+      'none': { points: 0, label: 'No spouse/Not accompanying' },
+      'low': { points: 10, label: 'Spouse with basic qualifications' },
+      'medium': { points: 25, label: 'Spouse with strong qualifications' },
+      'high': { points: 40, label: 'Spouse with excellent qualifications' },
+    }
   }
 };
 
@@ -176,6 +186,20 @@ const ScoreAssessmentQuestionnaire: React.FC<ScoreAssessmentQuestionnaireProps> 
     q12iiWriting: '',
   });
 
+  // Calculate spouse score based on answers
+  const calculateSpouseScore = useMemo(() => {
+    // If no spouse or spouse not coming, return 0
+    if (!formData.q1 || formData.q1 === 'F' || formData.q2i === 'B' || formData.q2ii === 'A') {
+      return 0;
+    }
+    // Calculate based on spouse-related questions (simplified scoring)
+    let score = 0;
+    if (formData.q2ii === 'B') score += 10; // Spouse coming to Canada
+    if (formData.q12i) score += 15; // Spouse has education
+    if (formData.q12iiSpeaking || formData.q12iiListening || formData.q12iiReading || formData.q12iiWriting) score += 15;
+    return Math.min(score, 40);
+  }, [formData]);
+
   // Calculate running score based on current answers
   const currentScores = useMemo(() => {
     return {
@@ -184,15 +208,16 @@ const ScoreAssessmentQuestionnaire: React.FC<ScoreAssessmentQuestionnaireProps> 
       canadianExp: formData.q6i ? (CRS_POINTS.canadianExp.options[formData.q6i as keyof typeof CRS_POINTS.canadianExp.options]?.points || 0) : 0,
       foreignExp: formData.q6ii ? (CRS_POINTS.foreignExp.options[formData.q6ii as keyof typeof CRS_POINTS.foreignExp.options]?.points || 0) : 0,
       provincialNom: formData.q9 ? (CRS_POINTS.provincialNom.options[formData.q9 as keyof typeof CRS_POINTS.provincialNom.options]?.points || 0) : 0,
+      spouse: calculateSpouseScore,
     };
-  }, [formData]);
+  }, [formData, calculateSpouseScore]);
 
   const totalCurrentScore = useMemo(() => {
     return Object.values(currentScores).reduce((sum, score) => sum + score, 0);
   }, [currentScores]);
 
   const totalMaxScore = useMemo(() => {
-    return CRS_POINTS.age.maxPoints + CRS_POINTS.education.maxPoints + CRS_POINTS.canadianExp.maxPoints + CRS_POINTS.foreignExp.maxPoints + CRS_POINTS.provincialNom.maxPoints;
+    return CRS_POINTS.age.maxPoints + CRS_POINTS.education.maxPoints + CRS_POINTS.canadianExp.maxPoints + CRS_POINTS.foreignExp.maxPoints + CRS_POINTS.provincialNom.maxPoints + CRS_POINTS.spouse.maxPoints;
   }, []);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLSelectElement | HTMLInputElement>) => {
