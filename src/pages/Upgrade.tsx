@@ -69,28 +69,29 @@ const Upgrade = () => {
           </p>
         </div>
 
-        <div className="max-w-3xl mx-auto grid md:grid-cols-2 gap-6">
+        <div className="max-w-4xl mx-auto grid md:grid-cols-2 gap-8">
           {/* Plan card */}
-          <div className="bg-white rounded-xl p-6 border border-primary-blue shadow-lg">
-            <div className="mb-4">
-              <h3 className="text-xl font-bold text-foreground">Express Entry</h3>
-            </div>
-
+          <div className="bg-white rounded-2xl p-8 border-2 border-primary-blue shadow-xl">
             <div className="mb-6">
-              <div className="flex items-baseline gap-1">
-                <span className="text-4xl font-bold text-foreground">$279</span>
-                <span className="text-lg text-muted-foreground">CAD</span>
-              </div>
-              <p className="text-xs text-muted-foreground mt-1">One-time payment</p>
+              <h3 className="text-2xl font-bold text-foreground">Express Entry</h3>
+              <p className="text-muted-foreground text-sm mt-1">Complete application toolkit</p>
             </div>
 
-            <div className="space-y-3 mb-6">
+            <div className="mb-8">
+              <div className="flex items-baseline gap-2">
+                <span className="text-5xl font-bold text-foreground">$279</span>
+                <span className="text-xl text-muted-foreground">CAD</span>
+              </div>
+              <p className="text-sm text-muted-foreground mt-2">One-time payment</p>
+            </div>
+
+            <div className="space-y-4 mb-8">
               {features.map((feature, i) => (
-                <div key={i} className="flex items-center gap-3">
-                  <div className="w-7 h-7 bg-primary-blue/10 rounded-md flex items-center justify-center flex-shrink-0">
-                    <feature.icon className="w-4 h-4 text-primary-blue" />
+                <div key={i} className="flex items-center gap-4">
+                  <div className="w-10 h-10 bg-primary-blue/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <feature.icon className="w-5 h-5 text-primary-blue" />
                   </div>
-                  <span className="text-sm text-foreground">{feature.title}</span>
+                  <span className="text-foreground font-medium">{feature.title}</span>
                 </div>
               ))}
             </div>
@@ -99,53 +100,53 @@ const Upgrade = () => {
             <Button
               onClick={handleCheckout}
               disabled={isProcessing}
-              className="w-full py-3 bg-primary-blue text-white rounded-lg font-semibold shadow-md hover:shadow-lg transition-all"
+              className="w-full py-4 bg-primary-blue text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all text-lg"
             >
               {isProcessing ? (
                 <span className="flex items-center gap-2">
-                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                  <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
                   Processing...
                 </span>
               ) : (
                 <span className="flex items-center justify-center gap-2">
-                  <Zap className="w-4 h-4" />
+                  <Zap className="w-5 h-5" />
                   Get Started - $279 CAD
                 </span>
               )}
             </Button>
 
             {/* Trust badge */}
-            <div className="mt-4 flex justify-center text-muted-foreground text-xs">
-              <div className="flex items-center gap-1">
-                <Lock className="w-3 h-3" />
+            <div className="mt-4 flex justify-center text-muted-foreground text-sm">
+              <div className="flex items-center gap-2">
+                <Lock className="w-4 h-4" />
                 <span>Secure Payment</span>
               </div>
             </div>
           </div>
 
           {/* Payment form placeholder */}
-          <div className="bg-white/80 rounded-xl p-6 border border-border">
-            <h3 className="text-lg font-bold mb-4 text-foreground">Payment Details</h3>
+          <div className="bg-white/80 rounded-2xl p-8 border border-border">
+            <h3 className="text-xl font-bold mb-6 text-foreground">Payment Details</h3>
             
             {/* Payment form placeholder */}
-            <div className="space-y-4">
+            <div className="space-y-5">
               <div>
-                <label className="block text-sm font-medium text-foreground mb-1">Card Number</label>
-                <div className="h-10 bg-white rounded-lg border border-border flex items-center px-3 text-muted-foreground text-sm">
-                  <CreditCard className="w-4 h-4 mr-2" />
+                <label className="block text-sm font-medium text-foreground mb-2">Card Number</label>
+                <div className="h-12 bg-white rounded-xl border border-border flex items-center px-4 text-muted-foreground">
+                  <CreditCard className="w-5 h-5 mr-3" />
                   <span>•••• •••• •••• ••••</span>
                 </div>
               </div>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-foreground mb-1">Expiry</label>
-                  <div className="h-10 bg-white rounded-lg border border-border flex items-center px-3 text-muted-foreground text-sm">
+                  <label className="block text-sm font-medium text-foreground mb-2">Expiry</label>
+                  <div className="h-12 bg-white rounded-xl border border-border flex items-center px-4 text-muted-foreground">
                     MM/YY
                   </div>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-foreground mb-1">CVC</label>
-                  <div className="h-10 bg-white rounded-lg border border-border flex items-center px-3 text-muted-foreground text-sm">
+                  <label className="block text-sm font-medium text-foreground mb-2">CVC</label>
+                  <div className="h-12 bg-white rounded-xl border border-border flex items-center px-4 text-muted-foreground">
                     •••
                   </div>
                 </div>
@@ -153,8 +154,8 @@ const Upgrade = () => {
             </div>
 
             {/* Stripe badge placeholder */}
-            <div className="flex items-center justify-center gap-1 mt-4 text-muted-foreground text-xs">
-              <Lock className="w-3 h-3" />
+            <div className="flex items-center justify-center gap-2 mt-6 text-muted-foreground">
+              <Lock className="w-4 h-4" />
               <span>Secured by</span>
               <span className="font-bold text-foreground">Stripe</span>
             </div>
