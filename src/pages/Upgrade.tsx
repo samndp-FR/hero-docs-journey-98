@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { CheckCircle2, CreditCard, Shield, Zap, ArrowLeft, Lock, FolderOpen, FileEdit, Clock, HeadphonesIcon } from 'lucide-react';
+import { CreditCard, Zap, ArrowLeft, Lock, FileEdit, Clock, Timer } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 
@@ -23,24 +23,16 @@ const Upgrade = () => {
 
   const features = [
     {
-      icon: FolderOpen,
-      title: 'Centralized Document Management',
-      description: 'Keep all your application documents organized in one secure place',
+      icon: Timer,
+      title: '16h+ hours saved',
     },
     {
       icon: FileEdit,
-      title: 'Automated Form Filling',
-      description: 'Save hours with intelligent form auto-completion across your application',
+      title: 'Automated form filling',
     },
     {
       icon: Clock,
-      title: 'Application Timeline Tracking',
-      description: 'Stay on top of deadlines and know exactly where you are in the process',
-    },
-    {
-      icon: HeadphonesIcon,
-      title: 'Priority Support',
-      description: 'Get help when you need it with dedicated email support',
+      title: 'Timeline tracking',
     },
   ];
 
@@ -63,52 +55,42 @@ const Upgrade = () => {
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back
           </Button>
-          <div className="flex items-center gap-2">
-            <span className="eldo-text text-3xl">Eldo</span>
-            <span className="agent-text text-xl">Copilot</span>
-          </div>
+          <span className="eldo-text text-3xl">Eldo</span>
           <div className="w-20"></div>
         </div>
 
         {/* Title */}
-        <div className="text-center mb-12">
-          <span className="px-4 py-1.5 rounded-full bg-primary-blue/20 text-primary-blue font-medium text-sm inline-block mb-4">
-            ELDO COPILOT
-          </span>
-          <h1 className="text-3xl md:text-4xl font-bold mb-4 text-foreground">
+        <div className="text-center mb-8">
+          <h1 className="text-2xl md:text-3xl font-bold mb-2 text-foreground">
             Get started with Eldo
           </h1>
-          <p className="text-muted-foreground max-w-xl mx-auto">
-            One simple plan to help you through your Express Entry application.
+          <p className="text-muted-foreground text-sm">
+            One simple plan for your Express Entry application.
           </p>
         </div>
 
-        <div className="max-w-4xl mx-auto grid md:grid-cols-2 gap-8">
+        <div className="max-w-3xl mx-auto grid md:grid-cols-2 gap-6">
           {/* Plan card */}
-          <div className="bg-white rounded-2xl p-8 border-2 border-primary-blue shadow-xl">
+          <div className="bg-white rounded-xl p-6 border border-primary-blue shadow-lg">
+            <div className="mb-4">
+              <h3 className="text-xl font-bold text-foreground">Express Entry</h3>
+            </div>
+
             <div className="mb-6">
-              <h3 className="text-2xl font-bold text-foreground mb-2">Express Entry Copilot</h3>
-              <p className="text-muted-foreground">Everything you need to manage your application</p>
-            </div>
-
-            <div className="mb-8">
               <div className="flex items-baseline gap-1">
-                <span className="text-5xl font-bold text-foreground">$279</span>
-                <span className="text-xl text-muted-foreground">CAD</span>
+                <span className="text-4xl font-bold text-foreground">$279</span>
+                <span className="text-lg text-muted-foreground">CAD</span>
               </div>
-              <p className="text-sm text-muted-foreground mt-1">One-time payment</p>
+              <p className="text-xs text-muted-foreground mt-1">One-time payment</p>
             </div>
 
-            <div className="space-y-4 mb-8">
+            <div className="space-y-3 mb-6">
               {features.map((feature, i) => (
-                <div key={i} className="flex items-start gap-3">
-                  <div className="w-8 h-8 bg-primary-blue/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                <div key={i} className="flex items-center gap-3">
+                  <div className="w-7 h-7 bg-primary-blue/10 rounded-md flex items-center justify-center flex-shrink-0">
                     <feature.icon className="w-4 h-4 text-primary-blue" />
                   </div>
-                  <div>
-                    <h4 className="font-medium text-foreground text-sm">{feature.title}</h4>
-                    <p className="text-xs text-muted-foreground">{feature.description}</p>
-                  </div>
+                  <span className="text-sm text-foreground">{feature.title}</span>
                 </div>
               ))}
             </div>
@@ -117,58 +99,53 @@ const Upgrade = () => {
             <Button
               onClick={handleCheckout}
               disabled={isProcessing}
-              className="w-full py-4 bg-primary-blue text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5 text-lg"
+              className="w-full py-3 bg-primary-blue text-white rounded-lg font-semibold shadow-md hover:shadow-lg transition-all"
             >
               {isProcessing ? (
                 <span className="flex items-center gap-2">
-                  <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
                   Processing...
                 </span>
               ) : (
                 <span className="flex items-center justify-center gap-2">
-                  <Zap className="w-5 h-5" />
+                  <Zap className="w-4 h-4" />
                   Get Started - $279 CAD
                 </span>
               )}
             </Button>
 
-            {/* Trust badges */}
-            <div className="mt-6 flex justify-center gap-6">
-              {[
-                { icon: Shield, text: '14-Day Money Back' },
-                { icon: Lock, text: 'Secure Payment' },
-              ].map((badge, i) => (
-                <div key={i} className="flex items-center gap-2 text-muted-foreground text-sm">
-                  <badge.icon className="w-4 h-4 text-primary-blue" />
-                  <span>{badge.text}</span>
-                </div>
-              ))}
+            {/* Trust badge */}
+            <div className="mt-4 flex justify-center text-muted-foreground text-xs">
+              <div className="flex items-center gap-1">
+                <Lock className="w-3 h-3" />
+                <span>Secure Payment</span>
+              </div>
             </div>
           </div>
 
           {/* Payment form placeholder */}
-          <div className="glass-card rounded-2xl p-8">
-            <h3 className="text-xl font-bold mb-6 text-foreground">Payment Details</h3>
+          <div className="bg-white/80 rounded-xl p-6 border border-border">
+            <h3 className="text-lg font-bold mb-4 text-foreground">Payment Details</h3>
             
             {/* Payment form placeholder */}
-            <div className="space-y-4 mb-6">
+            <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-foreground mb-2">Card Number</label>
-                <div className="h-12 bg-white rounded-lg border border-border flex items-center px-4 text-muted-foreground">
-                  <CreditCard className="w-5 h-5 mr-3" />
+                <label className="block text-sm font-medium text-foreground mb-1">Card Number</label>
+                <div className="h-10 bg-white rounded-lg border border-border flex items-center px-3 text-muted-foreground text-sm">
+                  <CreditCard className="w-4 h-4 mr-2" />
                   <span>•••• •••• •••• ••••</span>
                 </div>
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-sm font-medium text-foreground mb-2">Expiry</label>
-                  <div className="h-12 bg-white rounded-lg border border-border flex items-center px-4 text-muted-foreground">
+                  <label className="block text-sm font-medium text-foreground mb-1">Expiry</label>
+                  <div className="h-10 bg-white rounded-lg border border-border flex items-center px-3 text-muted-foreground text-sm">
                     MM/YY
                   </div>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-foreground mb-2">CVC</label>
-                  <div className="h-12 bg-white rounded-lg border border-border flex items-center px-4 text-muted-foreground">
+                  <label className="block text-sm font-medium text-foreground mb-1">CVC</label>
+                  <div className="h-10 bg-white rounded-lg border border-border flex items-center px-3 text-muted-foreground text-sm">
                     •••
                   </div>
                 </div>
@@ -176,39 +153,26 @@ const Upgrade = () => {
             </div>
 
             {/* Stripe badge placeholder */}
-            <div className="flex items-center justify-center gap-2 mb-6 text-muted-foreground text-sm">
-              <Lock className="w-4 h-4" />
+            <div className="flex items-center justify-center gap-1 mt-4 text-muted-foreground text-xs">
+              <Lock className="w-3 h-3" />
               <span>Secured by</span>
               <span className="font-bold text-foreground">Stripe</span>
             </div>
-
-            {/* Divider */}
-            <div className="relative my-8">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-border"></div>
-              </div>
-              <div className="relative flex justify-center text-sm">
-                <span className="px-4 bg-white text-muted-foreground">or</span>
-              </div>
-            </div>
-
-            {/* Skip option */}
-            <div className="text-center">
-              <p className="text-sm text-muted-foreground mb-4">
-                Not ready to commit? Explore the dashboard with limited features.
-              </p>
-              <Button
-                variant="outline"
-                onClick={handleSkipForNow}
-                className="w-full py-3 rounded-xl"
-              >
-                Continue with Free Version
-              </Button>
-              <p className="text-xs text-muted-foreground mt-3">
-                You can upgrade anytime from your dashboard
-              </p>
-            </div>
           </div>
+        </div>
+
+        {/* Skip option - outside cards */}
+        <div className="max-w-3xl mx-auto mt-6 text-center">
+          <Button
+            variant="ghost"
+            onClick={handleSkipForNow}
+            className="text-muted-foreground hover:text-foreground"
+          >
+            Skip for now - Continue with Free Version
+          </Button>
+          <p className="text-xs text-muted-foreground mt-1">
+            You can upgrade anytime from your dashboard
+          </p>
         </div>
       </div>
     </div>
