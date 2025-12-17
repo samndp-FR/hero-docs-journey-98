@@ -1,13 +1,23 @@
 
 import React, { useState } from 'react';
-import { ArrowRight, ArrowLeft, CheckCircle2, FolderOpen, FileEdit, ShieldCheck, Calculator, AlertTriangle } from 'lucide-react';
+import { ArrowRight, ArrowLeft, CheckCircle2, FolderOpen, FileEdit, ShieldCheck, Calculator, AlertTriangle, Mail, Lock, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { useNavigate } from 'react-router-dom';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 const steps = [
   { id: 1, title: 'Get Started', content: 'welcome' },
-  { id: 2, title: 'Eligibility', content: 'crs' },
-  { id: 3, title: 'Terms & Conditions', content: 'terms' },
+  { id: 2, title: 'Create Account', content: 'register' },
+  { id: 3, title: 'Eligibility', content: 'crs' },
+  { id: 4, title: 'Terms & Conditions', content: 'terms' },
 ];
 
 const termsContent = `1. Acceptance of Terms
@@ -66,6 +76,11 @@ const Onboarding = () => {
   const [currentStep, setCurrentStep] = useState(0);
   const [hasConfirmedCRS, setHasConfirmedCRS] = useState(false);
   const [hasAcceptedTerms, setHasAcceptedTerms] = useState(false);
+  const [showTermsConfirmDialog, setShowTermsConfirmDialog] = useState(false);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [name, setName] = useState('');
+  const [isLogin, setIsLogin] = useState(false);
   const navigate = useNavigate();
 
   const handleNext = () => {
@@ -86,9 +101,23 @@ const Onboarding = () => {
     navigate('/crs-assessment');
   };
 
+  const handleTermsCheckboxClick = () => {
+    if (!hasAcceptedTerms) {
+      setShowTermsConfirmDialog(true);
+    } else {
+      setHasAcceptedTerms(false);
+    }
+  };
+
+  const handleConfirmTerms = () => {
+    setHasAcceptedTerms(true);
+    setShowTermsConfirmDialog(false);
+  };
+
   const canProceed = () => {
-    if (currentStep === 1) return hasConfirmedCRS;
-    if (currentStep === 2) return hasAcceptedTerms;
+    if (currentStep === 1) return email && password && (isLogin || name);
+    if (currentStep === 2) return hasConfirmedCRS;
+    if (currentStep === 3) return hasAcceptedTerms;
     return true;
   };
 
@@ -108,7 +137,7 @@ const Onboarding = () => {
         </div>
 
         {/* Progress bar */}
-        <div className="max-w-2xl mx-auto mb-12">
+        <div className="max-w-3xl mx-auto mb-12">
           <div className="flex items-center justify-between mb-4">
             {steps.map((step, index) => (
               <div key={step.id} className="flex items-center">
@@ -126,7 +155,7 @@ const Onboarding = () => {
                   )}
                 </div>
                 {index < steps.length - 1 && (
-                  <div className={`w-16 md:w-24 h-1 mx-2 rounded-full transition-all duration-300 ${
+                  <div className={`w-12 md:w-20 h-1 mx-2 rounded-full transition-all duration-300 ${
                     index < currentStep ? 'bg-primary-blue' : 'bg-border'
                   }`}></div>
                 )}
@@ -190,8 +219,78 @@ const Onboarding = () => {
               </div>
             )}
 
-            {/* Step 2: CRS Check */}
+            {/* Step 2: Register/Login */}
             {currentStep === 1 && (
+              <div className="space-y-6">
+                <div className="text-center">
+                  <h1 className="text-3xl md:text-4xl font-bold mb-4 text-foreground">
+                    {isLogin ? 'Welcome back' : 'Create your account'}
+                  </h1>
+                  <p className="text-muted-foreground">
+                    {isLogin ? 'Sign in to continue your application' : 'Get started with Eldo'}
+                  </p>
+                </div>
+                
+                <div className="space-y-4">
+                  {!isLogin && (
+                    <div>
+                      <label className="block text-sm font-medium text-foreground mb-2">Full Name</label>
+                      <div className="relative">
+                        <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                        <Input
+                          type="text"
+                          placeholder="Enter your full name"
+                          value={name}
+                          onChange={(e) => setName(e.target.value)}
+                          className="pl-10 py-3 rounded-xl"
+                        />
+                      </div>
+                    </div>
+                  )}
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-foreground mb-2">Email</label>
+                    <div className="relative">
+                      <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                      <Input
+                        type="email"
+                        placeholder="Enter your email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        className="pl-10 py-3 rounded-xl"
+                      />
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-foreground mb-2">Password</label>
+                    <div className="relative">
+                      <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                      <Input
+                        type="password"
+                        placeholder={isLogin ? 'Enter your password' : 'Create a password'}
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        className="pl-10 py-3 rounded-xl"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="text-center pt-2">
+                  <button
+                    type="button"
+                    onClick={() => setIsLogin(!isLogin)}
+                    className="text-primary-blue hover:underline text-sm font-medium"
+                  >
+                    {isLogin ? "Don't have an account? Sign up" : 'Already have an account? Sign in'}
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Step 3: CRS Check */}
+            {currentStep === 2 && (
               <div className="space-y-8">
                 <div className="text-center">
                   <h1 className="text-3xl md:text-4xl font-bold mb-4 text-foreground">
@@ -261,8 +360,8 @@ const Onboarding = () => {
               </div>
             )}
 
-            {/* Step 3: Terms & Conditions */}
-            {currentStep === 2 && (
+            {/* Step 4: Terms & Conditions */}
+            {currentStep === 3 && (
               <div className="space-y-6">
                 <div className="text-center">
                   <h1 className="text-3xl md:text-4xl font-bold mb-4 text-foreground">
@@ -297,7 +396,8 @@ const Onboarding = () => {
                   </div>
                 </div>
 
-                <label 
+                <div 
+                  onClick={handleTermsCheckboxClick}
                   className={`block bg-white rounded-xl p-5 border-2 cursor-pointer transition-all ${
                     hasAcceptedTerms 
                       ? 'border-primary-blue bg-primary-blue/5' 
@@ -308,8 +408,8 @@ const Onboarding = () => {
                     <input
                       type="checkbox"
                       checked={hasAcceptedTerms}
-                      onChange={(e) => setHasAcceptedTerms(e.target.checked)}
-                      className="mt-1 w-5 h-5 rounded border-border text-primary-blue focus:ring-primary-blue"
+                      readOnly
+                      className="mt-1 w-5 h-5 rounded border-border text-primary-blue focus:ring-primary-blue pointer-events-none"
                     />
                     <div>
                       <h4 className="font-semibold text-foreground mb-1">
@@ -320,7 +420,7 @@ const Onboarding = () => {
                       </p>
                     </div>
                   </div>
-                </label>
+                </div>
               </div>
             )}
 
@@ -348,6 +448,65 @@ const Onboarding = () => {
           </div>
         </div>
       </div>
+
+      {/* Terms Confirmation Dialog */}
+      <Dialog open={showTermsConfirmDialog} onOpenChange={setShowTermsConfirmDialog}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>By accepting, you understand that:</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="flex items-start gap-3">
+              <div className="w-6 h-6 bg-amber-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                <AlertTriangle className="w-4 h-4 text-amber-600" />
+              </div>
+              <p className="text-sm text-muted-foreground">
+                Eldo does <strong>not</strong> generate documents or provide immigration guidance
+              </p>
+            </div>
+            <div className="flex items-start gap-3">
+              <div className="w-6 h-6 bg-amber-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                <AlertTriangle className="w-4 h-4 text-amber-600" />
+              </div>
+              <p className="text-sm text-muted-foreground">
+                Eldo does <strong>not</strong> submit documents on your behalf
+              </p>
+            </div>
+            <div className="flex items-start gap-3">
+              <div className="w-6 h-6 bg-amber-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                <AlertTriangle className="w-4 h-4 text-amber-600" />
+              </div>
+              <p className="text-sm text-muted-foreground">
+                Eldo does <strong>not</strong> provide legal immigration counsel
+              </p>
+            </div>
+            <div className="flex items-start gap-3">
+              <div className="w-6 h-6 bg-amber-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                <AlertTriangle className="w-4 h-4 text-amber-600" />
+              </div>
+              <p className="text-sm text-muted-foreground">
+                You are responsible for reviewing all documents and confirming their accuracy before submission
+              </p>
+            </div>
+            <div className="flex items-start gap-3">
+              <div className="w-6 h-6 bg-amber-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                <AlertTriangle className="w-4 h-4 text-amber-600" />
+              </div>
+              <p className="text-sm text-muted-foreground">
+                All payments are <strong>non-refundable</strong>
+              </p>
+            </div>
+          </div>
+          <DialogFooter className="flex gap-2">
+            <Button variant="outline" onClick={() => setShowTermsConfirmDialog(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleConfirmTerms} className="bg-primary-blue text-white">
+              I Understand & Accept
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
