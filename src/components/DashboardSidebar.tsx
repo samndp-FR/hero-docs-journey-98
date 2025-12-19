@@ -20,10 +20,10 @@ import { cn } from '@/lib/utils';
 
 const menuItems = [
   { title: 'Overview', url: '/dashboard', icon: LayoutDashboard },
-  { title: 'Score Assessment', url: '/dashboard/score', icon: Calculator },
-  { title: 'Eldo Form', url: '/dashboard/form', icon: FileText },
+  { title: 'Improve Score', url: '/dashboard/score', icon: Calculator },
+  { title: 'Build Profile', url: '/dashboard/form', icon: FileText },
   { title: 'Document Center', url: '/dashboard/documents', icon: FolderOpen },
-  { title: 'Complete Application', url: '/dashboard/complete', icon: CheckCircle2 },
+  { title: 'Apply for PR', url: '/dashboard/complete', icon: CheckCircle2 },
 ];
 
 export function DashboardSidebar() {
