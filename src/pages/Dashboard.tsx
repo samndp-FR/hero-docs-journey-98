@@ -1,18 +1,17 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { Checkbox } from '@/components/ui/checkbox';
 import { 
   ArrowRight,
   Clock,
   CheckCircle,
-  AlertCircle,
   TrendingUp,
   FileWarning,
   Briefcase,
   Wallet,
-  ChevronDown,
+  Info,
   Flag
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -20,49 +19,117 @@ import { DashboardLayout } from '@/components/DashboardLayout';
 import { toast } from 'sonner';
 
 const STORAGE_KEY = 'eldo-journey-stage';
+const CHECKLIST_KEY = 'eldo-checklist-state';
+
+type ChecklistItem = {
+  id: string;
+  label: string;
+  type: 'auto' | 'declared';
+  completed: boolean;
+  info?: string;
+};
+
+type StageConfig = {
+  label: string;
+  goal: string;
+  checklist: ChecklistItem[];
+  exitAction?: { label: string; nextStage: string };
+};
 
 const Dashboard = () => {
   const navigate = useNavigate();
-  const [completedOpen, setCompletedOpen] = useState(false);
+  
   const [currentStage, setCurrentStage] = useState(() => {
-    return localStorage.getItem(STORAGE_KEY) || 'build-profile';
+    return localStorage.getItem(STORAGE_KEY) || 'get-ready';
+  });
+
+  const [checklistState, setChecklistState] = useState<Record<string, boolean>>(() => {
+    const saved = localStorage.getItem(CHECKLIST_KEY);
+    return saved ? JSON.parse(saved) : {};
   });
 
   const estimatedCRS = 465;
   const recentCutoff = '470-480';
 
-  const stages = {
-    'get-ready': { label: 'Get Ready', description: 'Preparing eligibility and prerequisites' },
-    'build-profile': { label: 'Build Profile', description: 'You\'ve completed eligibility. Completing your profile allows you to enter the Express Entry pool.' },
-    'wait-invitation': { label: 'Wait for Invitation', description: 'Profile submitted, awaiting ITA' },
-    'apply-pr': { label: 'Apply for PR', description: 'ITA received, complete your PR application' },
-    'after-submission': { label: 'After Submission', description: 'Application submitted, awaiting decision' },
+  // Auto-completed items based on app state (would come from actual app state)
+  const autoCompletedItems = {
+    'crs-estimated': true,
+    'eligibility-confirmed': true,
+  };
+
+  const stageConfigs: Record<string, StageConfig> = {
+    'get-ready': {
+      label: 'Get Ready',
+      goal: "You're eligible and allowed to create a profile.",
+      checklist: [
+        { id: 'crs-estimated', label: 'CRS score estimated', type: 'auto', completed: autoCompletedItems['crs-estimated'], info: 'From CRS calculator' },
+        { id: 'eligibility-confirmed', label: 'Eligibility confirmed', type: 'auto', completed: autoCompletedItems['eligibility-confirmed'], info: 'From CRS calculator' },
+        { id: 'language-test', label: 'Language test completed', type: 'declared', completed: checklistState['language-test'] || false },
+        { id: 'eca', label: 'Educational Credential Assessment (if required)', type: 'declared', completed: checklistState['eca'] || false },
+      ],
+      exitAction: { label: 'I have my language test & ECA ready', nextStage: 'build-profile' },
+    },
+    'build-profile': {
+      label: 'Build Profile',
+      goal: "You're in the Express Entry pool.",
+      checklist: [
+        { id: 'profile-submitted', label: 'Profile submitted to IRCC', type: 'declared', completed: checklistState['profile-submitted'] || false },
+      ],
+      exitAction: { label: 'I submitted my profile to IRCC', nextStage: 'wait-invitation' },
+    },
+    'wait-invitation': {
+      label: 'Wait for Invitation',
+      goal: 'Stay eligible while waiting.',
+      checklist: [
+        { id: 'profile-active', label: 'Profile active in IRCC pool', type: 'declared', completed: checklistState['profile-active'] || false },
+        { id: 'delay-docs', label: 'Prepare delay-prone documents (police certs, ECA, diplomas, translations)', type: 'declared', completed: checklistState['delay-docs'] || false },
+        { id: 'ita-received', label: 'Invitation to Apply (ITA) received', type: 'declared', completed: checklistState['ita-received'] || false },
+      ],
+      exitAction: { label: 'I received my ITA', nextStage: 'apply-pr' },
+    },
+    'apply-pr': {
+      label: 'Apply for PR',
+      goal: 'Submit a complete PR application.',
+      checklist: [
+        { id: 'forms-completed', label: 'Application forms completed', type: 'declared', completed: checklistState['forms-completed'] || false },
+        { id: 'docs-ready', label: 'Supporting documents ready', type: 'declared', completed: checklistState['docs-ready'] || false, info: 'View Document Center' },
+        { id: 'pr-submitted', label: 'Application submitted to IRCC', type: 'declared', completed: checklistState['pr-submitted'] || false },
+      ],
+      exitAction: { label: 'I submitted my PR application', nextStage: 'after-submission' },
+    },
+    'after-submission': {
+      label: 'After Submission',
+      goal: 'Stay compliant until decision.',
+      checklist: [
+        { id: 'medical-exam', label: 'Medical exam completed', type: 'declared', completed: checklistState['medical-exam'] || false },
+        { id: 'biometrics', label: 'Biometrics completed', type: 'declared', completed: checklistState['biometrics'] || false },
+        { id: 'final-decision', label: 'Final decision received', type: 'declared', completed: checklistState['final-decision'] || false },
+      ],
+    },
   };
 
   const stageOrder = ['get-ready', 'build-profile', 'wait-invitation', 'apply-pr', 'after-submission'];
   const currentStageIndex = stageOrder.indexOf(currentStage);
+  const currentConfig = stageConfigs[currentStage];
+
+  const toggleChecklistItem = (itemId: string) => {
+    const newState = { ...checklistState, [itemId]: !checklistState[itemId] };
+    setChecklistState(newState);
+    localStorage.setItem(CHECKLIST_KEY, JSON.stringify(newState));
+  };
 
   const advanceToStage = (newStage: string) => {
     setCurrentStage(newStage);
     localStorage.setItem(STORAGE_KEY, newStage);
-    toast.success(`Stage updated to: ${stages[newStage as keyof typeof stages].label}`);
+    toast.success(`Stage updated to: ${stageConfigs[newStage].label}`);
   };
 
-  // Stage-specific milestones the user can mark
-  const getMilestoneAction = () => {
-    switch (currentStage) {
-      case 'build-profile':
-        return { label: 'I submitted my profile to IRCC', nextStage: 'wait-invitation' };
-      case 'wait-invitation':
-        return { label: 'I received my ITA', nextStage: 'apply-pr' };
-      case 'apply-pr':
-        return { label: 'I submitted my PR application', nextStage: 'after-submission' };
-      default:
-        return null;
-    }
+  // Check if exit conditions are met
+  const canAdvance = () => {
+    const checklist = currentConfig.checklist;
+    const declaredItems = checklist.filter(item => item.type === 'declared');
+    return declaredItems.every(item => checklistState[item.id]);
   };
-
-  const milestoneAction = getMilestoneAction();
 
   return (
     <DashboardLayout>
@@ -76,10 +143,10 @@ const Dashboard = () => {
             </Badge>
           </div>
           <h1 className="text-2xl font-semibold text-foreground mb-2">
-            {stages[currentStage as keyof typeof stages].label}
+            {currentConfig.label}
           </h1>
           <p className="text-muted-foreground">
-            {stages[currentStage as keyof typeof stages].description}
+            {currentConfig.goal}
           </p>
           
           {/* Stage progress indicators */}
@@ -101,37 +168,39 @@ const Dashboard = () => {
           </div>
         </div>
 
-        {/* Primary Focus Card */}
-        <Card className="border-2 border-primary-blue/20 bg-gradient-to-br from-primary-blue/5 to-transparent">
-          <CardContent className="p-6">
-            <div className="flex items-start justify-between">
-              <div className="space-y-3">
-                <Badge className="bg-primary-blue text-white">Your Current Priority</Badge>
-                <h2 className="text-xl font-semibold text-foreground">Complete profile details</h2>
-                <p className="text-muted-foreground max-w-lg">
-                  Required to enter the Express Entry pool. Cannot receive ITA until completed.
-                </p>
-                <p className="text-sm text-muted-foreground/80">
-                  Most applicants complete this step in one session.
-                </p>
-                <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                  <span className="flex items-center gap-1">
-                    <Clock className="h-4 w-4" />
-                    ~30-45 minutes
-                  </span>
+        {/* Primary Focus Card - only show in build-profile stage */}
+        {currentStage === 'build-profile' && (
+          <Card className="border-2 border-primary-blue/20 bg-gradient-to-br from-primary-blue/5 to-transparent">
+            <CardContent className="p-6">
+              <div className="flex items-start justify-between">
+                <div className="space-y-3">
+                  <Badge className="bg-primary-blue text-white">Your Current Priority</Badge>
+                  <h2 className="text-xl font-semibold text-foreground">Complete profile details</h2>
+                  <p className="text-muted-foreground max-w-lg">
+                    Required to enter the Express Entry pool. Cannot receive ITA until completed.
+                  </p>
+                  <p className="text-sm text-muted-foreground/80">
+                    Most applicants complete this step in one session.
+                  </p>
+                  <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                    <span className="flex items-center gap-1">
+                      <Clock className="h-4 w-4" />
+                      ~30-45 minutes
+                    </span>
+                  </div>
                 </div>
+                <Button 
+                  size="lg" 
+                  className="bg-primary-blue hover:bg-primary-blue/90"
+                  onClick={() => navigate('/dashboard/form')}
+                >
+                  Continue Application
+                  <ArrowRight className="h-4 w-4 ml-2" />
+                </Button>
               </div>
-              <Button 
-                size="lg" 
-                className="bg-primary-blue hover:bg-primary-blue/90"
-                onClick={() => navigate('/dashboard/form')}
-              >
-                Continue Application
-                <ArrowRight className="h-4 w-4 ml-2" />
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        )}
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* CRS Outlook */}
@@ -167,7 +236,7 @@ const Dashboard = () => {
             </CardContent>
           </Card>
 
-          {/* Recent Activity (demoted) */}
+          {/* Recent Activity */}
           <Card>
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
@@ -203,61 +272,67 @@ const Dashboard = () => {
           </Card>
         </div>
 
-        {/* Stage Checklist */}
+        {/* Dynamic Stage Checklist */}
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="text-lg">Build Profile Checklist</CardTitle>
+            <CardTitle className="text-lg">{currentConfig.label} Checklist</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-2">
-            {/* Action needed - always visible */}
-            <div className="flex items-center justify-between p-3 bg-amber-50 rounded-lg border border-amber-200">
-              <div className="flex items-center gap-3">
-                <AlertCircle className="h-5 w-5 text-amber-600" />
-                <span className="font-medium text-foreground">Profile details incomplete</span>
+          <CardContent className="space-y-3">
+            {currentConfig.checklist.map((item) => (
+              <div 
+                key={item.id}
+                className={`flex items-center justify-between p-3 rounded-lg border ${
+                  item.completed 
+                    ? 'bg-green-50 border-green-200' 
+                    : 'bg-muted/30 border-border'
+                }`}
+              >
+                <div className="flex items-center gap-3">
+                  {item.type === 'auto' ? (
+                    <div className="flex items-center justify-center w-5 h-5">
+                      {item.completed ? (
+                        <CheckCircle className="h-5 w-5 text-green-600" />
+                      ) : (
+                        <Info className="h-5 w-5 text-muted-foreground" />
+                      )}
+                    </div>
+                  ) : (
+                    <Checkbox
+                      checked={item.completed}
+                      onCheckedChange={() => toggleChecklistItem(item.id)}
+                      className="h-5 w-5"
+                    />
+                  )}
+                  <div>
+                    <span className={`font-medium ${item.completed ? 'text-foreground' : 'text-foreground'}`}>
+                      {item.label}
+                    </span>
+                    {item.info && (
+                      <p className="text-xs text-muted-foreground">{item.info}</p>
+                    )}
+                  </div>
+                </div>
+                {item.completed && (
+                  <Badge variant="secondary" className="bg-green-100 text-green-700">Done</Badge>
+                )}
               </div>
-              <Badge variant="outline" className="border-amber-300 text-amber-700">Action needed</Badge>
-            </div>
-            
-            {/* Completed items - collapsed by default */}
-            <Collapsible open={completedOpen} onOpenChange={setCompletedOpen}>
-              <CollapsibleTrigger asChild>
-                <button className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors py-2 w-full">
-                  <ChevronDown className={`h-4 w-4 transition-transform ${completedOpen ? 'rotate-180' : ''}`} />
-                  <span>Completed (2)</span>
-                </button>
-              </CollapsibleTrigger>
-              <CollapsibleContent className="space-y-2">
-                <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
-                  <div className="flex items-center gap-3">
-                    <CheckCircle className="h-5 w-5 text-green-600" />
-                    <span className="text-foreground">Eligibility confirmed</span>
-                  </div>
-                  <Badge variant="secondary" className="bg-green-100 text-green-700">Done</Badge>
-                </div>
-                <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
-                  <div className="flex items-center gap-3">
-                    <CheckCircle className="h-5 w-5 text-green-600" />
-                    <span className="text-foreground">Language test added</span>
-                  </div>
-                  <Badge variant="secondary" className="bg-green-100 text-green-700">Done</Badge>
-                </div>
-              </CollapsibleContent>
-            </Collapsible>
+            ))}
 
-            {/* User milestone action */}
-            {milestoneAction && (
+            {/* Exit action / milestone button */}
+            {currentConfig.exitAction && (
               <div className="mt-4 pt-4 border-t border-border">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     <Flag className="h-4 w-4" />
-                    <span>Did something happen outside Eldo?</span>
+                    <span>Ready to move on?</span>
                   </div>
                   <Button 
-                    variant="outline" 
+                    variant={canAdvance() ? 'default' : 'outline'}
                     size="sm"
-                    onClick={() => advanceToStage(milestoneAction.nextStage)}
+                    onClick={() => advanceToStage(currentConfig.exitAction!.nextStage)}
+                    className={canAdvance() ? 'bg-primary-blue hover:bg-primary-blue/90' : ''}
                   >
-                    {milestoneAction.label}
+                    {currentConfig.exitAction.label}
                   </Button>
                 </div>
               </div>
@@ -265,52 +340,53 @@ const Dashboard = () => {
           </CardContent>
         </Card>
 
-        {/* Prepare Ahead */}
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-lg">Prepare Ahead</CardTitle>
-            <p className="text-sm text-muted-foreground">
-              You don't need these yet — starting early helps avoid last-minute delays.
-            </p>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {/* Sorted by risk: High → Medium → Low */}
-              <div className="p-4 border border-amber-200 bg-amber-50/30 rounded-lg space-y-2">
-                <div className="flex items-center gap-2">
-                  <FileWarning className="h-5 w-5 text-amber-600" />
-                  <h4 className="font-medium text-foreground">Police Certificates</h4>
+        {/* Prepare Ahead - only show in earlier stages */}
+        {['get-ready', 'build-profile', 'wait-invitation'].includes(currentStage) && (
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-lg">Prepare Ahead</CardTitle>
+              <p className="text-sm text-muted-foreground">
+                You don't need these yet — starting early helps avoid last-minute delays.
+              </p>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="p-4 border border-amber-200 bg-amber-50/30 rounded-lg space-y-2">
+                  <div className="flex items-center gap-2">
+                    <FileWarning className="h-5 w-5 text-amber-600" />
+                    <h4 className="font-medium text-foreground">Police Certificates</h4>
+                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    Can take 2-8 weeks depending on country. Required after ITA.
+                  </p>
+                  <Badge variant="outline" className="text-xs border-amber-300 text-amber-700">High delay risk</Badge>
                 </div>
-                <p className="text-sm text-muted-foreground">
-                  Can take 2-8 weeks depending on country. Required after ITA.
-                </p>
-                <Badge variant="outline" className="text-xs border-amber-300 text-amber-700">High delay risk</Badge>
-              </div>
-              
-              <div className="p-4 border border-border rounded-lg space-y-2">
-                <div className="flex items-center gap-2">
-                  <Briefcase className="h-5 w-5 text-primary-blue" />
-                  <h4 className="font-medium text-foreground">Employment Letters</h4>
+                
+                <div className="p-4 border border-border rounded-lg space-y-2">
+                  <div className="flex items-center gap-2">
+                    <Briefcase className="h-5 w-5 text-primary-blue" />
+                    <h4 className="font-medium text-foreground">Employment Letters</h4>
+                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    Reference letters from all past employers. Start requesting now.
+                  </p>
+                  <Badge variant="outline" className="text-xs">Medium delay risk</Badge>
                 </div>
-                <p className="text-sm text-muted-foreground">
-                  Reference letters from all past employers. Start requesting now.
-                </p>
-                <Badge variant="outline" className="text-xs">Medium delay risk</Badge>
-              </div>
-              
-              <div className="p-4 border border-border rounded-lg space-y-2">
-                <div className="flex items-center gap-2">
-                  <Wallet className="h-5 w-5 text-green-600" />
-                  <h4 className="font-medium text-foreground">Proof of Funds</h4>
+                
+                <div className="p-4 border border-border rounded-lg space-y-2">
+                  <div className="flex items-center gap-2">
+                    <Wallet className="h-5 w-5 text-green-600" />
+                    <h4 className="font-medium text-foreground">Proof of Funds</h4>
+                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    Bank statements showing settlement funds. Required at submission.
+                  </p>
+                  <Badge variant="outline" className="text-xs">Low delay risk</Badge>
                 </div>
-                <p className="text-sm text-muted-foreground">
-                  Bank statements showing settlement funds. Required at submission.
-                </p>
-                <Badge variant="outline" className="text-xs">Low delay risk</Badge>
               </div>
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        )}
       </div>
     </DashboardLayout>
   );
