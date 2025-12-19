@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -12,17 +12,22 @@ import {
   FileWarning,
   Briefcase,
   Wallet,
-  ChevronDown
+  ChevronDown,
+  Flag
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { DashboardLayout } from '@/components/DashboardLayout';
+import { toast } from 'sonner';
+
+const STORAGE_KEY = 'eldo-journey-stage';
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const [completedOpen, setCompletedOpen] = useState(false);
+  const [currentStage, setCurrentStage] = useState(() => {
+    return localStorage.getItem(STORAGE_KEY) || 'build-profile';
+  });
 
-  // Mock data - in a real app this would come from state/API
-  const currentStage = 'build-profile';
   const estimatedCRS = 465;
   const recentCutoff = '470-480';
 
@@ -36,6 +41,28 @@ const Dashboard = () => {
 
   const stageOrder = ['get-ready', 'build-profile', 'wait-invitation', 'apply-pr', 'after-submission'];
   const currentStageIndex = stageOrder.indexOf(currentStage);
+
+  const advanceToStage = (newStage: string) => {
+    setCurrentStage(newStage);
+    localStorage.setItem(STORAGE_KEY, newStage);
+    toast.success(`Stage updated to: ${stages[newStage as keyof typeof stages].label}`);
+  };
+
+  // Stage-specific milestones the user can mark
+  const getMilestoneAction = () => {
+    switch (currentStage) {
+      case 'build-profile':
+        return { label: 'I submitted my profile to IRCC', nextStage: 'wait-invitation' };
+      case 'wait-invitation':
+        return { label: 'I received my ITA', nextStage: 'apply-pr' };
+      case 'apply-pr':
+        return { label: 'I submitted my PR application', nextStage: 'after-submission' };
+      default:
+        return null;
+    }
+  };
+
+  const milestoneAction = getMilestoneAction();
 
   return (
     <DashboardLayout>
@@ -72,6 +99,25 @@ const Dashboard = () => {
               </div>
             ))}
           </div>
+
+          {/* User milestone action */}
+          {milestoneAction && (
+            <div className="mt-6 pt-4 border-t border-border">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <Flag className="h-4 w-4" />
+                  <span>Did something happen outside Eldo?</span>
+                </div>
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => advanceToStage(milestoneAction.nextStage)}
+                >
+                  {milestoneAction.label}
+                </Button>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Primary Focus Card */}
