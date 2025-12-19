@@ -99,25 +99,6 @@ const Dashboard = () => {
               </div>
             ))}
           </div>
-
-          {/* User milestone action */}
-          {milestoneAction && (
-            <div className="mt-6 pt-4 border-t border-border">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <Flag className="h-4 w-4" />
-                  <span>Did something happen outside Eldo?</span>
-                </div>
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  onClick={() => advanceToStage(milestoneAction.nextStage)}
-                >
-                  {milestoneAction.label}
-                </Button>
-              </div>
-            </div>
-          )}
         </div>
 
         {/* Primary Focus Card */}
@@ -262,6 +243,25 @@ const Dashboard = () => {
                 </div>
               </CollapsibleContent>
             </Collapsible>
+
+            {/* User milestone action */}
+            {milestoneAction && (
+              <div className="mt-4 pt-4 border-t border-border">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <Flag className="h-4 w-4" />
+                    <span>Did something happen outside Eldo?</span>
+                  </div>
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => advanceToStage(milestoneAction.nextStage)}
+                  >
+                    {milestoneAction.label}
+                  </Button>
+                </div>
+              </div>
+            )}
           </CardContent>
         </Card>
 
