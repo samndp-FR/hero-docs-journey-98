@@ -1,286 +1,245 @@
-
-import React from 'react';
-import Header from '@/components/Header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
-  FileText, 
-  Calculator, 
-  Clock, 
-  CheckCircle, 
-  AlertCircle,
   ArrowRight,
-  Trophy,
-  Target,
-  Users,
-  Scan
+  Clock,
+  CheckCircle,
+  AlertCircle,
+  TrendingUp,
+  FileWarning,
+  Briefcase,
+  FileText,
+  Wallet
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import DocumentCenter from '@/components/DocumentCenter';
+import { DashboardLayout } from '@/components/DashboardLayout';
 
 const Dashboard = () => {
   const navigate = useNavigate();
 
+  // Mock data - in a real app this would come from state/API
+  const currentStage = 'build-profile';
+  const estimatedCRS = 465;
+  const recentCutoff = '470-480';
+
+  const stages = {
+    'get-ready': { label: 'Get Ready', description: 'Preparing eligibility and prerequisites' },
+    'build-profile': { label: 'Build Profile', description: 'You\'ve completed eligibility. Next step is entering the pool.' },
+    'wait-invitation': { label: 'Wait for Invitation', description: 'Profile submitted, awaiting ITA' },
+    'apply-pr': { label: 'Apply for PR', description: 'ITA received, complete your PR application' },
+    'after-submission': { label: 'After Submission', description: 'Application submitted, awaiting decision' },
+  };
+
+  const stageOrder = ['get-ready', 'build-profile', 'wait-invitation', 'apply-pr', 'after-submission'];
+  const currentStageIndex = stageOrder.indexOf(currentStage);
+
   return (
-    <div className="min-h-screen bg-pale-blue">
-      <Header />
-      <div className="pt-20 pb-12">
-        <div className="container mx-auto px-6 space-y-8">
-          {/* Welcome Section */}
-          <div className="text-center space-y-4">
-            <h1 className="text-3xl font-bold text-gray-900">Welcome to Your Express Entry Journey</h1>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Track your progress, manage your application, and get ready for your move to Canada.
-            </p>
+    <DashboardLayout>
+      <div className="max-w-5xl mx-auto space-y-6">
+        
+        {/* Stage-based Journey Header */}
+        <div className="bg-card rounded-xl p-6 border border-border">
+          <div className="flex items-center gap-2 mb-3">
+            <Badge variant="secondary" className="bg-primary-blue/10 text-primary-blue">
+              Current Stage
+            </Badge>
           </div>
-
-          {/* Main Tabs */}
-          <Tabs defaultValue="overview" className="w-full">
-            <TabsList className="grid w-full grid-cols-3">
-              <TabsTrigger value="overview">Overview</TabsTrigger>
-              <TabsTrigger value="documents">Document Center</TabsTrigger>
-              <TabsTrigger value="tools">Tools</TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="overview" className="space-y-6">
-              {/* Quick Actions */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => navigate('/crs-assessment')}>
-                  <CardHeader className="pb-3">
-                    <div className="flex items-center justify-between">
-                      <Calculator className="h-8 w-8 text-primary-blue" />
-                      <Badge variant="secondary">New</Badge>
-                    </div>
-                    <CardTitle className="text-lg">CRS Score Calculator</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-gray-600 mb-4">
-                      Calculate your Comprehensive Ranking System score for Express Entry
-                    </p>
-                    <Button className="w-full bg-primary-blue hover:bg-primary-blue/90">
-                      Calculate Score
-                      <ArrowRight className="h-4 w-4 ml-2" />
-                    </Button>
-                  </CardContent>
-                </Card>
-
-                <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => navigate('/application-form')}>
-                  <CardHeader className="pb-3">
-                    <div className="flex items-center justify-between">
-                      <FileText className="h-8 w-8 text-green-600" />
-                      <Badge variant="outline">In Progress</Badge>
-                    </div>
-                    <CardTitle className="text-lg">Application Form</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-gray-600 mb-4">
-                      Complete your Express Entry profile with progressive disclosure
-                    </p>
-                    <Button variant="outline" className="w-full">
-                      Continue Application
-                      <ArrowRight className="h-4 w-4 ml-2" />
-                    </Button>
-                  </CardContent>
-                </Card>
-
-                <Card className="hover:shadow-lg transition-shadow">
-                  <CardHeader className="pb-3">
-                    <div className="flex items-center justify-between">
-                      <Trophy className="h-8 w-8 text-yellow-600" />
-                      <Badge variant="outline">Coming Soon</Badge>
-                    </div>
-                    <CardTitle className="text-lg">Score History</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-gray-600 mb-4">
-                      Track your CRS score improvements over time
-                    </p>
-                    <Button variant="outline" className="w-full" disabled>
-                      View History
-                    </Button>
-                  </CardContent>
-                </Card>
+          <h1 className="text-2xl font-semibold text-foreground mb-2">
+            {stages[currentStage as keyof typeof stages].label}
+          </h1>
+          <p className="text-muted-foreground">
+            {stages[currentStage as keyof typeof stages].description}
+          </p>
+          
+          {/* Stage progress indicators */}
+          <div className="flex items-center gap-2 mt-6">
+            {stageOrder.map((stage, index) => (
+              <div key={stage} className="flex items-center">
+                <div 
+                  className={`h-2 w-12 rounded-full transition-colors ${
+                    index < currentStageIndex 
+                      ? 'bg-green-500' 
+                      : index === currentStageIndex 
+                        ? 'bg-primary-blue' 
+                        : 'bg-muted'
+                  }`}
+                />
+                {index < stageOrder.length - 1 && <div className="w-1" />}
               </div>
-
-              {/* Current Status */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <Target className="h-5 w-5" />
-                      Application Status
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
-                      <div className="flex items-center gap-3">
-                        <CheckCircle className="h-5 w-5 text-blue-600" />
-                        <span className="font-medium">Profile Created</span>
-                      </div>
-                      <Badge variant="secondary">Complete</Badge>
-                    </div>
-                    <div className="flex items-center justify-between p-3 bg-yellow-50 rounded-lg">
-                      <div className="flex items-center gap-3">
-                        <Clock className="h-5 w-5 text-yellow-600" />
-                        <span className="font-medium">Documents Upload</span>
-                      </div>
-                      <Badge variant="outline">In Progress</Badge>
-                    </div>
-                    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                      <div className="flex items-center gap-3">
-                        <AlertCircle className="h-5 w-5 text-gray-400" />
-                        <span className="font-medium">Language Tests</span>
-                      </div>
-                      <Badge variant="outline">Pending</Badge>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <Users className="h-5 w-5" />
-                      Recent Activity
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="flex items-start gap-3 p-3 border-l-4 border-blue-500 bg-blue-50">
-                      <div className="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
-                      <div>
-                        <p className="font-medium text-blue-900">Profile Updated</p>
-                        <p className="text-sm text-blue-700">Personal details section completed</p>
-                        <p className="text-xs text-blue-600 mt-1">2 hours ago</p>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-3 p-3 border-l-4 border-green-500 bg-green-50">
-                      <div className="w-2 h-2 bg-green-500 rounded-full mt-2"></div>
-                      <div>
-                        <p className="font-medium text-green-900">Document Uploaded</p>
-                        <p className="text-sm text-green-700">Educational credential assessment added</p>
-                        <p className="text-xs text-green-600 mt-1">1 day ago</p>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-3 p-3 border-l-4 border-purple-500 bg-purple-50">
-                      <div className="w-2 h-2 bg-purple-500 rounded-full mt-2"></div>
-                      <div>
-                        <p className="font-medium text-purple-900">Language Test Scheduled</p>
-                        <p className="text-sm text-purple-700">IELTS test booked for next month</p>
-                        <p className="text-xs text-purple-600 mt-1">3 days ago</p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-
-              {/* Next Steps */}
-              <Card>
-                <CardHeader>
-                  <CardTitle>Recommended Next Steps</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div className="p-4 border rounded-lg hover:bg-gray-50 transition-colors">
-                      <div className="flex items-center gap-3 mb-2">
-                        <Calculator className="h-5 w-5 text-primary-blue" />
-                        <h4 className="font-medium">Calculate CRS Score</h4>
-                      </div>
-                      <p className="text-sm text-gray-600 mb-3">
-                        Get your current CRS score to understand your competitiveness
-                      </p>
-                      <Button 
-                        size="sm" 
-                        className="bg-primary-blue hover:bg-primary-blue/90"
-                        onClick={() => navigate('/crs-assessment')}
-                      >
-                        Start Calculator
-                      </Button>
-                    </div>
-
-                    <div className="p-4 border rounded-lg hover:bg-gray-50 transition-colors">
-                      <div className="flex items-center gap-3 mb-2">
-                        <FileText className="h-5 w-5 text-green-600" />
-                        <h4 className="font-medium">Complete Profile</h4>
-                      </div>
-                      <p className="text-sm text-gray-600 mb-3">
-                        Fill out remaining sections of your Express Entry profile
-                      </p>
-                      <Button 
-                        size="sm" 
-                        variant="outline"
-                        onClick={() => navigate('/application-form')}
-                      >
-                        Continue Form
-                      </Button>
-                    </div>
-
-                    <div className="p-4 border rounded-lg hover:bg-gray-50 transition-colors">
-                      <div className="flex items-center gap-3 mb-2">
-                        <Trophy className="h-5 w-5 text-yellow-600" />
-                        <h4 className="font-medium">Book Language Test</h4>
-                      </div>
-                      <p className="text-sm text-gray-600 mb-3">
-                        Schedule your IELTS or CELPIP test for language proficiency
-                      </p>
-                      <Button size="sm" variant="outline" disabled>
-                        Coming Soon
-                      </Button>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
-
-            <TabsContent value="documents">
-              <DocumentCenter 
-                remainingScans={5}
-                isUnlimited={false}
-                subscription="free"
-              />
-            </TabsContent>
-
-            <TabsContent value="tools" className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => navigate('/crs-assessment')}>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <Calculator className="h-6 w-6 text-primary-blue" />
-                      CRS Score Calculator
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-gray-600 mb-4">
-                      Calculate your Comprehensive Ranking System score for Express Entry
-                    </p>
-                    <Button className="w-full bg-primary-blue hover:bg-primary-blue/90">
-                      Open Calculator
-                    </Button>
-                  </CardContent>
-                </Card>
-
-                <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => navigate('/application-form')}>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <FileText className="h-6 w-6 text-green-600" />
-                      Application Form
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-gray-600 mb-4">
-                      Complete your Express Entry profile with progressive disclosure
-                    </p>
-                    <Button variant="outline" className="w-full">
-                      Continue Form
-                    </Button>
-                  </CardContent>
-                </Card>
-              </div>
-            </TabsContent>
-          </Tabs>
+            ))}
+          </div>
         </div>
+
+        {/* Primary Focus Card */}
+        <Card className="border-2 border-primary-blue/20 bg-gradient-to-br from-primary-blue/5 to-transparent">
+          <CardContent className="p-6">
+            <div className="flex items-start justify-between">
+              <div className="space-y-3">
+                <Badge className="bg-primary-blue text-white">Your Current Priority</Badge>
+                <h2 className="text-xl font-semibold text-foreground">Complete profile details</h2>
+                <p className="text-muted-foreground max-w-lg">
+                  Required to enter the Express Entry pool. Cannot receive ITA until completed.
+                </p>
+                <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                  <span className="flex items-center gap-1">
+                    <Clock className="h-4 w-4" />
+                    ~30-45 minutes
+                  </span>
+                </div>
+              </div>
+              <Button 
+                size="lg" 
+                className="bg-primary-blue hover:bg-primary-blue/90"
+                onClick={() => navigate('/dashboard/form')}
+              >
+                Continue Application
+                <ArrowRight className="h-4 w-4 ml-2" />
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* CRS Outlook */}
+          <Card className="lg:col-span-2">
+            <CardHeader className="pb-3">
+              <CardTitle className="flex items-center gap-2 text-lg">
+                <TrendingUp className="h-5 w-5 text-primary-blue" />
+                CRS Outlook
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex items-baseline gap-6">
+                <div>
+                  <p className="text-sm text-muted-foreground">Estimated Score</p>
+                  <p className="text-3xl font-bold text-foreground">~{estimatedCRS}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">Recent Cutoffs</p>
+                  <p className="text-xl font-medium text-muted-foreground">{recentCutoff}</p>
+                </div>
+              </div>
+              <p className="text-sm text-muted-foreground border-t border-border pt-4">
+                Improving language results or adding Canadian experience could materially increase your chances.
+              </p>
+              <Button 
+                variant="outline" 
+                className="mt-2"
+                onClick={() => navigate('/dashboard/score')}
+              >
+                Improve my score
+                <ArrowRight className="h-4 w-4 ml-2" />
+              </Button>
+            </CardContent>
+          </Card>
+
+          {/* Recent Activity (demoted) */}
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-base text-muted-foreground">Recent Activity</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <div className="flex items-start gap-2 text-sm">
+                <div className="w-1.5 h-1.5 bg-primary-blue rounded-full mt-2" />
+                <div>
+                  <p className="font-medium text-foreground">Profile Updated</p>
+                  <p className="text-xs text-muted-foreground">2 hours ago</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-2 text-sm">
+                <div className="w-1.5 h-1.5 bg-green-500 rounded-full mt-2" />
+                <div>
+                  <p className="font-medium text-foreground">Document Uploaded</p>
+                  <p className="text-xs text-muted-foreground">1 day ago</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-2 text-sm">
+                <div className="w-1.5 h-1.5 bg-purple-500 rounded-full mt-2" />
+                <div>
+                  <p className="font-medium text-foreground">Language Test Added</p>
+                  <p className="text-xs text-muted-foreground">3 days ago</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Stage Checklist */}
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-lg">Build Profile Checklist</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-2">
+            <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
+              <div className="flex items-center gap-3">
+                <CheckCircle className="h-5 w-5 text-green-600" />
+                <span className="text-foreground">Eligibility confirmed</span>
+              </div>
+              <Badge variant="secondary" className="bg-green-100 text-green-700">Done</Badge>
+            </div>
+            <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
+              <div className="flex items-center gap-3">
+                <CheckCircle className="h-5 w-5 text-green-600" />
+                <span className="text-foreground">Language test added</span>
+              </div>
+              <Badge variant="secondary" className="bg-green-100 text-green-700">Done</Badge>
+            </div>
+            <div className="flex items-center justify-between p-3 bg-amber-50 rounded-lg border border-amber-200">
+              <div className="flex items-center gap-3">
+                <AlertCircle className="h-5 w-5 text-amber-600" />
+                <span className="font-medium text-foreground">Profile details incomplete</span>
+              </div>
+              <Badge variant="outline" className="border-amber-300 text-amber-700">Action needed</Badge>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Prepare Ahead */}
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-lg">Prepare Ahead</CardTitle>
+            <p className="text-sm text-muted-foreground">Documents that often cause delays — start gathering now</p>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="p-4 border border-border rounded-lg space-y-2">
+                <div className="flex items-center gap-2">
+                  <FileWarning className="h-5 w-5 text-amber-600" />
+                  <h4 className="font-medium text-foreground">Police Certificates</h4>
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  Can take 2-8 weeks depending on country. Required after ITA.
+                </p>
+                <Badge variant="outline" className="text-xs">High delay risk</Badge>
+              </div>
+              
+              <div className="p-4 border border-border rounded-lg space-y-2">
+                <div className="flex items-center gap-2">
+                  <Briefcase className="h-5 w-5 text-primary-blue" />
+                  <h4 className="font-medium text-foreground">Employment Letters</h4>
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  Reference letters from all past employers. Start requesting now.
+                </p>
+                <Badge variant="outline" className="text-xs">Medium delay risk</Badge>
+              </div>
+              
+              <div className="p-4 border border-border rounded-lg space-y-2">
+                <div className="flex items-center gap-2">
+                  <Wallet className="h-5 w-5 text-green-600" />
+                  <h4 className="font-medium text-foreground">Proof of Funds</h4>
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  Bank statements showing settlement funds. Required at submission.
+                </p>
+                <Badge variant="outline" className="text-xs">Low delay risk</Badge>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </div>
-    </div>
+    </DashboardLayout>
   );
 };
 
