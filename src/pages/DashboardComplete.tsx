@@ -102,7 +102,7 @@ const DashboardComplete = () => {
         : undefined,
       secondaryAction: {
         label: 'Go to Form',
-        onClick: () => navigate('/dashboard/form'),
+        onClick: () => {}, // Placeholder - actual link exists in working repo
       },
     },
     {
