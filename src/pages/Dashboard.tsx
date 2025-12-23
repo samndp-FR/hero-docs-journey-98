@@ -17,9 +17,13 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { DashboardLayout } from '@/components/DashboardLayout';
 import { toast } from 'sonner';
+import DocumentReminder, { TrackedDocument } from '@/components/DocumentReminder';
+import CompletedStages from '@/components/CompletedStages';
 
 const STORAGE_KEY = 'eldo-journey-stage';
 const CHECKLIST_KEY = 'eldo-checklist-state';
+const STAGE_HISTORY_KEY = 'eldo-stage-history';
+const DOCUMENTS_KEY = 'eldo-documents-state';
 
 type ChecklistItem = {
   id: string;
@@ -36,6 +40,25 @@ type StageConfig = {
   exitAction?: { label: string; nextStage: string };
 };
 
+type StageHistoryEntry = {
+  stageId: string;
+  completedAt: string;
+};
+
+const defaultDocuments: TrackedDocument[] = [
+  { id: 'passport', name: 'Passport', status: 'pending', relevantStages: ['build-profile', 'apply-pr'] },
+  { id: 'educational-credentials', name: 'Educational Credentials', status: 'pending', relevantStages: ['build-profile', 'apply-pr'] },
+  { id: 'work-letters', name: 'Work Experience Letters', status: 'pending', relevantStages: ['build-profile', 'apply-pr'] },
+  { id: 'language-test', name: 'Language Test Results', status: 'pending', relevantStages: ['get-ready', 'build-profile', 'apply-pr'] },
+  { id: 'eca', name: 'Educational Credential Assessment', status: 'pending', relevantStages: ['get-ready'] },
+  { id: 'police-certificate', name: 'Police Certificate', status: 'pending', relevantStages: ['wait-invitation', 'apply-pr'] },
+  { id: 'employment-letters', name: 'Employment Reference Letters', status: 'pending', relevantStages: ['wait-invitation'] },
+  { id: 'proof-of-funds', name: 'Proof of Funds', status: 'pending', relevantStages: ['wait-invitation', 'apply-pr'] },
+  { id: 'medical-exam', name: 'Medical Exam', status: 'pending', relevantStages: ['apply-pr', 'after-submission'] },
+  { id: 'birth-certificate', name: 'Birth Certificate', status: 'pending', relevantStages: ['apply-pr'] },
+  { id: 'biometrics-confirmation', name: 'Biometrics Confirmation', status: 'pending', relevantStages: ['after-submission'] },
+];
+
 const Dashboard = () => {
   const navigate = useNavigate();
   
@@ -46,6 +69,16 @@ const Dashboard = () => {
   const [checklistState, setChecklistState] = useState<Record<string, boolean>>(() => {
     const saved = localStorage.getItem(CHECKLIST_KEY);
     return saved ? JSON.parse(saved) : {};
+  });
+
+  const [stageHistory, setStageHistory] = useState<StageHistoryEntry[]>(() => {
+    const saved = localStorage.getItem(STAGE_HISTORY_KEY);
+    return saved ? JSON.parse(saved) : [];
+  });
+
+  const [documents, setDocuments] = useState<TrackedDocument[]>(() => {
+    const saved = localStorage.getItem(DOCUMENTS_KEY);
+    return saved ? JSON.parse(saved) : defaultDocuments;
   });
 
   const estimatedCRS = 465;
@@ -119,10 +152,38 @@ const Dashboard = () => {
   };
 
   const advanceToStage = (newStage: string) => {
+    // Save current stage to history with completion date
+    const newHistory = [...stageHistory, { stageId: currentStage, completedAt: new Date().toISOString() }];
+    setStageHistory(newHistory);
+    localStorage.setItem(STAGE_HISTORY_KEY, JSON.stringify(newHistory));
+    
     setCurrentStage(newStage);
     localStorage.setItem(STORAGE_KEY, newStage);
     toast.success(`Stage updated to: ${stageConfigs[newStage].label}`);
   };
+
+  const handleMarkDocumentAsHaveIt = (docId: string) => {
+    const updatedDocs = documents.map(doc => 
+      doc.id === docId ? { ...doc, status: 'have-it' as const } : doc
+    );
+    setDocuments(updatedDocs);
+    localStorage.setItem(DOCUMENTS_KEY, JSON.stringify(updatedDocs));
+    toast.success('Document marked as available');
+  };
+
+  const handleViewCompletedStage = (stageId: string) => {
+    // Navigate to a stage review - for now just show a toast
+    const stageLabel = stageConfigs[stageId]?.label || stageId;
+    toast.info(`Viewing completed stage: ${stageLabel}`);
+    // Could navigate to a detailed view or open a modal
+  };
+
+  // Get completed stages for display
+  const completedStages = stageHistory.map(entry => ({
+    id: entry.stageId,
+    label: stageConfigs[entry.stageId]?.label || entry.stageId,
+    completedAt: new Date(entry.completedAt),
+  }));
 
   // Check if exit conditions are met
   const canAdvance = () => {
@@ -216,7 +277,22 @@ const Dashboard = () => {
                 <div>
                   <p className="text-sm text-muted-foreground">Estimated Score</p>
                   <p className="text-3xl font-bold text-foreground">~{estimatedCRS}</p>
-                </div>
+        </div>
+
+        {/* Completed Stages - show previous steps */}
+        {completedStages.length > 0 && (
+          <CompletedStages 
+            stages={completedStages}
+            onViewStage={handleViewCompletedStage}
+          />
+        )}
+
+        {/* Document Reminder for current stage */}
+        <DocumentReminder
+          currentStage={currentStage}
+          documents={documents}
+          onMarkAsHaveIt={handleMarkDocumentAsHaveIt}
+        />
                 <div>
                   <p className="text-sm text-muted-foreground">Recent Cutoffs</p>
                   <p className="text-xl font-medium text-muted-foreground">{recentCutoff}</p>
