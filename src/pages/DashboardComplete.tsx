@@ -226,15 +226,25 @@ const DashboardComplete = () => {
                                   {Math.round(formProgress)}% complete
                                 </span>
                               </div>
-                              <Button 
-                                variant="outline"
-                                size="sm"
-                                onClick={() => navigate('/dashboard/form')}
-                                className="mt-2 w-full border-amber-300 text-amber-700 hover:bg-amber-100 dark:border-amber-700 dark:text-amber-400 dark:hover:bg-amber-900/30"
-                              >
-                                Continue Build Profile
-                                <ArrowRight className="h-3 w-3 ml-1" />
-                              </Button>
+                              <div className="flex gap-2 mt-2">
+                                <Button 
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => navigate('/dashboard/form')}
+                                  className="flex-1 border-amber-300 text-amber-700 hover:bg-amber-100 dark:border-amber-700 dark:text-amber-400 dark:hover:bg-amber-900/30"
+                                >
+                                  Continue Build Profile
+                                  <ArrowRight className="h-3 w-3 ml-1" />
+                                </Button>
+                                <Button 
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => completeStep(2)}
+                                  className="text-muted-foreground hover:text-foreground"
+                                >
+                                  Skip
+                                </Button>
+                              </div>
                             </div>
                           )}
                         </div>
