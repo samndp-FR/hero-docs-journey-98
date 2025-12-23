@@ -360,7 +360,16 @@ const Dashboard = () => {
           </Card>
         )}
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* CRS Score reminder - small inline badge for apply-pr and after - outside grid */}
+        {['apply-pr', 'after-submission'].includes(displayedStage) && (
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-muted/50 rounded-md border border-border/50 text-sm">
+            <TrendingUp className="h-3.5 w-3.5 text-muted-foreground" />
+            <span className="text-muted-foreground">CRS:</span>
+            <span className="font-medium text-foreground">~{estimatedCRS}</span>
+          </div>
+        )}
+
+        <div className={`grid gap-6 ${['get-ready', 'build-profile', 'wait-invitation'].includes(displayedStage) ? 'grid-cols-1 lg:grid-cols-3' : 'grid-cols-1'}`}>
           {/* CRS Outlook - full card until wait-invitation */}
           {['get-ready', 'build-profile', 'wait-invitation'].includes(displayedStage) && (
             <Card className="lg:col-span-2">
@@ -417,17 +426,8 @@ const Dashboard = () => {
             </Card>
           )}
 
-          {/* CRS Score reminder - small inline badge for apply-pr and after */}
-          {['apply-pr', 'after-submission'].includes(displayedStage) && (
-            <div className="flex items-center gap-2 px-3 py-2 bg-muted/50 rounded-lg border border-border/50">
-              <TrendingUp className="h-4 w-4 text-muted-foreground" />
-              <span className="text-sm text-muted-foreground">CRS:</span>
-              <span className="text-sm font-semibold text-foreground">~{estimatedCRS}</span>
-            </div>
-          )}
-
           {/* Recent Activity */}
-          <Card className={['get-ready', 'build-profile', 'wait-invitation'].includes(displayedStage) ? '' : 'lg:col-span-2'}>
+          <Card>
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
                 <CardTitle className="text-base text-muted-foreground">Recent Activity</CardTitle>
