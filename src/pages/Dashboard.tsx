@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { format } from 'date-fns';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -22,6 +23,7 @@ import CompletedStages from '@/components/CompletedStages';
 
 const STORAGE_KEY = 'eldo-journey-stage';
 const CHECKLIST_KEY = 'eldo-checklist-state';
+const CHECKLIST_DATES_KEY = 'eldo-checklist-dates';
 const STAGE_HISTORY_KEY = 'eldo-stage-history';
 const DOCUMENTS_KEY = 'eldo-documents-state';
 
@@ -71,6 +73,11 @@ const Dashboard = () => {
     return saved ? JSON.parse(saved) : {};
   });
 
+  const [checklistDates, setChecklistDates] = useState<Record<string, string>>(() => {
+    const saved = localStorage.getItem(CHECKLIST_DATES_KEY);
+    return saved ? JSON.parse(saved) : {};
+  });
+
   const [stageHistory, setStageHistory] = useState<StageHistoryEntry[]>(() => {
     const saved = localStorage.getItem(STAGE_HISTORY_KEY);
     return saved ? JSON.parse(saved) : [];
@@ -80,6 +87,9 @@ const Dashboard = () => {
     const saved = localStorage.getItem(DOCUMENTS_KEY);
     return saved ? JSON.parse(saved) : defaultDocuments;
   });
+
+  // State for viewing a past stage
+  const [viewingStage, setViewingStage] = useState<string | null>(null);
 
   const estimatedCRS = 465;
   const recentCutoff = '470-480';
@@ -143,12 +153,24 @@ const Dashboard = () => {
 
   const stageOrder = ['get-ready', 'build-profile', 'wait-invitation', 'apply-pr', 'after-submission'];
   const currentStageIndex = stageOrder.indexOf(currentStage);
-  const currentConfig = stageConfigs[currentStage];
+  
+  // Use viewingStage if set, otherwise currentStage
+  const displayedStage = viewingStage || currentStage;
+  const displayedConfig = stageConfigs[displayedStage];
+  const isViewingPast = viewingStage !== null;
 
   const toggleChecklistItem = (itemId: string) => {
-    const newState = { ...checklistState, [itemId]: !checklistState[itemId] };
+    const wasCompleted = checklistState[itemId];
+    const newState = { ...checklistState, [itemId]: !wasCompleted };
     setChecklistState(newState);
     localStorage.setItem(CHECKLIST_KEY, JSON.stringify(newState));
+    
+    // Track completion date
+    if (!wasCompleted) {
+      const newDates = { ...checklistDates, [itemId]: new Date().toISOString() };
+      setChecklistDates(newDates);
+      localStorage.setItem(CHECKLIST_DATES_KEY, JSON.stringify(newDates));
+    }
   };
 
   const advanceToStage = (newStage: string) => {
@@ -172,10 +194,11 @@ const Dashboard = () => {
   };
 
   const handleViewCompletedStage = (stageId: string) => {
-    // Navigate to a stage review - for now just show a toast
-    const stageLabel = stageConfigs[stageId]?.label || stageId;
-    toast.info(`Viewing completed stage: ${stageLabel}`);
-    // Could navigate to a detailed view or open a modal
+    setViewingStage(stageId);
+  };
+
+  const handleBackToCurrentStage = () => {
+    setViewingStage(null);
   };
 
   // Get completed stages for display
@@ -185,9 +208,15 @@ const Dashboard = () => {
     completedAt: new Date(entry.completedAt),
   }));
 
+  // Get completion date for a stage
+  const getStageCompletionDate = (stageId: string) => {
+    const entry = stageHistory.find(h => h.stageId === stageId);
+    return entry ? new Date(entry.completedAt) : null;
+  };
+
   // Check if exit conditions are met
   const canAdvance = () => {
-    const checklist = currentConfig.checklist;
+    const checklist = displayedConfig.checklist;
     const declaredItems = checklist.filter(item => item.type === 'declared');
     return declaredItems.every(item => checklistState[item.id]);
   };
@@ -199,16 +228,27 @@ const Dashboard = () => {
         {/* Stage-based Journey Header */}
         <div className="bg-card rounded-xl p-6 border border-border">
           <div className="flex items-center gap-2 mb-3">
-            <Badge variant="secondary" className="bg-primary-blue/10 text-primary-blue">
-              Current Stage
+            <Badge variant="secondary" className={isViewingPast ? "bg-green-100 text-green-700" : "bg-primary-blue/10 text-primary-blue"}>
+              {isViewingPast ? 'Viewing Past Stage' : 'Current Stage'}
             </Badge>
+            {isViewingPast && (
+              <Button variant="ghost" size="sm" onClick={handleBackToCurrentStage} className="text-primary-blue">
+                ← Back to current
+              </Button>
+            )}
           </div>
           <h1 className="text-2xl font-semibold text-foreground mb-2">
-            {currentConfig.label}
+            {displayedConfig.label}
           </h1>
           <p className="text-muted-foreground">
-            {currentConfig.goal}
+            {displayedConfig.goal}
           </p>
+          {isViewingPast && getStageCompletionDate(displayedStage) && (
+            <p className="text-sm text-green-600 mt-2 flex items-center gap-1">
+              <CheckCircle className="h-4 w-4" />
+              Completed on {format(getStageCompletionDate(displayedStage)!, 'MMMM d, yyyy')}
+            </p>
+          )}
           
           {/* Stage progress indicators */}
           <div className="flex items-center gap-2 mt-6">
@@ -351,10 +391,10 @@ const Dashboard = () => {
         {/* Dynamic Stage Checklist */}
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="text-lg">{currentConfig.label} Checklist</CardTitle>
+            <CardTitle className="text-lg">{displayedConfig.label} Checklist</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
-            {currentConfig.checklist.map((item) => (
+            {displayedConfig.checklist.map((item) => (
               <div 
                 key={item.id}
                 className={`flex items-center justify-between p-3 rounded-lg border ${
@@ -375,7 +415,8 @@ const Dashboard = () => {
                   ) : (
                     <Checkbox
                       checked={item.completed}
-                      onCheckedChange={() => toggleChecklistItem(item.id)}
+                      onCheckedChange={() => !isViewingPast && toggleChecklistItem(item.id)}
+                      disabled={isViewingPast}
                       className="h-5 w-5"
                     />
                   )}
@@ -386,6 +427,11 @@ const Dashboard = () => {
                     {item.info && (
                       <p className="text-xs text-muted-foreground">{item.info}</p>
                     )}
+                    {item.completed && checklistDates[item.id] && (
+                      <p className="text-xs text-green-600">
+                        Completed {format(new Date(checklistDates[item.id]), 'MMM d, yyyy')}
+                      </p>
+                    )}
                   </div>
                 </div>
                 {item.completed && (
@@ -394,8 +440,8 @@ const Dashboard = () => {
               </div>
             ))}
 
-            {/* Exit action / milestone button */}
-            {currentConfig.exitAction && (
+            {/* Exit action / milestone button - only show on current stage */}
+            {!isViewingPast && displayedConfig.exitAction && (
               <div className="mt-4 pt-4 border-t border-border">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
@@ -405,10 +451,10 @@ const Dashboard = () => {
                   <Button 
                     variant={canAdvance() ? 'default' : 'outline'}
                     size="sm"
-                    onClick={() => advanceToStage(currentConfig.exitAction!.nextStage)}
+                    onClick={() => advanceToStage(displayedConfig.exitAction!.nextStage)}
                     className={canAdvance() ? 'bg-primary-blue hover:bg-primary-blue/90' : ''}
                   >
-                    {currentConfig.exitAction.label}
+                    {displayedConfig.exitAction.label}
                   </Button>
                 </div>
               </div>
