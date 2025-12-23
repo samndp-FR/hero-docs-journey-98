@@ -140,11 +140,14 @@ const Dashboard = () => {
       exitAction: { label: 'I submitted my PR application', nextStage: 'after-submission' },
     },
     'after-submission': {
-      label: 'After Submission',
-      goal: 'Stay compliant until decision.',
+      label: 'Wait for IRCC Response',
+      goal: 'Track your application status and respond to requests.',
       checklist: [
-        { id: 'medical-exam', label: 'Medical exam completed', type: 'declared', completed: checklistState['medical-exam'] || false },
-        { id: 'biometrics', label: 'Biometrics completed', type: 'declared', completed: checklistState['biometrics'] || false },
+        { id: 'more-info-required', label: 'More information required', type: 'declared', completed: checklistState['more-info-required'] || false },
+        { id: 'medical-exam-required', label: 'Medical Exam required', type: 'declared', completed: checklistState['medical-exam-required'] || false },
+        { id: 'biometrics-required', label: 'Biometrics Required', type: 'declared', completed: checklistState['biometrics-required'] || false },
+        { id: 'medical-exam-completed', label: 'Medical Exam Completed', type: 'declared', completed: checklistState['medical-exam-completed'] || false },
+        { id: 'biometrics-completed', label: 'Biometrics Completed', type: 'declared', completed: checklistState['biometrics-completed'] || false },
         { id: 'final-decision', label: 'Final decision received', type: 'declared', completed: checklistState['final-decision'] || false },
       ],
     },
@@ -465,12 +468,14 @@ const Dashboard = () => {
           </Card>
         </div>
 
-        {/* Document Reminder for current stage */}
-        <DocumentReminder
-          currentStage={currentStage}
-          documents={documents}
-          onMarkAsHaveIt={handleMarkDocumentAsHaveIt}
-        />
+        {/* Document Reminder for current stage - hide for after-submission */}
+        {displayedStage !== 'after-submission' && (
+          <DocumentReminder
+            currentStage={displayedStage}
+            documents={documents}
+            onMarkAsHaveIt={handleMarkDocumentAsHaveIt}
+          />
+        )}
 
         {/* Dynamic Stage Checklist */}
         <Card>
