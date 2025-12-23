@@ -156,7 +156,7 @@ const Dashboard = () => {
   // Use viewingStage if set, otherwise currentStage
   const displayedStage = viewingStage || currentStage;
   const displayedConfig = stageConfigs[displayedStage];
-  const isViewingPast = viewingStage !== null;
+  const isViewingPast = viewingStage !== null && viewingStage !== currentStage;
 
   const toggleChecklistItem = (itemId: string) => {
     const wasCompleted = checklistState[itemId];
@@ -303,20 +303,21 @@ const Dashboard = () => {
               </div>
             </div>
             
-            {/* Estimated time remaining */}
-            <div className="flex items-center justify-between text-sm mt-4 p-3 bg-muted/30 rounded-lg">
-              <div className="flex items-center gap-2">
-                <Clock className="h-4 w-4 text-muted-foreground" />
-                <span className="text-muted-foreground">Estimated time to PR:</span>
+            {/* Estimated time remaining - hide for final stage */}
+            {currentStageIndex < 4 && (
+              <div className="flex items-center justify-between text-sm mt-4 p-3 bg-muted/30 rounded-lg">
+                <div className="flex items-center gap-2">
+                  <Clock className="h-4 w-4 text-muted-foreground" />
+                  <span className="text-muted-foreground">Estimated time to PR:</span>
+                </div>
+                <span className="font-medium text-foreground">
+                  {currentStageIndex === 0 ? '8-14 months' : 
+                   currentStageIndex === 1 ? '6-12 months' : 
+                   currentStageIndex === 2 ? '4-10 months' : 
+                   currentStageIndex === 3 ? '2-6 months' : ''}
+                </span>
               </div>
-              <span className="font-medium text-foreground">
-                {currentStageIndex === 0 && '8-14 months'}
-                {currentStageIndex === 1 && '6-12 months'}
-                {currentStageIndex === 2 && '4-10 months'}
-                {currentStageIndex === 3 && '2-6 months'}
-                {currentStageIndex === 4 && 'Decision pending'}
-              </span>
-            </div>
+            )}
           </div>
         </div>
 
@@ -383,7 +384,7 @@ const Dashboard = () => {
                   className="mt-2"
                   onClick={() => navigate('/dashboard/score')}
                 >
-                  See details
+                  Improve my score
                   <ArrowRight className="h-4 w-4 ml-2" />
                 </Button>
               </CardContent>
