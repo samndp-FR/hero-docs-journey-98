@@ -362,7 +362,7 @@ const Dashboard = () => {
 
         {/* CRS Score reminder - small inline badge for apply-pr and after - outside grid */}
         {['apply-pr', 'after-submission'].includes(displayedStage) && (
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-muted/50 rounded-md border border-border/50 text-sm">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-primary-blue/10 rounded-md border border-primary-blue/20 text-sm">
             <TrendingUp className="h-3.5 w-3.5 text-muted-foreground" />
             <span className="text-muted-foreground">CRS:</span>
             <span className="font-medium text-foreground">~{estimatedCRS}</span>
