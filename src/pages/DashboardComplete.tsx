@@ -239,10 +239,10 @@ const DashboardComplete = () => {
                                 <Button 
                                   variant="ghost"
                                   size="sm"
-                                  onClick={() => completeStep(2)}
+                                  onClick={() => {}} // Placeholder - opens validation form in working repo
                                   className="text-muted-foreground hover:text-foreground"
                                 >
-                                  Skip
+                                  Open Form Anyway
                                 </Button>
                               </div>
                             </div>
