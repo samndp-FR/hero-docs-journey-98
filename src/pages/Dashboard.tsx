@@ -277,22 +277,7 @@ const Dashboard = () => {
                 <div>
                   <p className="text-sm text-muted-foreground">Estimated Score</p>
                   <p className="text-3xl font-bold text-foreground">~{estimatedCRS}</p>
-        </div>
-
-        {/* Completed Stages - show previous steps */}
-        {completedStages.length > 0 && (
-          <CompletedStages 
-            stages={completedStages}
-            onViewStage={handleViewCompletedStage}
-          />
-        )}
-
-        {/* Document Reminder for current stage */}
-        <DocumentReminder
-          currentStage={currentStage}
-          documents={documents}
-          onMarkAsHaveIt={handleMarkDocumentAsHaveIt}
-        />
+                </div>
                 <div>
                   <p className="text-sm text-muted-foreground">Recent Cutoffs</p>
                   <p className="text-xl font-medium text-muted-foreground">{recentCutoff}</p>
@@ -347,6 +332,21 @@ const Dashboard = () => {
             </CardContent>
           </Card>
         </div>
+
+        {/* Completed Stages - show previous steps */}
+        {completedStages.length > 0 && (
+          <CompletedStages 
+            stages={completedStages}
+            onViewStage={handleViewCompletedStage}
+          />
+        )}
+
+        {/* Document Reminder for current stage */}
+        <DocumentReminder
+          currentStage={currentStage}
+          documents={documents}
+          onMarkAsHaveIt={handleMarkDocumentAsHaveIt}
+        />
 
         {/* Dynamic Stage Checklist */}
         <Card>
