@@ -255,11 +255,20 @@ const Dashboard = () => {
               
               {/* Dots */}
               <div className="relative flex justify-between">
-                {stageOrder.map((stage, index) => {
+              {stageOrder.map((stage, index) => {
                   const historyEntry = stageHistory.find(h => h.stageId === stage);
                   const isCompleted = index < currentStageIndex;
                   const isCurrent = index === currentStageIndex;
                   const isFuture = index > currentStageIndex;
+                  
+                  // Find the latest checklist item completion date for this stage
+                  const stageChecklist = stageConfigs[stage]?.checklist || [];
+                  const stageChecklistDates = stageChecklist
+                    .map(item => checklistDates[item.id])
+                    .filter(Boolean)
+                    .map(d => new Date(d))
+                    .sort((a, b) => b.getTime() - a.getTime());
+                  const lastChecklistDate = stageChecklistDates[0];
                   
                   return (
                     <button
@@ -295,8 +304,8 @@ const Dashboard = () => {
                       <span className={`text-xs font-medium ${
                         isCompleted ? 'text-green-600' : isCurrent ? 'text-primary-blue' : 'text-muted-foreground/30'
                       }`}>
-                        {historyEntry 
-                          ? format(new Date(historyEntry.completedAt), 'MMM yyyy')
+                        {lastChecklistDate 
+                          ? format(lastChecklistDate, 'MMM yyyy')
                           : isCurrent 
                             ? 'In Progress' 
                             : ''
