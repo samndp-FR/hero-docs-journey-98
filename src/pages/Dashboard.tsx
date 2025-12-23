@@ -20,6 +20,7 @@ import { DashboardLayout } from '@/components/DashboardLayout';
 import { toast } from 'sonner';
 import DocumentReminder, { TrackedDocument } from '@/components/DocumentReminder';
 import CompletedStages from '@/components/CompletedStages';
+import JourneyTimeline from '@/components/JourneyTimeline';
 
 const STORAGE_KEY = 'eldo-journey-stage';
 const CHECKLIST_KEY = 'eldo-checklist-state';
@@ -250,23 +251,35 @@ const Dashboard = () => {
             </p>
           )}
           
-          {/* Stage progress indicators */}
+          {/* Stage progress indicators - clickable for navigation */}
           <div className="flex items-center gap-2 mt-6">
             {stageOrder.map((stage, index) => (
-              <div key={stage} className="flex items-center">
-                <div 
-                  className={`h-2 w-12 rounded-full transition-colors ${
+              <div key={stage} className="flex items-center group">
+                <button 
+                  onClick={() => {
+                    if (index < currentStageIndex) {
+                      setViewingStage(stage);
+                    } else if (index === currentStageIndex) {
+                      setViewingStage(null);
+                    }
+                  }}
+                  disabled={index > currentStageIndex}
+                  className={`h-2 w-12 rounded-full transition-all ${
                     index < currentStageIndex 
-                      ? 'bg-green-500' 
+                      ? 'bg-green-500 hover:bg-green-600 cursor-pointer hover:scale-y-150' 
                       : index === currentStageIndex 
-                        ? 'bg-primary-blue' 
-                        : 'bg-muted'
-                  }`}
+                        ? 'bg-primary-blue cursor-pointer hover:scale-y-150' 
+                        : 'bg-muted cursor-not-allowed'
+                  } ${viewingStage === stage ? 'ring-2 ring-offset-2 ring-green-500' : ''}`}
+                  title={stageConfigs[stage].label}
                 />
                 {index < stageOrder.length - 1 && <div className="w-1" />}
               </div>
             ))}
           </div>
+          <p className="text-xs text-muted-foreground mt-2">
+            Click on completed stages to view details
+          </p>
         </div>
 
         {/* Primary Focus Card - only show in build-profile stage */}
@@ -372,6 +385,32 @@ const Dashboard = () => {
             </CardContent>
           </Card>
         </div>
+
+        {/* Journey Timeline - shows all milestones */}
+        <JourneyTimeline 
+          milestones={stageOrder.map((stage, index) => {
+            const historyEntry = stageHistory.find(h => h.stageId === stage);
+            return {
+              id: stage,
+              label: stageConfigs[stage].label,
+              description: stageConfigs[stage].goal,
+              date: historyEntry ? new Date(historyEntry.completedAt) : undefined,
+              status: index < currentStageIndex 
+                ? 'completed' 
+                : index === currentStageIndex 
+                  ? 'current' 
+                  : 'upcoming'
+            };
+          })}
+          onMilestoneClick={(id) => {
+            const index = stageOrder.indexOf(id);
+            if (index < currentStageIndex) {
+              setViewingStage(id);
+            } else if (index === currentStageIndex) {
+              setViewingStage(null);
+            }
+          }}
+        />
 
         {/* Completed Stages - show previous steps */}
         {completedStages.length > 0 && (
