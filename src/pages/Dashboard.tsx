@@ -19,8 +19,6 @@ import { useNavigate } from 'react-router-dom';
 import { DashboardLayout } from '@/components/DashboardLayout';
 import { toast } from 'sonner';
 import DocumentReminder, { TrackedDocument } from '@/components/DocumentReminder';
-import CompletedStages from '@/components/CompletedStages';
-import JourneyTimeline from '@/components/JourneyTimeline';
 
 const STORAGE_KEY = 'eldo-journey-stage';
 const CHECKLIST_KEY = 'eldo-checklist-state';
@@ -194,20 +192,9 @@ const Dashboard = () => {
     toast.success('Document marked as available');
   };
 
-  const handleViewCompletedStage = (stageId: string) => {
-    setViewingStage(stageId);
-  };
-
   const handleBackToCurrentStage = () => {
     setViewingStage(null);
   };
-
-  // Get completed stages for display
-  const completedStages = stageHistory.map(entry => ({
-    id: entry.stageId,
-    label: stageConfigs[entry.stageId]?.label || entry.stageId,
-    completedAt: new Date(entry.completedAt),
-  }));
 
   // Get completion date for a stage
   const getStageCompletionDate = (stageId: string) => {
@@ -226,7 +213,7 @@ const Dashboard = () => {
     <DashboardLayout>
       <div className="max-w-5xl mx-auto space-y-6">
         
-        {/* Stage-based Journey Header */}
+        {/* Stage-based Journey Header with Integrated Timeline */}
         <div className="bg-card rounded-xl p-6 border border-border">
           <div className="flex items-center gap-2 mb-3">
             <Badge variant="secondary" className={isViewingPast ? "bg-green-100 text-green-700" : "bg-primary-blue/10 text-primary-blue"}>
@@ -251,35 +238,67 @@ const Dashboard = () => {
             </p>
           )}
           
-          {/* Stage progress indicators - clickable for navigation */}
-          <div className="flex items-center gap-2 mt-6">
-            {stageOrder.map((stage, index) => (
-              <div key={stage} className="flex items-center group">
-                <button 
-                  onClick={() => {
-                    if (index < currentStageIndex) {
-                      setViewingStage(stage);
-                    } else if (index === currentStageIndex) {
-                      setViewingStage(null);
-                    }
-                  }}
-                  disabled={index > currentStageIndex}
-                  className={`h-2 w-12 rounded-full transition-all ${
-                    index < currentStageIndex 
-                      ? 'bg-green-500 hover:bg-green-600 cursor-pointer hover:scale-y-150' 
-                      : index === currentStageIndex 
-                        ? 'bg-primary-blue cursor-pointer hover:scale-y-150' 
-                        : 'bg-muted cursor-not-allowed'
-                  } ${viewingStage === stage ? 'ring-2 ring-offset-2 ring-green-500' : ''}`}
-                  title={stageConfigs[stage].label}
-                />
-                {index < stageOrder.length - 1 && <div className="w-1" />}
-              </div>
-            ))}
+          {/* Horizontal Timeline with Navigation */}
+          <div className="mt-6 pt-4 border-t border-border">
+            <div className="flex items-stretch justify-between gap-1">
+              {stageOrder.map((stage, index) => {
+                const historyEntry = stageHistory.find(h => h.stageId === stage);
+                const isCompleted = index < currentStageIndex;
+                const isCurrent = index === currentStageIndex;
+                const isFuture = index > currentStageIndex;
+                const isViewing = viewingStage === stage;
+                
+                return (
+                  <button
+                    key={stage}
+                    onClick={() => {
+                      if (isCompleted) {
+                        setViewingStage(stage);
+                      } else if (isCurrent) {
+                        setViewingStage(null);
+                      }
+                    }}
+                    disabled={isFuture}
+                    className={`flex-1 text-left p-3 rounded-lg transition-all border ${
+                      isViewing
+                        ? 'bg-green-50 border-green-300 ring-2 ring-green-500/20'
+                        : isCompleted
+                          ? 'bg-green-50/50 border-green-200 hover:bg-green-50 cursor-pointer'
+                          : isCurrent
+                            ? 'bg-primary-blue/5 border-primary-blue/30'
+                            : 'bg-muted/20 border-transparent opacity-40'
+                    }`}
+                  >
+                    <div className="flex items-center gap-2 mb-1">
+                      {isCompleted ? (
+                        <CheckCircle className="h-4 w-4 text-green-600 flex-shrink-0" />
+                      ) : isCurrent ? (
+                        <div className="h-4 w-4 rounded-full bg-primary-blue flex-shrink-0" />
+                      ) : (
+                        <div className="h-4 w-4 rounded-full border-2 border-muted-foreground/30 flex-shrink-0" />
+                      )}
+                      <span className={`text-sm font-medium truncate ${
+                        isFuture ? 'text-muted-foreground/50' : 'text-foreground'
+                      }`}>
+                        {stageConfigs[stage].label}
+                      </span>
+                    </div>
+                    {historyEntry && (
+                      <p className="text-xs text-green-600 ml-6">
+                        {format(new Date(historyEntry.completedAt), 'MMM d, yyyy')}
+                      </p>
+                    )}
+                    {isCurrent && !historyEntry && (
+                      <p className="text-xs text-primary-blue ml-6">In progress</p>
+                    )}
+                    {isFuture && (
+                      <p className="text-xs text-muted-foreground/40 ml-6">Upcoming</p>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
           </div>
-          <p className="text-xs text-muted-foreground mt-2">
-            Click on completed stages to view details
-          </p>
         </div>
 
         {/* Primary Focus Card - only show in build-profile stage */}
@@ -385,40 +404,6 @@ const Dashboard = () => {
             </CardContent>
           </Card>
         </div>
-
-        {/* Journey Timeline - shows all milestones */}
-        <JourneyTimeline 
-          milestones={stageOrder.map((stage, index) => {
-            const historyEntry = stageHistory.find(h => h.stageId === stage);
-            return {
-              id: stage,
-              label: stageConfigs[stage].label,
-              description: stageConfigs[stage].goal,
-              date: historyEntry ? new Date(historyEntry.completedAt) : undefined,
-              status: index < currentStageIndex 
-                ? 'completed' 
-                : index === currentStageIndex 
-                  ? 'current' 
-                  : 'upcoming'
-            };
-          })}
-          onMilestoneClick={(id) => {
-            const index = stageOrder.indexOf(id);
-            if (index < currentStageIndex) {
-              setViewingStage(id);
-            } else if (index === currentStageIndex) {
-              setViewingStage(null);
-            }
-          }}
-        />
-
-        {/* Completed Stages - show previous steps */}
-        {completedStages.length > 0 && (
-          <CompletedStages 
-            stages={completedStages}
-            onViewStage={handleViewCompletedStage}
-          />
-        )}
 
         {/* Document Reminder for current stage */}
         <DocumentReminder
