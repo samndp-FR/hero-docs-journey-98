@@ -417,19 +417,13 @@ const Dashboard = () => {
             </Card>
           )}
 
-          {/* CRS Score reminder - small card for apply-pr and after */}
+          {/* CRS Score reminder - small inline badge for apply-pr and after */}
           {['apply-pr', 'after-submission'].includes(displayedStage) && (
-            <Card className="lg:col-span-1">
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-xs text-muted-foreground">Your CRS Score</p>
-                    <p className="text-2xl font-bold text-foreground">~{estimatedCRS}</p>
-                  </div>
-                  <TrendingUp className="h-8 w-8 text-muted-foreground/30" />
-                </div>
-              </CardContent>
-            </Card>
+            <div className="flex items-center gap-2 px-3 py-2 bg-muted/50 rounded-lg border border-border/50">
+              <TrendingUp className="h-4 w-4 text-muted-foreground" />
+              <span className="text-sm text-muted-foreground">CRS:</span>
+              <span className="text-sm font-semibold text-foreground">~{estimatedCRS}</span>
+            </div>
           )}
 
           {/* Recent Activity */}
