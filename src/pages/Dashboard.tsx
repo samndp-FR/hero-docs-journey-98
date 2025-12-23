@@ -359,7 +359,7 @@ const Dashboard = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* CRS Outlook - full card until wait-invitation */}
-          {['get-ready', 'build-profile', 'wait-invitation'].includes(currentStage) && (
+          {['get-ready', 'build-profile', 'wait-invitation'].includes(displayedStage) && (
             <Card className="lg:col-span-2">
               <CardHeader className="pb-3">
                 <CardTitle className="flex items-center gap-2 text-lg">
@@ -415,7 +415,7 @@ const Dashboard = () => {
           )}
 
           {/* CRS Score reminder - small card for apply-pr and after */}
-          {['apply-pr', 'after-submission'].includes(currentStage) && (
+          {['apply-pr', 'after-submission'].includes(displayedStage) && (
             <Card className="lg:col-span-1">
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
@@ -430,7 +430,7 @@ const Dashboard = () => {
           )}
 
           {/* Recent Activity */}
-          <Card className={['get-ready', 'build-profile', 'wait-invitation'].includes(currentStage) ? '' : 'lg:col-span-2'}>
+          <Card className={['get-ready', 'build-profile', 'wait-invitation'].includes(displayedStage) ? '' : 'lg:col-span-2'}>
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
                 <CardTitle className="text-base text-muted-foreground">Recent Activity</CardTitle>
