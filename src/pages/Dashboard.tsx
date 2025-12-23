@@ -238,65 +238,84 @@ const Dashboard = () => {
             </p>
           )}
           
-          {/* Horizontal Timeline with Navigation */}
+          {/* Visual Progress Bar with Dots */}
           <div className="mt-6 pt-4 border-t border-border">
-            <div className="flex items-stretch justify-between gap-1">
-              {stageOrder.map((stage, index) => {
-                const historyEntry = stageHistory.find(h => h.stageId === stage);
-                const isCompleted = index < currentStageIndex;
-                const isCurrent = index === currentStageIndex;
-                const isFuture = index > currentStageIndex;
-                const isViewing = viewingStage === stage;
-                
-                return (
-                  <button
-                    key={stage}
-                    onClick={() => {
-                      if (isCompleted) {
-                        setViewingStage(stage);
-                      } else if (isCurrent) {
-                        setViewingStage(null);
-                      }
-                    }}
-                    disabled={isFuture}
-                    className={`flex-1 text-left p-3 rounded-lg transition-all border ${
-                      isViewing
-                        ? 'bg-green-50 border-green-300 ring-2 ring-green-500/20'
-                        : isCompleted
-                          ? 'bg-green-50/50 border-green-200 hover:bg-green-50 cursor-pointer'
-                          : isCurrent
-                            ? 'bg-primary-blue/5 border-primary-blue/30'
-                            : 'bg-muted/20 border-transparent opacity-40'
-                    }`}
-                  >
-                    <div className="flex items-center gap-2 mb-1">
-                      {isCompleted ? (
-                        <CheckCircle className="h-4 w-4 text-green-600 flex-shrink-0" />
-                      ) : isCurrent ? (
-                        <div className="h-4 w-4 rounded-full bg-primary-blue flex-shrink-0" />
-                      ) : (
-                        <div className="h-4 w-4 rounded-full border-2 border-muted-foreground/30 flex-shrink-0" />
-                      )}
-                      <span className={`text-sm font-medium truncate ${
-                        isFuture ? 'text-muted-foreground/50' : 'text-foreground'
+            {/* Progress bar with connected dots */}
+            <div className="relative mb-4">
+              {/* Background line */}
+              <div className="absolute top-3 left-0 right-0 h-0.5 bg-muted" />
+              {/* Progress line */}
+              <div 
+                className="absolute top-3 left-0 h-0.5 bg-green-500 transition-all"
+                style={{ width: `${(currentStageIndex / (stageOrder.length - 1)) * 100}%` }}
+              />
+              
+              {/* Dots */}
+              <div className="relative flex justify-between">
+                {stageOrder.map((stage, index) => {
+                  const historyEntry = stageHistory.find(h => h.stageId === stage);
+                  const isCompleted = index < currentStageIndex;
+                  const isCurrent = index === currentStageIndex;
+                  const isFuture = index > currentStageIndex;
+                  
+                  return (
+                    <button
+                      key={stage}
+                      onClick={() => {
+                        if (isCompleted) setViewingStage(stage);
+                        else if (isCurrent) setViewingStage(null);
+                      }}
+                      disabled={isFuture}
+                      className={`flex flex-col items-center ${!isFuture ? 'cursor-pointer' : 'cursor-default'}`}
+                    >
+                      <div className={`w-6 h-6 rounded-full flex items-center justify-center transition-all ${
+                        viewingStage === stage
+                          ? 'ring-4 ring-green-200'
+                          : ''
+                      } ${
+                        isCompleted 
+                          ? 'bg-green-500 hover:bg-green-600' 
+                          : isCurrent 
+                            ? 'bg-primary-blue hover:bg-primary-blue/80' 
+                            : 'bg-muted border-2 border-muted-foreground/20'
+                      }`}>
+                        {isCompleted && <CheckCircle className="h-4 w-4 text-white" />}
+                        {isCurrent && <div className="w-2 h-2 bg-white rounded-full" />}
+                      </div>
+                      <span className={`text-xs mt-2 font-medium text-center max-w-[80px] ${
+                        isFuture ? 'text-muted-foreground/40' : 'text-foreground'
                       }`}>
                         {stageConfigs[stage].label}
                       </span>
-                    </div>
-                    {historyEntry && (
-                      <p className="text-xs text-green-600 ml-6">
-                        {format(new Date(historyEntry.completedAt), 'MMM d, yyyy')}
-                      </p>
-                    )}
-                    {isCurrent && !historyEntry && (
-                      <p className="text-xs text-primary-blue ml-6">In progress</p>
-                    )}
-                    {isFuture && (
-                      <p className="text-xs text-muted-foreground/40 ml-6">Upcoming</p>
-                    )}
-                  </button>
-                );
-              })}
+                      <span className={`text-xs ${
+                        isCompleted ? 'text-green-600' : isCurrent ? 'text-primary-blue' : 'text-muted-foreground/40'
+                      }`}>
+                        {historyEntry 
+                          ? format(new Date(historyEntry.completedAt), 'MMM yyyy')
+                          : isCurrent 
+                            ? 'Now' 
+                            : '—'
+                        }
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+            
+            {/* Estimated time remaining */}
+            <div className="flex items-center justify-between text-sm mt-4 p-3 bg-muted/30 rounded-lg">
+              <div className="flex items-center gap-2">
+                <Clock className="h-4 w-4 text-muted-foreground" />
+                <span className="text-muted-foreground">Estimated time to PR:</span>
+              </div>
+              <span className="font-medium text-foreground">
+                {currentStageIndex === 0 && '8-14 months'}
+                {currentStageIndex === 1 && '6-12 months'}
+                {currentStageIndex === 2 && '4-10 months'}
+                {currentStageIndex === 3 && '2-6 months'}
+                {currentStageIndex === 4 && 'Decision pending'}
+              </span>
             </div>
           </div>
         </div>
@@ -336,41 +355,58 @@ const Dashboard = () => {
         )}
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* CRS Outlook */}
-          <Card className="lg:col-span-2">
-            <CardHeader className="pb-3">
-              <CardTitle className="flex items-center gap-2 text-lg">
-                <TrendingUp className="h-5 w-5 text-primary-blue" />
-                CRS Outlook
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-baseline gap-6">
-                <div>
-                  <p className="text-sm text-muted-foreground">Estimated Score</p>
-                  <p className="text-3xl font-bold text-foreground">~{estimatedCRS}</p>
+          {/* CRS Outlook - full card for early stages */}
+          {['get-ready', 'build-profile'].includes(currentStage) && (
+            <Card className="lg:col-span-2">
+              <CardHeader className="pb-3">
+                <CardTitle className="flex items-center gap-2 text-lg">
+                  <TrendingUp className="h-5 w-5 text-primary-blue" />
+                  CRS Outlook
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex items-baseline gap-6">
+                  <div>
+                    <p className="text-sm text-muted-foreground">Estimated Score</p>
+                    <p className="text-3xl font-bold text-foreground">~{estimatedCRS}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-muted-foreground">Recent Cutoffs</p>
+                    <p className="text-xl font-medium text-muted-foreground">{recentCutoff}</p>
+                  </div>
                 </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">Recent Cutoffs</p>
-                  <p className="text-xl font-medium text-muted-foreground">{recentCutoff}</p>
+                <p className="text-sm text-muted-foreground border-t border-border pt-4">
+                  Many applicants at this stage improve their score through language results or additional experience.
+                </p>
+                <Button 
+                  variant="outline" 
+                  className="mt-2"
+                  onClick={() => navigate('/dashboard/score')}
+                >
+                  See details
+                  <ArrowRight className="h-4 w-4 ml-2" />
+                </Button>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* CRS Score reminder - small card for later stages */}
+          {['wait-invitation', 'apply-pr', 'after-submission'].includes(currentStage) && (
+            <Card className="lg:col-span-1">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-xs text-muted-foreground">Your CRS Score</p>
+                    <p className="text-2xl font-bold text-foreground">~{estimatedCRS}</p>
+                  </div>
+                  <TrendingUp className="h-8 w-8 text-muted-foreground/30" />
                 </div>
-              </div>
-              <p className="text-sm text-muted-foreground border-t border-border pt-4">
-                Many applicants at this stage improve their score through language results or additional experience.
-              </p>
-              <Button 
-                variant="outline" 
-                className="mt-2"
-                onClick={() => navigate('/dashboard/score')}
-              >
-                Improve my score
-                <ArrowRight className="h-4 w-4 ml-2" />
-              </Button>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          )}
 
           {/* Recent Activity */}
-          <Card>
+          <Card className={['get-ready', 'build-profile'].includes(currentStage) ? '' : 'lg:col-span-2'}>
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
                 <CardTitle className="text-base text-muted-foreground">Recent Activity</CardTitle>
