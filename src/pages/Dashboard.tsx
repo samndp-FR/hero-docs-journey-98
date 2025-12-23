@@ -266,7 +266,9 @@ const Dashboard = () => {
                         else if (isCurrent) setViewingStage(null);
                       }}
                       disabled={isFuture}
-                      className={`flex flex-col items-center ${!isFuture ? 'cursor-pointer' : 'cursor-default'}`}
+                      className={`flex flex-col items-center ${!isFuture ? 'cursor-pointer' : 'cursor-default'} ${
+                        isFuture ? 'opacity-30' : ''
+                      }`}
                     >
                       <div className={`w-6 h-6 rounded-full flex items-center justify-center transition-all ${
                         viewingStage === stage
@@ -277,24 +279,24 @@ const Dashboard = () => {
                           ? 'bg-green-500 hover:bg-green-600' 
                           : isCurrent 
                             ? 'bg-primary-blue hover:bg-primary-blue/80' 
-                            : 'bg-muted border-2 border-muted-foreground/20'
+                            : 'bg-muted/50 border-2 border-dashed border-muted-foreground/20'
                       }`}>
                         {isCompleted && <CheckCircle className="h-4 w-4 text-white" />}
                         {isCurrent && <div className="w-2 h-2 bg-white rounded-full" />}
                       </div>
                       <span className={`text-xs mt-2 font-medium text-center max-w-[80px] ${
-                        isFuture ? 'text-muted-foreground/40' : 'text-foreground'
+                        isFuture ? 'text-muted-foreground/30' : 'text-foreground'
                       }`}>
                         {stageConfigs[stage].label}
                       </span>
-                      <span className={`text-xs ${
-                        isCompleted ? 'text-green-600' : isCurrent ? 'text-primary-blue' : 'text-muted-foreground/40'
+                      <span className={`text-xs font-medium ${
+                        isCompleted ? 'text-green-600' : isCurrent ? 'text-primary-blue' : 'text-muted-foreground/30'
                       }`}>
                         {historyEntry 
                           ? format(new Date(historyEntry.completedAt), 'MMM yyyy')
                           : isCurrent 
-                            ? 'Now' 
-                            : '—'
+                            ? 'In Progress' 
+                            : ''
                         }
                       </span>
                     </button>
@@ -356,8 +358,8 @@ const Dashboard = () => {
         )}
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* CRS Outlook - full card for early stages */}
-          {['get-ready', 'build-profile'].includes(currentStage) && (
+          {/* CRS Outlook - full card until wait-invitation */}
+          {['get-ready', 'build-profile', 'wait-invitation'].includes(currentStage) && (
             <Card className="lg:col-span-2">
               <CardHeader className="pb-3">
                 <CardTitle className="flex items-center gap-2 text-lg">
@@ -391,8 +393,8 @@ const Dashboard = () => {
             </Card>
           )}
 
-          {/* CRS Score reminder - small card for later stages */}
-          {['wait-invitation', 'apply-pr', 'after-submission'].includes(currentStage) && (
+          {/* CRS Score reminder - small card for apply-pr and after */}
+          {['apply-pr', 'after-submission'].includes(currentStage) && (
             <Card className="lg:col-span-1">
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
@@ -407,7 +409,7 @@ const Dashboard = () => {
           )}
 
           {/* Recent Activity */}
-          <Card className={['get-ready', 'build-profile'].includes(currentStage) ? '' : 'lg:col-span-2'}>
+          <Card className={['get-ready', 'build-profile', 'wait-invitation'].includes(currentStage) ? '' : 'lg:col-span-2'}>
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
                 <CardTitle className="text-base text-muted-foreground">Recent Activity</CardTitle>
@@ -476,8 +478,7 @@ const Dashboard = () => {
                   ) : (
                     <Checkbox
                       checked={item.completed}
-                      onCheckedChange={() => !isViewingPast && toggleChecklistItem(item.id)}
-                      disabled={isViewingPast}
+                      onCheckedChange={() => toggleChecklistItem(item.id)}
                       className="h-5 w-5"
                     />
                   )}
