@@ -368,27 +368,48 @@ const Dashboard = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="flex items-baseline gap-6">
+                <div className="flex items-center gap-8">
                   <div>
                     <p className="text-sm text-muted-foreground">Estimated Score</p>
-                    <p className="text-3xl font-bold text-foreground">~{estimatedCRS}</p>
+                    <p className="text-4xl font-bold text-foreground">~{estimatedCRS}</p>
                   </div>
+                  <div className="h-16 w-px bg-border" />
                   <div>
-                    <p className="text-sm text-muted-foreground">Recent Cutoffs</p>
-                    <p className="text-xl font-medium text-muted-foreground">{recentCutoff}</p>
+                    <p className="text-sm text-muted-foreground">Recent Cutoff</p>
+                    <p className="text-2xl font-semibold text-muted-foreground">{recentCutoff}</p>
+                  </div>
+                  <div className="h-16 w-px bg-border" />
+                  <div>
+                    <p className="text-sm text-muted-foreground">Competitiveness</p>
+                    <div className="flex items-center gap-2 mt-1">
+                      {estimatedCRS >= parseInt(recentCutoff.replace(/[^\d]/g, '').slice(0, 3)) ? (
+                        <>
+                          <div className="w-3 h-3 rounded-full bg-green-500" />
+                          <span className="text-lg font-medium text-green-600">Competitive</span>
+                        </>
+                      ) : estimatedCRS >= parseInt(recentCutoff.replace(/[^\d]/g, '').slice(0, 3)) - 20 ? (
+                        <>
+                          <div className="w-3 h-3 rounded-full bg-yellow-500" />
+                          <span className="text-lg font-medium text-yellow-600">Close</span>
+                        </>
+                      ) : (
+                        <>
+                          <div className="w-3 h-3 rounded-full bg-red-500" />
+                          <span className="text-lg font-medium text-red-600">Needs Improvement</span>
+                        </>
+                      )}
+                    </div>
                   </div>
                 </div>
-                <p className="text-sm text-muted-foreground border-t border-border pt-4">
-                  Many applicants at this stage improve their score through language results or additional experience.
-                </p>
-                <Button 
-                  variant="outline" 
-                  className="mt-2"
-                  onClick={() => navigate('/dashboard/score')}
-                >
-                  Improve my score
-                  <ArrowRight className="h-4 w-4 ml-2" />
-                </Button>
+                <div className="border-t border-border pt-4">
+                  <Button 
+                    variant="outline" 
+                    onClick={() => navigate('/dashboard/score')}
+                  >
+                    See details
+                    <ArrowRight className="h-4 w-4 ml-2" />
+                  </Button>
+                </div>
               </CardContent>
             </Card>
           )}
