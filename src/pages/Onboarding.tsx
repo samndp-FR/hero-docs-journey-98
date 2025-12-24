@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { ArrowRight, ArrowLeft, CheckCircle2, FolderOpen, FileEdit, ShieldCheck, Calculator, AlertTriangle, Mail, Lock, User } from 'lucide-react';
+import { ArrowRight, ArrowLeft, CheckCircle2, FolderOpen, FileEdit, ShieldCheck, Calculator, AlertTriangle, Mail, Lock, User, Search, FileCheck, ClipboardCheck, Send } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useNavigate } from 'react-router-dom';
@@ -18,6 +18,15 @@ const steps = [
   { id: 2, title: 'Create Account', content: 'register' },
   { id: 3, title: 'Eligibility', content: 'crs' },
   { id: 4, title: 'Terms & Conditions', content: 'terms' },
+  { id: 5, title: 'Your Journey', content: 'journey' },
+];
+
+const journeySteps = [
+  { icon: Calculator, title: 'Understand', subtitle: 'Your CRS score' },
+  { icon: FolderOpen, title: 'Gather', subtitle: 'Your documents' },
+  { icon: Search, title: 'Review', subtitle: "What's missing or unclear" },
+  { icon: ClipboardCheck, title: 'Complete', subtitle: 'Your forms' },
+  { icon: Send, title: 'Submit', subtitle: 'With confidence' },
 ];
 
 const termsContent = `1. Acceptance of Terms
@@ -175,7 +184,7 @@ const Onboarding = () => {
                     Welcome to Eldo
                   </h1>
                   <p className="text-muted-foreground text-lg">
-                    Let's get your Express Entry application started. Here's what Eldo helps you with:
+                    Let's prepare your Express Entry application — clearly and carefully.
                   </p>
                 </div>
                 
@@ -187,7 +196,7 @@ const Onboarding = () => {
                     <div>
                       <h3 className="font-semibold text-foreground mb-1">Apply with peace of mind</h3>
                       <p className="text-sm text-muted-foreground">
-                        Stay organized and confident throughout your application process
+                        Know what's required, what's missing, and what needs your attention at every step.
                       </p>
                     </div>
                   </div>
@@ -197,9 +206,9 @@ const Onboarding = () => {
                       <FolderOpen className="w-6 h-6 text-primary-blue" />
                     </div>
                     <div>
-                      <h3 className="font-semibold text-foreground mb-1">Keep everything in one place</h3>
+                      <h3 className="font-semibold text-foreground mb-1">Keep everything consistent</h3>
                       <p className="text-sm text-muted-foreground">
-                        All your forms and application details organized together
+                        Your documents, answers, and forms stay aligned and easy to review.
                       </p>
                     </div>
                   </div>
@@ -209,9 +218,9 @@ const Onboarding = () => {
                       <FileEdit className="w-6 h-6 text-primary-blue" />
                     </div>
                     <div>
-                      <h3 className="font-semibold text-foreground mb-1">Automate form filling</h3>
+                      <h3 className="font-semibold text-foreground mb-1">Reduce manual work — without losing control</h3>
                       <p className="text-sm text-muted-foreground">
-                        Save time with automated data entry across your application forms
+                        Forms are pre-filled using your information. You review every detail.
                       </p>
                     </div>
                   </div>
@@ -294,10 +303,10 @@ const Onboarding = () => {
               <div className="space-y-8">
                 <div className="text-center">
                   <h1 className="text-3xl md:text-4xl font-bold mb-4 text-foreground">
-                    Check your eligibility
+                    Check where you stand
                   </h1>
                   <p className="text-muted-foreground text-lg">
-                    Express Entry is a points-based system. Make sure you have a competitive CRS score.
+                    Express Entry is competitive. Understanding your CRS score helps you decide your next steps.
                   </p>
                 </div>
                 
@@ -305,9 +314,9 @@ const Onboarding = () => {
                   <div className="flex items-start gap-3">
                     <AlertTriangle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
                     <div>
-                      <h4 className="font-semibold text-amber-800 mb-1">Important</h4>
                       <p className="text-sm text-amber-700">
-                        Eldo helps you with the application process, but does not help you improve your CRS score or qualify for Express Entry.
+                        <strong className="text-amber-800">Eldo helps you prepare a complete application.</strong><br />
+                        It does not change your CRS score or guarantee eligibility.
                       </p>
                     </div>
                   </div>
@@ -320,7 +329,7 @@ const Onboarding = () => {
                     className="w-full py-6 rounded-xl border-2 border-primary-blue/30 hover:border-primary-blue hover:bg-primary-blue/5"
                   >
                     <Calculator className="w-5 h-5 mr-3 text-primary-blue" />
-                    <span className="text-foreground">Take the CRS Assessment</span>
+                    <span className="text-foreground">Check my CRS score</span>
                   </Button>
                   
                   <div className="relative">
@@ -351,7 +360,7 @@ const Onboarding = () => {
                           I already know my CRS score
                         </h4>
                         <p className="text-sm text-muted-foreground">
-                          I confirm that I have a competitive CRS score and understand that Eldo does not help improve my eligibility or points.
+                          I understand that Eldo helps me prepare my application, not increase my CRS score.
                         </p>
                       </div>
                     </div>
@@ -424,6 +433,37 @@ const Onboarding = () => {
               </div>
             )}
 
+            {/* Step 5: Journey Preview */}
+            {currentStep === 4 && (
+              <div className="space-y-8">
+                <div className="text-center">
+                  <h1 className="text-3xl md:text-4xl font-bold mb-4 text-foreground">
+                    Your application journey
+                  </h1>
+                  <p className="text-muted-foreground text-lg">
+                    Here's what you'll work through with Eldo.
+                  </p>
+                </div>
+                
+                <div className="grid gap-3">
+                  {journeySteps.map((step, index) => (
+                    <div 
+                      key={index} 
+                      className="bg-white rounded-xl p-4 border border-border flex items-center gap-4"
+                    >
+                      <div className="w-10 h-10 bg-primary-blue/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                        <step.icon className="w-5 h-5 text-primary-blue" />
+                      </div>
+                      <div>
+                        <h3 className="font-semibold text-foreground">{step.title}</h3>
+                        <p className="text-sm text-muted-foreground">{step.subtitle}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {/* Navigation buttons */}
             <div className="flex justify-between items-center gap-4 mt-8">
               <Button
@@ -457,11 +497,11 @@ const Onboarding = () => {
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="flex items-start gap-3">
-              <div className="w-6 h-6 bg-amber-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                <AlertTriangle className="w-4 h-4 text-amber-600" />
+              <div className="w-6 h-6 bg-primary-blue/10 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                <CheckCircle2 className="w-4 h-4 text-primary-blue" />
               </div>
               <p className="text-sm text-muted-foreground">
-                Eldo does <strong>not</strong> generate documents or provide immigration guidance
+                Eldo helps you organize information, check documents, and complete forms
               </p>
             </div>
             <div className="flex items-start gap-3">
@@ -469,7 +509,7 @@ const Onboarding = () => {
                 <AlertTriangle className="w-4 h-4 text-amber-600" />
               </div>
               <p className="text-sm text-muted-foreground">
-                Eldo does <strong>not</strong> submit documents on your behalf
+                Eldo does <strong>not</strong> submit applications on your behalf
               </p>
             </div>
             <div className="flex items-start gap-3">
@@ -477,7 +517,7 @@ const Onboarding = () => {
                 <AlertTriangle className="w-4 h-4 text-amber-600" />
               </div>
               <p className="text-sm text-muted-foreground">
-                Eldo does <strong>not</strong> provide legal immigration counsel
+                Eldo does <strong>not</strong> replace licensed immigration professionals or provide legal advice
               </p>
             </div>
             <div className="flex items-start gap-3">
@@ -485,7 +525,7 @@ const Onboarding = () => {
                 <AlertTriangle className="w-4 h-4 text-amber-600" />
               </div>
               <p className="text-sm text-muted-foreground">
-                You are responsible for reviewing all documents and confirming their accuracy before submission
+                You review and confirm all information before submission
               </p>
             </div>
             <div className="flex items-start gap-3">
@@ -493,7 +533,7 @@ const Onboarding = () => {
                 <AlertTriangle className="w-4 h-4 text-amber-600" />
               </div>
               <p className="text-sm text-muted-foreground">
-                All payments are <strong>non-refundable</strong>
+                Because Eldo provides immediate access to the full application toolkit, payments are <strong>non-refundable</strong>
               </p>
             </div>
           </div>
@@ -502,7 +542,7 @@ const Onboarding = () => {
               Cancel
             </Button>
             <Button onClick={handleConfirmTerms} className="bg-primary-blue text-white">
-              I Understand & Accept
+              I understand and want to continue
             </Button>
           </DialogFooter>
         </DialogContent>
