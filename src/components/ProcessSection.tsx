@@ -1,99 +1,83 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { cn } from '@/lib/utils';
-import { FileText, FileUp, Brain, FileCheck, Send, Mic, Activity, Timer, ClipboardCheck, MessageCircle, AlertTriangle, Loader, ChevronRight, ChevronLeft, BarChart } from 'lucide-react';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Progress } from '@/components/ui/progress';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { 
+  BarChart, 
+  Activity, 
+  Timer, 
+  Mic, 
+  ChevronRight,
+  User,
+  Briefcase,
+  GraduationCap,
+  Globe,
+  FileText,
+  CheckCircle,
+  AlertCircle,
+  Scan,
+  Upload,
+  Eye,
+  AlertTriangle,
+  Chrome,
+  Zap,
+  MousePointer,
+  ArrowRight
+} from 'lucide-react';
 
 interface Step {
   number: number;
-  title: string;
-  description: string;
-  icon: React.ReactNode;
-  color: string;
-  animation?: string;
+  action: string;
+  subject: string;
 }
 
 const ProcessSection = () => {
   const [activeStep, setActiveStep] = useState(1);
   const [isVisible, setIsVisible] = useState(false);
   const sectionRef = useRef<HTMLDivElement>(null);
-  const observerRef = useRef<IntersectionObserver | null>(null);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   const steps: Step[] = [
-    {
-      number: 1,
-      title: "Answer a 5 min questionnaire",
-      description: "Assess your initial points and predict your chances and timeline. Don't like writing? You can also talk.",
-      icon: <ClipboardCheck size={28} />,
-      color: "bg-sky-400",
-      animation: "animate-pulse"
-    },
-    {
-      number: 2,
-      title: "Upload Your Documents",
-      description: "Simply scan or upload your passport, education credentials, work experience proof, and language test results.",
-      icon: <FileUp size={28} />,
-      color: "bg-eldo-blue"
-    },
-    {
-      number: 3,
-      title: "AI Document Analysis",
-      description: "Our system automatically analyzes your documents for compliance with IRCC requirements and extracts key information.",
-      icon: <Brain size={28} />,
-      color: "bg-eldo-purple"
-    },
-    {
-      number: 4,
-      title: "Form Auto-Completion",
-      description: "Watch as your Express Entry profile and application forms get filled automatically with your information.",
-      icon: <FileCheck size={28} />,
-      color: "bg-green-500"
-    },
-    {
-      number: 5,
-      title: "Review & Submit",
-      description: "Review the completed application, make any final adjustments, and submit with confidence.",
-      icon: <Send size={28} />,
-      color: "bg-amber-500"
-    }
+    { number: 1, action: "Assess", subject: "Your CRS score" },
+    { number: 2, action: "Build", subject: "Your profile" },
+    { number: 3, action: "Organize", subject: "Your documents" },
+    { number: 4, action: "Verify", subject: "Every detail" },
+    { number: 5, action: "Apply", subject: "With the Chrome extension" }
   ];
-
-  const goToNextStep = () => {
-    setActiveStep((prev) => (prev < steps.length ? prev + 1 : prev));
-  };
-
-  const goToPreviousStep = () => {
-    setActiveStep((prev) => (prev > 1 ? prev - 1 : prev));
-  };
 
   const goToStep = (stepNumber: number) => {
     setActiveStep(stepNumber);
+    // Reset auto-rotation when user manually clicks
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = setInterval(() => {
+        setActiveStep((prev) => (prev < steps.length ? prev + 1 : 1));
+      }, 4000);
+    }
   };
 
   useEffect(() => {
     if (!sectionRef.current) return;
     
-    observerRef.current = new IntersectionObserver(
+    const observer = new IntersectionObserver(
       (entries) => {
         if (entries[0].isIntersecting) {
           setIsVisible(true);
-          const interval = setInterval(() => {
+          intervalRef.current = setInterval(() => {
             setActiveStep((prev) => (prev < steps.length ? prev + 1 : 1));
-          }, 3000);
-          
-          return () => clearInterval(interval);
+          }, 4000);
         }
       },
       { threshold: 0.3 }
     );
 
-    observerRef.current.observe(sectionRef.current);
+    observer.observe(sectionRef.current);
 
     return () => {
-      if (sectionRef.current && observerRef.current) {
-        observerRef.current.unobserve(sectionRef.current);
+      if (sectionRef.current) {
+        observer.unobserve(sectionRef.current);
+      }
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
       }
     };
   }, [steps.length]);
@@ -101,410 +85,413 @@ const ProcessSection = () => {
   return (
     <section id="process" className="py-20 bg-white" ref={sectionRef}>
       <div className="container mx-auto px-6">
-        <div className="text-center mb-16">
-          <span className="px-4 py-1.5 rounded-full bg-eldo-soft-blue text-eldo-blue font-medium text-sm inline-block mb-4">
-            PROCESS
-          </span>
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">Simple 5-Step Journey</h2>
-          <p className="text-eldo-dark/80 max-w-2xl mx-auto">
-            From assessment to final submission, Eldo guides you through a seamless Express Entry application process.
+        <div className="text-center mb-12">
+          <h2 className="text-3xl md:text-4xl font-bold mb-4 text-eldo-dark">See how Eldo works</h2>
+          <p className="text-eldo-dark/70 max-w-2xl mx-auto">
+            Eldo doesn't submit anything for you. It helps you prepare everything carefully — and you review every detail.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-          {/* Steps visualization */}
-          <div className="order-2 lg:order-1">
-            <div className="relative">
-              {/* Progress bar */}
-              <div className="absolute left-[26px] top-0 bottom-0 w-[2px] bg-eldo-light-purple/40"></div>
-              
-              {/* Steps */}
-              {steps.map((step) => (
-                <div 
-                  key={step.number} 
-                  className={cn(
-                    "flex mb-12 last:mb-0 relative transition-all duration-500",
-                    activeStep === step.number ? "opacity-100" : "opacity-50"
-                  )}
-                  onClick={() => goToStep(step.number)}
-                  style={{ cursor: 'pointer' }}
-                >
-                  <div 
-                    className={cn(
-                      "flex-shrink-0 w-14 h-14 rounded-full flex items-center justify-center text-white mr-6 z-10 transition-all duration-500",
-                      activeStep === step.number 
-                        ? `${step.color} shadow-lg shadow-${step.color}/20 ${step.animation || ''}` 
-                        : "bg-white text-eldo-dark/60 border border-eldo-light-purple/40"
-                    )}
-                    style={{ background: activeStep !== step.number ? 'white' : undefined }}
-                  >
-                    {activeStep === step.number ? step.icon : <span className="font-bold text-xl">{step.number}</span>}
+        {/* Animation Container */}
+        <div className="max-w-4xl mx-auto mb-12">
+          <div className="relative bg-gradient-to-br from-eldo-soft-blue/60 to-eldo-light-purple/30 rounded-3xl p-8 md:p-12 min-h-[420px] overflow-hidden">
+            <div 
+              className={cn(
+                "flex items-center justify-center transition-opacity duration-500 h-full",
+                isVisible ? "opacity-100" : "opacity-0"
+              )}
+            >
+              {/* Step 1: Assess - CRS Score Questionnaire */}
+              {activeStep === 1 && (
+                <div className="animate-fade-in glass-card rounded-xl p-6 w-full max-w-sm shadow-xl">
+                  <div className="h-7 w-44 bg-primary-blue/10 rounded-full mb-5 flex items-center px-3 border border-primary-blue/20">
+                    <span className="text-xs text-primary-blue font-medium">Questionnaire Progress</span>
                   </div>
-                  <div className={cn(
-                    "pt-2 transition-all duration-500",
-                    activeStep === step.number ? "transform-none" : "translate-y-2"
-                  )}>
-                    <h3 className="text-xl font-semibold mb-2">{step.title}</h3>
-                    <p className="text-eldo-dark/80">{step.description}</p>
-                    {step.number === 1 && activeStep === 1 && (
-                      <div className="flex items-center gap-2 mt-2 text-sky-500">
-                        <MessageCircle size={16} className="animate-pulse" />
-                        <span className="text-sm font-medium">Voice input available</span>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-          
-          {/* Visual representation with animations */}
-          <div className="order-1 lg:order-2">
-            <div className="relative bg-gradient-to-br from-eldo-soft-blue/50 to-eldo-light-purple/30 rounded-2xl p-6 md:p-10 aspect-square max-w-md mx-auto overflow-hidden">
-              <div 
-                className={cn(
-                  "absolute inset-0 flex items-center justify-center transition-opacity duration-500",
-                  isVisible ? "opacity-100" : "opacity-0"
-                )}
-              >
-                {activeStep === 1 && (
-                  <div className="animate-fade-in glass-card rounded-xl p-6 w-full max-w-xs">
-                    <div className="h-6 w-44 bg-sky-400/20 rounded mb-4 flex items-center px-2">
-                      <span className="text-xs text-sky-700">Questionnaire Progress</span>
-                    </div>
-                    <div className="space-y-4 mb-6">
-                      <div className="animate-fade-in" style={{ animationDelay: "0.1s" }}>
-                        <div className="h-5 w-full bg-sky-400/10 rounded-md mb-2 flex items-center px-2">
-                          <span className="text-xs text-sky-700">Are you currently in Canada?</span>
-                        </div>
-                        <div className="flex gap-2 items-center">
-                          <div className="h-8 w-16 bg-sky-400/20 rounded flex items-center justify-center">
-                            <span className="text-xs text-sky-700">Yes</span>
-                          </div>
-                          <div className="h-8 w-16 bg-sky-400/20 rounded flex items-center justify-center">
-                            <span className="text-xs text-sky-700">No</span>
-                          </div>
-                          <Mic size={16} className="text-sky-500 animate-pulse ml-2" />
-                        </div>
-                      </div>
-                      
-                      <div className="animate-fade-in" style={{ animationDelay: "0.2s" }}>
-                        <div className="flex items-center gap-2 mb-2">
-                          <BarChart className="text-sky-500" size={16} />
-                          <div className="text-xs text-sky-700">Your points: 490</div>
-                        </div>
-                        <div className="h-6 w-full bg-sky-400/10 rounded-full overflow-hidden">
-                          <div className="h-full w-[97%] bg-green-500 animate-pulse rounded-full"></div>
-                        </div>
-                        <div className="text-right text-xs text-green-600 font-medium mt-1">Top 3% of applicants</div>
-                      </div>
-                      
-                      <div className="animate-fade-in" style={{ animationDelay: "0.3s" }}>
-                        <div className="flex items-center gap-2 mb-2">
-                          <Activity className="text-sky-500" size={16} />
-                          <div className="text-xs text-sky-700">Your chances</div>
-                        </div>
-                        <div className="h-6 w-full bg-sky-400/10 rounded-full overflow-hidden">
-                          <div className="h-full w-3/4 bg-green-500 animate-pulse rounded-full"></div>
-                        </div>
-                        <div className="text-right text-xs text-green-600 font-medium mt-1">High</div>
-                      </div>
-                      
-                      <div className="animate-fade-in" style={{ animationDelay: "0.4s" }}>
-                        <div className="flex items-center gap-2 mb-2">
-                          <Timer className="text-sky-500" size={16} />
-                          <div className="text-xs text-sky-700">Timeline</div>
-                        </div>
-                        <div className="h-6 w-full bg-sky-400/10 rounded-full overflow-hidden">
-                          <div className="h-full w-1/2 bg-amber-500 animate-pulse rounded-full"></div>
-                        </div>
-                        <div className="text-right text-xs text-amber-600 font-medium mt-1">3-6 months</div>
-                      </div>
-                    </div>
-                    <div className="flex justify-between animate-fade-in" style={{ animationDelay: "0.5s" }}>
-                      <div className="flex items-center gap-2">
-                        <Mic size={16} className="text-sky-500" />
-                        <span className="text-xs text-sky-700">Voice enabled</span>
-                      </div>
-                      <div className="h-8 w-20 bg-sky-400 rounded flex items-center justify-center text-white text-xs hover:bg-sky-500 transition-colors cursor-pointer" onClick={goToNextStep}>
-                        Next
-                        <ChevronRight size={14} className="ml-1" />
-                      </div>
-                    </div>
-                  </div>
-                )}
-                
-                {activeStep === 2 && (
-                  <div className="animate-fade-in glass-card rounded-xl p-6 w-full max-w-xs">
-                    <div className="h-6 w-36 bg-eldo-blue/20 rounded mb-6 flex items-center px-2">
-                      <span className="text-xs text-eldo-blue">Upload Documents</span>
-                    </div>
-                    <div className="grid grid-cols-2 gap-4 mb-6">
-                      <div className="animate-fade-in" style={{ animationDelay: "0.1s" }}>
-                        <div className="h-24 bg-eldo-blue/10 rounded-lg border-2 border-dashed border-eldo-blue/30 flex flex-col items-center justify-center cursor-pointer hover:bg-eldo-blue/20 transition-colors">
-                          <FileText className="text-eldo-blue mb-2" size={20} />
-                          <span className="text-xs text-eldo-blue">Passport</span>
-                          <span className="text-[10px] text-eldo-blue/70 mt-1">Completed</span>
-                        </div>
-                      </div>
-                      <div className="animate-fade-in" style={{ animationDelay: "0.2s" }}>
-                        <div className="h-24 bg-eldo-blue/10 rounded-lg border-2 border-dashed border-eldo-blue/30 flex flex-col items-center justify-center cursor-pointer hover:bg-eldo-blue/20 transition-colors">
-                          <FileUp className="text-eldo-blue mb-2" size={20} />
-                          <span className="text-xs text-eldo-blue">Education</span>
-                          <span className="text-[10px] text-eldo-blue/70 mt-1">Click to upload</span>
-                        </div>
-                      </div>
-                      <div className="animate-fade-in" style={{ animationDelay: "0.3s" }}>
-                        <div className="h-24 bg-eldo-blue/10 rounded-lg border-2 border-dashed border-eldo-blue/30 flex flex-col items-center justify-center cursor-pointer hover:bg-eldo-blue/20 transition-colors">
-                          <FileUp className="text-eldo-blue mb-2" size={20} />
-                          <span className="text-xs text-eldo-blue">Work Experience</span>
-                          <span className="text-[10px] text-eldo-blue/70 mt-1">Click to upload</span>
-                        </div>
-                      </div>
-                      <div className="animate-fade-in" style={{ animationDelay: "0.4s" }}>
-                        <div className="h-24 bg-eldo-blue/10 rounded-lg border-2 border-dashed border-eldo-blue/30 flex flex-col items-center justify-center cursor-pointer hover:bg-eldo-blue/20 transition-colors">
-                          <FileUp className="text-eldo-blue mb-2" size={20} />
-                          <span className="text-xs text-eldo-blue">Language Test</span>
-                          <span className="text-[10px] text-eldo-blue/70 mt-1">Click to upload</span>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="flex justify-between animate-fade-in" style={{ animationDelay: "0.5s" }}>
-                      <div className="h-8 w-20 bg-gray-200 rounded flex items-center justify-center text-gray-700 text-xs hover:bg-gray-300 transition-colors cursor-pointer" onClick={goToPreviousStep}>
-                        <ChevronLeft size={14} className="mr-1" />
-                        Back
-                      </div>
-                      <div className="h-8 w-20 bg-eldo-blue rounded flex items-center justify-center text-white text-xs hover:bg-eldo-blue/80 transition-colors cursor-pointer" onClick={goToNextStep}>
-                        Next
-                        <ChevronRight size={14} className="ml-1" />
-                      </div>
-                    </div>
-                  </div>
-                )}
-                
-                {activeStep === 3 && (
-                  <div className="animate-fade-in glass-card rounded-xl p-6 w-full max-w-xs">
-                    <div className="h-6 w-40 bg-eldo-purple/20 rounded mb-4 flex items-center px-2">
-                      <span className="text-xs text-eldo-purple">AI Document Analysis</span>
-                    </div>
+                  
+                  <div className="space-y-4 mb-6">
                     <div className="animate-fade-in" style={{ animationDelay: "0.1s" }}>
-                      <div className="h-4 w-full bg-gray-200 rounded-full mb-1">
-                        <div className="h-4 w-3/4 bg-eldo-purple rounded-full relative">
-                          <div className="absolute top-0 right-0 h-4 w-10 bg-eldo-purple animate-pulse rounded-full"></div>
-                        </div>
+                      <div className="h-6 w-full bg-gray-100 rounded-md mb-2 flex items-center px-3">
+                        <span className="text-xs text-gray-600">Are you currently in Canada?</span>
                       </div>
-                      <div className="text-xs text-right text-eldo-dark/60 mb-6">75% Analyzed</div>
-                    </div>
-                    
-                    <div className="space-y-3 mb-6">
-                      <div className="flex items-center gap-2 animate-fade-in" style={{ animationDelay: "0.2s" }}>
-                        <div className="h-10 w-10 rounded-full bg-eldo-purple/20 flex items-center justify-center">
-                          <FileText size={16} className="text-eldo-purple" />
+                      <div className="flex gap-2 items-center">
+                        <div className="h-8 w-16 bg-gray-100 border border-gray-200 rounded flex items-center justify-center cursor-pointer hover:bg-gray-200 transition-colors">
+                          <span className="text-xs text-gray-700">Yes</span>
                         </div>
-                        <div className="flex-1">
-                          <div className="text-xs font-medium text-eldo-dark">Letter of Employment</div>
-                          <div className="text-[10px] text-eldo-dark/60">Processing document data</div>
+                        <div className="h-8 w-16 bg-primary-blue/10 border border-primary-blue/30 rounded flex items-center justify-center">
+                          <span className="text-xs text-primary-blue font-medium">No</span>
                         </div>
-                        <div className="h-6 w-6 rounded-full bg-green-100 flex items-center justify-center">
-                          <svg className="w-3 h-3 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                          </svg>
-                        </div>
-                      </div>
-                      
-                      <div className="flex items-center gap-2 animate-fade-in" style={{ animationDelay: "0.3s" }}>
-                        <div className="h-10 w-10 rounded-full bg-eldo-purple/20 flex items-center justify-center">
-                          <FileText size={16} className="text-eldo-purple" />
-                        </div>
-                        <div className="flex-1">
-                          <div className="text-xs font-medium text-eldo-dark">Common-Law Certificate</div>
-                          <div className="text-[10px] text-eldo-dark/60">Validating information</div>
-                        </div>
-                        <div className="h-6 w-6 rounded-full bg-green-100 flex items-center justify-center">
-                          <svg className="w-3 h-3 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                          </svg>
-                        </div>
-                      </div>
-                      
-                      <div className="flex items-center gap-2 animate-fade-in" style={{ animationDelay: "0.4s" }}>
-                        <div className="h-10 w-10 rounded-full bg-eldo-purple/20 flex items-center justify-center">
-                          <FileText size={16} className="text-eldo-purple" />
-                        </div>
-                        <div className="flex-1">
-                          <div className="text-xs font-medium text-eldo-dark">Police Checker</div>
-                          <div className="text-[10px] text-red-600 flex items-center">
-                            <AlertTriangle size={10} className="mr-1 text-red-600 animate-pulse" />
-                            Dates aren't compliant
-                          </div>
-                        </div>
-                        <div className="h-6 w-6 rounded-full bg-red-100 flex items-center justify-center animate-pulse">
-                          <AlertTriangle size={14} className="text-red-600" />
-                        </div>
-                      </div>
-                      
-                      <div className="flex items-center gap-2 animate-fade-in" style={{ animationDelay: "0.5s" }}>
-                        <div className="h-10 w-10 rounded-full bg-eldo-purple/20 flex items-center justify-center">
-                          <FileText size={16} className="text-eldo-purple" />
-                        </div>
-                        <div className="flex-1">
-                          <Skeleton className="h-3 w-full" />
-                          <Skeleton className="h-2 w-3/5 mt-1" />
-                        </div>
-                        <div className="h-6 w-6 rounded-full flex items-center justify-center">
-                          <Loader size={14} className="text-eldo-purple animate-spin" />
-                        </div>
+                        <Mic size={18} className="text-primary-blue animate-pulse ml-2" />
                       </div>
                     </div>
                     
-                    <div className="flex justify-between animate-fade-in" style={{ animationDelay: "0.6s" }}>
-                      <div className="h-8 w-20 bg-gray-200 rounded flex items-center justify-center text-gray-700 text-xs hover:bg-gray-300 transition-colors cursor-pointer" onClick={goToPreviousStep}>
-                        <ChevronLeft size={14} className="mr-1" />
-                        Back
+                    <div className="animate-fade-in" style={{ animationDelay: "0.2s" }}>
+                      <div className="flex items-center gap-2 mb-2">
+                        <BarChart className="text-gray-500" size={14} />
+                        <div className="text-xs text-gray-600">Your points: 490</div>
                       </div>
-                      <div className="h-8 w-20 bg-eldo-purple rounded flex items-center justify-center text-white text-xs hover:bg-eldo-purple/80 transition-colors cursor-pointer" onClick={goToNextStep}>
-                        Next
-                        <ChevronRight size={14} className="ml-1" />
+                      <div className="h-5 w-full bg-gray-100 rounded-full overflow-hidden">
+                        <div className="h-full w-[82%] bg-gradient-to-r from-green-400 to-green-500 rounded-full transition-all duration-1000"></div>
                       </div>
-                    </div>
-                  </div>
-                )}
-                
-                {activeStep === 4 && (
-                  <div className="animate-fade-in glass-card rounded-xl p-6 w-full max-w-xs">
-                    <div className="h-6 w-44 bg-green-500/20 rounded mb-6 flex items-center px-2">
-                      <span className="text-xs text-green-700">Form Auto-Completion</span>
-                    </div>
-                    <div className="space-y-3 mb-6">
-                      <div className="animate-fade-in" style={{ animationDelay: "0.1s" }}>
-                        <div className="flex items-center">
-                          <div className="h-4 w-28 bg-eldo-dark/10 rounded mr-2"></div>
-                          <div className="h-8 flex-1 bg-green-500/10 rounded border border-green-500/30 px-2 flex items-center">
-                            <span className="text-xs text-green-700 animate-pulse">Auto-filling...</span>
-                          </div>
-                        </div>
-                      </div>
-                      
-                      <div className="animate-fade-in" style={{ animationDelay: "0.2s" }}>
-                        <div className="flex items-center">
-                          <div className="h-4 w-28 bg-eldo-dark/10 rounded mr-2"></div>
-                          <div className="h-8 flex-1 bg-green-500/10 rounded border border-green-500/30 px-2 flex items-center">
-                            <span className="text-xs text-green-700 overflow-hidden whitespace-nowrap" style={{ 
-                              animation: 'typing 2s steps(20, end) infinite',
-                              width: '100%'
-                            }}>John Smith</span>
-                          </div>
-                        </div>
-                      </div>
-                      
-                      <div className="animate-fade-in" style={{ animationDelay: "0.3s" }}>
-                        <div className="flex items-center">
-                          <div className="h-4 w-28 bg-eldo-dark/10 rounded mr-2"></div>
-                          <div className="h-8 flex-1 bg-green-500/10 rounded border border-green-500/30 px-2 flex items-center">
-                            <span className="text-xs text-green-700 overflow-hidden whitespace-nowrap" style={{ 
-                              animation: 'typing 2s steps(20, end) infinite',
-                              animationDelay: '0.5s',
-                              width: '100%'
-                            }}>123 Main St, Vancouver</span>
-                          </div>
-                        </div>
-                      </div>
-                      
-                      <div className="animate-fade-in" style={{ animationDelay: "0.4s" }}>
-                        <div className="flex items-center">
-                          <div className="h-4 w-28 bg-eldo-dark/10 rounded mr-2"></div>
-                          <div className="h-8 flex-1 bg-green-500/10 rounded border border-green-500/30 px-2 flex items-center">
-                            <span className="text-xs text-green-700 overflow-hidden whitespace-nowrap" style={{ 
-                              animation: 'typing 2s steps(20, end) infinite',
-                              animationDelay: '1s',
-                              width: '100%'
-                            }}>john.smith@example.com</span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <div className="flex justify-between animate-fade-in" style={{ animationDelay: "0.5s" }}>
-                      <div className="h-8 w-20 bg-gray-200 rounded flex items-center justify-center text-gray-700 text-xs hover:bg-gray-300 transition-colors cursor-pointer" onClick={goToPreviousStep}>
-                        <ChevronLeft size={14} className="mr-1" />
-                        Back
-                      </div>
-                      <div className="h-8 w-20 bg-green-500 rounded flex items-center justify-center text-white text-xs hover:bg-green-600 transition-colors cursor-pointer" onClick={goToNextStep}>
-                        Next
-                        <ChevronRight size={14} className="ml-1" />
-                      </div>
-                    </div>
-                  </div>
-                )}
-                
-                {activeStep === 5 && (
-                  <div className="animate-fade-in glass-card rounded-xl p-6 w-full max-w-xs">
-                    <div className="h-6 w-36 bg-amber-500/20 rounded mb-4 flex items-center px-2">
-                      <span className="text-xs text-amber-700">Ready to Submit</span>
-                    </div>
-                    
-                    <div className="flex justify-center items-center mb-6 animate-fade-in" style={{ animationDelay: "0.1s" }}>
-                      <div className="h-20 w-20 rounded-full bg-green-100 flex items-center justify-center">
-                        <svg className="w-12 h-12 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                        </svg>
-                      </div>
-                    </div>
-                    
-                    <div className="text-center text-sm text-eldo-dark/80 mb-6 animate-fade-in" style={{ animationDelay: "0.2s" }}>
-                      <p className="font-medium">Application Complete!</p>
-                      <p className="text-xs mt-2">All required forms have been filled and are ready for your review before submission.</p>
+                      <div className="text-right text-xs text-green-600 font-medium mt-1">Top 3% of applicants</div>
                     </div>
                     
                     <div className="animate-fade-in" style={{ animationDelay: "0.3s" }}>
-                      <div className="flex items-center gap-2 mb-4">
-                        <FileCheck className="text-green-600" size={16} />
-                        <div className="text-xs text-eldo-dark">Express Entry Profile</div>
-                        <div className="ml-auto">
-                          <div className="h-5 w-5 rounded-full bg-green-100 flex items-center justify-center">
-                            <svg className="w-3 h-3 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                            </svg>
-                          </div>
-                        </div>
+                      <div className="flex items-center gap-2 mb-2">
+                        <Activity className="text-gray-500" size={14} />
+                        <div className="text-xs text-gray-600">Your chances</div>
                       </div>
-                      
-                      <div className="flex items-center gap-2 mb-4">
-                        <FileCheck className="text-green-600" size={16} />
-                        <div className="text-xs text-eldo-dark">Personal Information</div>
-                        <div className="ml-auto">
-                          <div className="h-5 w-5 rounded-full bg-green-100 flex items-center justify-center">
-                            <svg className="w-3 h-3 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                            </svg>
-                          </div>
+                      <div className="h-5 w-full bg-gray-100 rounded-full overflow-hidden">
+                        <div className="h-full w-3/4 bg-gradient-to-r from-green-400 to-green-500 rounded-full transition-all duration-1000"></div>
+                      </div>
+                      <div className="text-right text-xs text-green-600 font-medium mt-1">High</div>
+                    </div>
+                    
+                    <div className="animate-fade-in" style={{ animationDelay: "0.4s" }}>
+                      <div className="flex items-center gap-2 mb-2">
+                        <Timer className="text-gray-500" size={14} />
+                        <div className="text-xs text-gray-600">Timeline</div>
+                      </div>
+                      <div className="h-5 w-full bg-gray-100 rounded-full overflow-hidden">
+                        <div className="h-full w-1/2 bg-gradient-to-r from-amber-400 to-amber-500 rounded-full transition-all duration-1000"></div>
+                      </div>
+                      <div className="text-right text-xs text-amber-600 font-medium mt-1">3-6 months</div>
+                    </div>
+                  </div>
+                  
+                  <div className="flex justify-between items-center animate-fade-in" style={{ animationDelay: "0.5s" }}>
+                    <div className="flex items-center gap-2">
+                      <Mic size={16} className="text-primary-blue" />
+                      <span className="text-xs text-gray-600">Voice enabled</span>
+                    </div>
+                    <div className="h-9 px-5 bg-primary-blue rounded-lg flex items-center justify-center text-white text-sm font-medium hover:bg-primary-blue/90 transition-colors cursor-pointer shadow-md">
+                      Next
+                      <ChevronRight size={16} className="ml-1" />
+                    </div>
+                  </div>
+                </div>
+              )}
+              
+              {/* Step 2: Build - Profile Building */}
+              {activeStep === 2 && (
+                <div className="animate-fade-in glass-card rounded-xl p-6 w-full max-w-sm shadow-xl">
+                  <div className="h-7 w-36 bg-eldo-blue/10 rounded-full mb-5 flex items-center px-3 border border-eldo-blue/20">
+                    <span className="text-xs text-eldo-blue font-medium">Build Your Profile</span>
+                  </div>
+                  
+                  <div className="space-y-3 mb-6">
+                    {/* Progress indicator */}
+                    <div className="flex items-center justify-between mb-4">
+                      <span className="text-xs text-gray-500">Step 3 of 7</span>
+                      <span className="text-xs text-eldo-blue font-medium">43% Complete</span>
+                    </div>
+                    <div className="h-2 w-full bg-gray-100 rounded-full overflow-hidden mb-4">
+                      <div className="h-full w-[43%] bg-eldo-blue rounded-full transition-all duration-1000"></div>
+                    </div>
+                    
+                    {/* Form sections */}
+                    <div className="animate-fade-in flex items-center gap-3 p-3 rounded-lg bg-green-50 border border-green-200" style={{ animationDelay: "0.1s" }}>
+                      <div className="h-8 w-8 rounded-full bg-green-100 flex items-center justify-center">
+                        <CheckCircle size={16} className="text-green-600" />
+                      </div>
+                      <div className="flex-1">
+                        <span className="text-sm font-medium text-green-800">Personal Details</span>
+                      </div>
+                      <CheckCircle size={16} className="text-green-500" />
+                    </div>
+                    
+                    <div className="animate-fade-in flex items-center gap-3 p-3 rounded-lg bg-green-50 border border-green-200" style={{ animationDelay: "0.2s" }}>
+                      <div className="h-8 w-8 rounded-full bg-green-100 flex items-center justify-center">
+                        <CheckCircle size={16} className="text-green-600" />
+                      </div>
+                      <div className="flex-1">
+                        <span className="text-sm font-medium text-green-800">Contact Information</span>
+                      </div>
+                      <CheckCircle size={16} className="text-green-500" />
+                    </div>
+                    
+                    <div className="animate-fade-in flex items-center gap-3 p-3 rounded-lg bg-eldo-blue/5 border-2 border-eldo-blue" style={{ animationDelay: "0.3s" }}>
+                      <div className="h-8 w-8 rounded-full bg-eldo-blue/20 flex items-center justify-center">
+                        <Briefcase size={16} className="text-eldo-blue" />
+                      </div>
+                      <div className="flex-1">
+                        <span className="text-sm font-medium text-eldo-blue">Work Experience</span>
+                        <div className="text-[10px] text-eldo-blue/70">Currently editing</div>
+                      </div>
+                      <div className="h-2 w-2 rounded-full bg-eldo-blue animate-pulse"></div>
+                    </div>
+                    
+                    <div className="animate-fade-in flex items-center gap-3 p-3 rounded-lg bg-gray-50 border border-gray-200" style={{ animationDelay: "0.4s" }}>
+                      <div className="h-8 w-8 rounded-full bg-gray-100 flex items-center justify-center">
+                        <GraduationCap size={16} className="text-gray-400" />
+                      </div>
+                      <div className="flex-1">
+                        <span className="text-sm text-gray-500">Education History</span>
+                      </div>
+                    </div>
+                    
+                    <div className="animate-fade-in flex items-center gap-3 p-3 rounded-lg bg-gray-50 border border-gray-200" style={{ animationDelay: "0.5s" }}>
+                      <div className="h-8 w-8 rounded-full bg-gray-100 flex items-center justify-center">
+                        <Globe size={16} className="text-gray-400" />
+                      </div>
+                      <div className="flex-1">
+                        <span className="text-sm text-gray-500">Language Skills</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+              
+              {/* Step 3: Organize - Document Center */}
+              {activeStep === 3 && (
+                <div className="animate-fade-in glass-card rounded-xl p-6 w-full max-w-sm shadow-xl">
+                  <div className="flex items-center justify-between mb-5">
+                    <div className="h-7 px-3 bg-green-500/10 rounded-full flex items-center border border-green-500/20">
+                      <Scan size={14} className="text-green-600 mr-2" />
+                      <span className="text-xs text-green-700 font-medium">Auto-scanned</span>
+                    </div>
+                    <span className="text-xs text-gray-500">3 of 5 ready</span>
+                  </div>
+                  
+                  <div className="space-y-3 mb-6">
+                    <div className="animate-fade-in flex items-center justify-between p-3 rounded-lg bg-green-50 border border-green-200" style={{ animationDelay: "0.1s" }}>
+                      <div className="flex items-center gap-3">
+                        <CheckCircle size={18} className="text-green-500" />
+                        <span className="text-sm text-green-800">Passport</span>
+                      </div>
+                      <span className="text-xs text-green-600 font-medium">Ready</span>
+                    </div>
+                    
+                    <div className="animate-fade-in flex items-center justify-between p-3 rounded-lg bg-green-50 border border-green-200" style={{ animationDelay: "0.2s" }}>
+                      <div className="flex items-center gap-3">
+                        <CheckCircle size={18} className="text-green-500" />
+                        <span className="text-sm text-green-800">Language Test</span>
+                      </div>
+                      <span className="text-xs text-green-600 font-medium">Ready</span>
+                    </div>
+                    
+                    <div className="animate-fade-in flex items-center justify-between p-3 rounded-lg bg-red-50 border border-red-200" style={{ animationDelay: "0.3s" }}>
+                      <div className="flex items-center gap-3">
+                        <AlertTriangle size={18} className="text-red-500" />
+                        <span className="text-sm text-red-800">Educational Credentials</span>
+                      </div>
+                      <span className="text-xs text-red-600 font-medium">Issues detected</span>
+                    </div>
+                    
+                    <div className="animate-fade-in flex items-center justify-between p-3 rounded-lg bg-amber-50 border border-amber-200" style={{ animationDelay: "0.4s" }}>
+                      <div className="flex items-center gap-3">
+                        <AlertCircle size={18} className="text-amber-500" />
+                        <span className="text-sm text-amber-800">Work Experience Letters</span>
+                      </div>
+                      <span className="text-xs text-amber-600 font-medium">Needed</span>
+                    </div>
+                    
+                    <div className="animate-fade-in flex items-center justify-between p-3 rounded-lg bg-green-50 border border-green-200" style={{ animationDelay: "0.5s" }}>
+                      <div className="flex items-center gap-3">
+                        <CheckCircle size={18} className="text-green-500" />
+                        <span className="text-sm text-green-800">Police Certificate</span>
+                      </div>
+                      <span className="text-xs text-green-600 font-medium">Ready</span>
+                    </div>
+                  </div>
+                  
+                  <div className="animate-fade-in border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-primary-blue transition-colors cursor-pointer" style={{ animationDelay: "0.6s" }}>
+                    <Upload size={20} className="text-gray-400 mx-auto mb-2" />
+                    <span className="text-xs text-gray-500">Drop files to scan automatically</span>
+                  </div>
+                </div>
+              )}
+              
+              {/* Step 4: Verify - Form Verification */}
+              {activeStep === 4 && (
+                <div className="animate-fade-in glass-card rounded-xl p-6 w-full max-w-sm shadow-xl">
+                  <div className="h-7 w-40 bg-purple-500/10 rounded-full mb-5 flex items-center px-3 border border-purple-500/20">
+                    <Eye size={14} className="text-purple-600 mr-2" />
+                    <span className="text-xs text-purple-700 font-medium">Final Verification</span>
+                  </div>
+                  
+                  <div className="text-center mb-4">
+                    <p className="text-xs text-gray-600">Review every field before submission</p>
+                  </div>
+                  
+                  <div className="space-y-3 mb-6">
+                    {/* Simulated IRCC-style form fields */}
+                    <div className="animate-fade-in bg-gray-50 rounded-lg p-3 border border-gray-200" style={{ animationDelay: "0.1s" }}>
+                      <div className="text-[10px] text-gray-500 uppercase tracking-wider mb-1">Family Name</div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm font-medium text-gray-800">SMITH</span>
+                        <CheckCircle size={14} className="text-green-500" />
+                      </div>
+                    </div>
+                    
+                    <div className="animate-fade-in bg-gray-50 rounded-lg p-3 border border-gray-200" style={{ animationDelay: "0.2s" }}>
+                      <div className="text-[10px] text-gray-500 uppercase tracking-wider mb-1">Given Name(s)</div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm font-medium text-gray-800">JOHN WILLIAM</span>
+                        <CheckCircle size={14} className="text-green-500" />
+                      </div>
+                    </div>
+                    
+                    <div className="animate-fade-in bg-amber-50 rounded-lg p-3 border border-amber-300" style={{ animationDelay: "0.3s" }}>
+                      <div className="text-[10px] text-amber-600 uppercase tracking-wider mb-1">Date of Birth</div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm font-medium text-amber-800">1990-05-15</span>
+                        <div className="flex items-center gap-2">
+                          <span className="text-[10px] text-amber-600">Confirm match</span>
+                          <AlertTriangle size={14} className="text-amber-500 animate-pulse" />
                         </div>
                       </div>
                     </div>
                     
-                    <div className="flex justify-between animate-fade-in" style={{ animationDelay: "0.4s" }}>
-                      <div className="h-8 w-20 bg-gray-200 rounded flex items-center justify-center text-gray-700 text-xs hover:bg-gray-300 transition-colors cursor-pointer" onClick={goToPreviousStep}>
-                        <ChevronLeft size={14} className="mr-1" />
-                        Back
+                    <div className="animate-fade-in bg-gray-50 rounded-lg p-3 border border-gray-200" style={{ animationDelay: "0.4s" }}>
+                      <div className="text-[10px] text-gray-500 uppercase tracking-wider mb-1">Country of Birth</div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm font-medium text-gray-800">INDIA</span>
+                        <CheckCircle size={14} className="text-green-500" />
                       </div>
-                      <div className="h-10 w-28 bg-amber-500 rounded-lg flex items-center justify-center text-white text-sm font-medium hover:bg-amber-600 transition-colors cursor-pointer shadow-lg shadow-amber-500/30">
-                        <Send className="mr-2" size={16} />
-                        Submit
+                    </div>
+                    
+                    <div className="animate-fade-in bg-gray-50 rounded-lg p-3 border border-gray-200" style={{ animationDelay: "0.5s" }}>
+                      <div className="text-[10px] text-gray-500 uppercase tracking-wider mb-1">Passport Number</div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm font-medium text-gray-800">M1234567</span>
+                        <CheckCircle size={14} className="text-green-500" />
                       </div>
                     </div>
                   </div>
-                )}
-              </div>
+                  
+                  <div className="animate-fade-in flex items-center justify-center gap-2 text-xs text-purple-600" style={{ animationDelay: "0.6s" }}>
+                    <Eye size={14} />
+                    <span>27 fields verified • 1 needs attention</span>
+                  </div>
+                </div>
+              )}
+              
+              {/* Step 5: Apply - Chrome Extension */}
+              {activeStep === 5 && (
+                <div className="animate-fade-in glass-card rounded-xl p-6 w-full max-w-sm shadow-xl">
+                  <div className="flex items-center justify-between mb-5">
+                    <div className="h-7 px-3 bg-gradient-to-r from-blue-500/10 to-green-500/10 rounded-full flex items-center border border-blue-500/20">
+                      <Chrome size={14} className="text-blue-600 mr-2" />
+                      <span className="text-xs text-blue-700 font-medium">Chrome Extension</span>
+                    </div>
+                    <div className="flex items-center gap-1 px-2 py-1 bg-green-100 rounded-full">
+                      <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse"></div>
+                      <span className="text-[10px] text-green-700 font-medium">Active</span>
+                    </div>
+                  </div>
+                  
+                  {/* Simulated IRCC website with auto-fill */}
+                  <div className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden mb-4">
+                    {/* Browser chrome */}
+                    <div className="bg-gray-100 px-3 py-2 border-b border-gray-200 flex items-center gap-2">
+                      <div className="flex gap-1.5">
+                        <div className="w-2.5 h-2.5 rounded-full bg-red-400"></div>
+                        <div className="w-2.5 h-2.5 rounded-full bg-amber-400"></div>
+                        <div className="w-2.5 h-2.5 rounded-full bg-green-400"></div>
+                      </div>
+                      <div className="flex-1 bg-white rounded px-2 py-1 text-[10px] text-gray-500 truncate">
+                        ircc.canada.ca/english/immigrate/skilled/profile...
+                      </div>
+                    </div>
+                    
+                    {/* Form being auto-filled */}
+                    <div className="p-3 space-y-2">
+                      <div className="animate-fade-in" style={{ animationDelay: "0.1s" }}>
+                        <div className="text-[10px] text-gray-500 mb-1">Full Name</div>
+                        <div className="h-7 bg-green-50 border border-green-300 rounded px-2 flex items-center relative overflow-hidden">
+                          <span className="text-xs text-gray-800 typewriter-text">John William Smith</span>
+                          <Zap size={12} className="absolute right-2 text-green-500" />
+                        </div>
+                      </div>
+                      
+                      <div className="animate-fade-in" style={{ animationDelay: "0.3s" }}>
+                        <div className="text-[10px] text-gray-500 mb-1">Email Address</div>
+                        <div className="h-7 bg-green-50 border border-green-300 rounded px-2 flex items-center relative overflow-hidden">
+                          <span className="text-xs text-gray-800 typewriter-text-2">john.smith@email.com</span>
+                          <Zap size={12} className="absolute right-2 text-green-500" />
+                        </div>
+                      </div>
+                      
+                      <div className="animate-fade-in" style={{ animationDelay: "0.5s" }}>
+                        <div className="text-[10px] text-gray-500 mb-1">Passport Number</div>
+                        <div className="h-7 bg-blue-50 border border-blue-300 rounded px-2 flex items-center animate-pulse">
+                          <span className="text-xs text-blue-600">Auto-filling...</span>
+                          <MousePointer size={12} className="absolute right-2 text-blue-500 animate-bounce" />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="animate-fade-in space-y-3" style={{ animationDelay: "0.6s" }}>
+                    <div className="flex items-center gap-2 text-xs text-gray-600">
+                      <CheckCircle size={14} className="text-green-500" />
+                      <span>24 fields auto-filled</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-xs text-gray-600">
+                      <CheckCircle size={14} className="text-green-500" />
+                      <span>You review before submitting</span>
+                    </div>
+                  </div>
+                  
+                  <div className="animate-fade-in mt-4 flex items-center justify-center" style={{ animationDelay: "0.7s" }}>
+                    <div className="px-4 py-2 bg-gradient-to-r from-blue-500 to-green-500 rounded-lg flex items-center gap-2 text-white text-sm font-medium shadow-lg cursor-pointer hover:shadow-xl transition-shadow">
+                      <Chrome size={16} />
+                      <span>Get the Extension</span>
+                      <ArrowRight size={14} />
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
+        </div>
+
+        {/* Step Pills at Bottom */}
+        <div className="flex flex-wrap justify-center gap-3">
+          {steps.map((step) => (
+            <button
+              key={step.number}
+              onClick={() => goToStep(step.number)}
+              className={cn(
+                "flex items-center gap-2 px-4 py-2.5 rounded-full border-2 transition-all duration-300 cursor-pointer",
+                activeStep === step.number
+                  ? "bg-primary-blue/10 border-primary-blue text-primary-blue shadow-md"
+                  : "bg-sky-50 border-sky-200 text-sky-700 hover:border-sky-300 hover:bg-sky-100"
+              )}
+            >
+              <span className={cn(
+                "flex items-center justify-center w-6 h-6 rounded-full text-xs font-bold",
+                activeStep === step.number
+                  ? "bg-primary-blue text-white"
+                  : "bg-sky-200 text-sky-700"
+              )}>
+                {step.number}
+              </span>
+              <span className="text-sm font-medium">
+                {step.action} <span className="hidden sm:inline">— {step.subject}</span>
+              </span>
+            </button>
+          ))}
         </div>
       </div>
       
       <style>
         {`
-          @keyframes typing {
-            from { width: 0 }
-            to { width: 100% }
+          .typewriter-text {
+            overflow: hidden;
+            white-space: nowrap;
+            animation: typewriter 1.5s steps(20, end) forwards;
+          }
+          .typewriter-text-2 {
+            overflow: hidden;
+            white-space: nowrap;
+            animation: typewriter 1.5s steps(20, end) 0.3s forwards;
+            opacity: 0;
+            animation-fill-mode: forwards;
+          }
+          @keyframes typewriter {
+            0% { width: 0; opacity: 1; }
+            100% { width: 100%; opacity: 1; }
           }
         `}
       </style>
