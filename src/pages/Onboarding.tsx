@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { ArrowRight, ArrowLeft, CheckCircle2, FolderOpen, FileEdit, ShieldCheck, Calculator, AlertTriangle, Mail, Lock, User, Search, FileCheck, ClipboardCheck, Send } from 'lucide-react';
+import { ArrowRight, ArrowLeft, CheckCircle2, FolderOpen, FileEdit, ShieldCheck, Calculator, AlertTriangle, Mail, Lock, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useNavigate } from 'react-router-dom';
@@ -18,15 +18,6 @@ const steps = [
   { id: 2, title: 'Create Account', content: 'register' },
   { id: 3, title: 'Eligibility', content: 'crs' },
   { id: 4, title: 'Terms & Conditions', content: 'terms' },
-  { id: 5, title: 'Your Journey', content: 'journey' },
-];
-
-const journeySteps = [
-  { icon: Calculator, title: 'Understand', subtitle: 'Your CRS score' },
-  { icon: FolderOpen, title: 'Gather', subtitle: 'Your documents' },
-  { icon: Search, title: 'Review', subtitle: "What's missing or unclear" },
-  { icon: ClipboardCheck, title: 'Complete', subtitle: 'Your forms' },
-  { icon: Send, title: 'Submit', subtitle: 'With confidence' },
 ];
 
 const termsContent = `1. Acceptance of Terms
@@ -433,36 +424,6 @@ const Onboarding = () => {
               </div>
             )}
 
-            {/* Step 5: Journey Preview */}
-            {currentStep === 4 && (
-              <div className="space-y-8">
-                <div className="text-center">
-                  <h1 className="text-3xl md:text-4xl font-bold mb-4 text-foreground">
-                    Your application journey
-                  </h1>
-                  <p className="text-muted-foreground text-lg">
-                    Here's what you'll work through with Eldo.
-                  </p>
-                </div>
-                
-                <div className="grid gap-3">
-                  {journeySteps.map((step, index) => (
-                    <div 
-                      key={index} 
-                      className="bg-white rounded-xl p-4 border border-border flex items-center gap-4"
-                    >
-                      <div className="w-10 h-10 bg-primary-blue/10 rounded-lg flex items-center justify-center flex-shrink-0">
-                        <step.icon className="w-5 h-5 text-primary-blue" />
-                      </div>
-                      <div>
-                        <h3 className="font-semibold text-foreground">{step.title}</h3>
-                        <p className="text-sm text-muted-foreground">{step.subtitle}</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
 
             {/* Navigation buttons */}
             <div className="flex justify-between items-center gap-4 mt-8">
