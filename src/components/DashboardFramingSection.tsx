@@ -1,7 +1,7 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { cn } from '@/lib/utils';
-import { CheckCircle, Clock, TrendingUp, FileText, AlertCircle, Scan } from 'lucide-react';
+import { CheckCircle, Clock, TrendingUp, FileText, AlertCircle, Scan, AlertTriangle } from 'lucide-react';
 
 const DashboardFramingSection = () => {
   const [isVisible, setIsVisible] = useState(false);
@@ -207,12 +207,12 @@ const DashboardFramingSection = () => {
                       </div>
                       <span className="text-[10px] text-green-500 font-medium">Ready</span>
                     </div>
-                    <div className="flex items-center justify-between p-2.5 rounded-lg bg-amber-50 border border-amber-200">
+                    <div className="flex items-center justify-between p-2.5 rounded-lg bg-red-50 border border-red-200">
                       <div className="flex items-center gap-2">
-                        <AlertCircle className="h-3.5 w-3.5 text-amber-500" />
-                        <span className="text-xs text-amber-700">Educational Credentials</span>
+                        <AlertTriangle className="h-3.5 w-3.5 text-red-500" />
+                        <span className="text-xs text-red-700">Educational Credentials</span>
                       </div>
-                      <span className="text-[10px] text-amber-500 font-medium">Needed</span>
+                      <span className="text-[10px] text-red-500 font-medium">Issues detected</span>
                     </div>
                     <div className="flex items-center justify-between p-2.5 rounded-lg bg-amber-50 border border-amber-200">
                       <div className="flex items-center gap-2">
