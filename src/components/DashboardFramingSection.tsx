@@ -1,7 +1,7 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { cn } from '@/lib/utils';
-import { CheckCircle, Clock, TrendingUp, ArrowRight, FileText, AlertCircle } from 'lucide-react';
+import { CheckCircle, Clock, TrendingUp, FileText, AlertCircle, Scan } from 'lucide-react';
 
 const DashboardFramingSection = () => {
   const [isVisible, setIsVisible] = useState(false);
@@ -136,63 +136,50 @@ const DashboardFramingSection = () => {
                   </div>
                 </div>
 
-                {/* CRS Outlook Card */}
+                {/* CRS Outlook + Checklist Side by Side */}
                 <div className={cn(
                   "p-5 border-b border-gray-100 transition-all duration-500",
                   isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
                 )} style={{ transitionDelay: "700ms" }}>
-                  <div className="flex items-center gap-2 mb-3">
-                    <TrendingUp className="h-4 w-4 text-eldo-blue" />
-                    <span className="text-sm font-medium text-gray-700">CRS Outlook</span>
-                  </div>
-                  <div className="flex items-center gap-6">
+                  <div className="grid grid-cols-2 gap-4">
+                    {/* CRS Outlook */}
                     <div>
-                      <p className="text-[10px] text-gray-500 uppercase tracking-wide">Estimated</p>
-                      <p className="text-2xl font-bold text-gray-900">~465</p>
-                    </div>
-                    <div className="h-10 w-px bg-gray-200" />
-                    <div>
-                      <p className="text-[10px] text-gray-500 uppercase tracking-wide">Cutoff</p>
-                      <p className="text-lg font-semibold text-gray-500">470-480</p>
-                    </div>
-                    <div className="h-10 w-px bg-gray-200" />
-                    <div>
-                      <div className="flex items-center gap-1.5">
-                        <div className="w-2 h-2 rounded-full bg-green-500" />
-                        <span className="text-sm font-medium text-green-600">Competitive</span>
+                      <div className="flex items-center gap-2 mb-2">
+                        <TrendingUp className="h-3.5 w-3.5 text-eldo-blue" />
+                        <span className="text-xs font-medium text-gray-700">CRS Outlook</span>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <div>
+                          <p className="text-[9px] text-gray-500 uppercase tracking-wide">Score</p>
+                          <p className="text-xl font-bold text-gray-900">~465</p>
+                        </div>
+                        <div className="h-8 w-px bg-gray-200" />
+                        <div>
+                          <p className="text-[9px] text-gray-500 uppercase tracking-wide">Cutoff</p>
+                          <p className="text-sm font-semibold text-gray-500">470-480</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-1.5 mt-2">
+                        <div className="w-1.5 h-1.5 rounded-full bg-green-500" />
+                        <span className="text-[10px] font-medium text-green-600">Competitive</span>
                       </div>
                     </div>
-                  </div>
-                </div>
-
-                {/* Checklist Preview */}
-                <div className={cn(
-                  "p-5 transition-all duration-500",
-                  isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
-                )} style={{ transitionDelay: "800ms" }}>
-                  <p className="text-sm font-medium text-gray-700 mb-3">Build Profile Checklist</p>
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-2.5 p-2.5 rounded-lg bg-green-50 border border-green-200">
-                      <div className="w-4 h-4 rounded bg-green-500 flex items-center justify-center">
-                        <CheckCircle className="h-3 w-3 text-white" />
+                    
+                    {/* Checklist */}
+                    <div>
+                      <p className="text-xs font-medium text-gray-700 mb-2">Checklist</p>
+                      <div className="space-y-1.5">
+                        <div className="flex items-center gap-2 p-2 rounded-md bg-green-50 border border-green-200">
+                          <div className="w-3 h-3 rounded bg-green-500 flex items-center justify-center">
+                            <CheckCircle className="h-2 w-2 text-white" />
+                          </div>
+                          <span className="text-[10px] text-green-700">CRS score estimated</span>
+                        </div>
+                        <div className="flex items-center gap-2 p-2 rounded-md bg-gray-50 border border-gray-200">
+                          <div className="w-3 h-3 rounded border border-gray-300" />
+                          <span className="text-[10px] text-gray-700">Profile submitted</span>
+                        </div>
                       </div>
-                      <span className="text-xs text-green-700">CRS score estimated</span>
-                      <span className="text-[10px] text-green-500 ml-auto">Auto</span>
-                    </div>
-                    <div className="flex items-center gap-2.5 p-2.5 rounded-lg bg-gray-50 border border-gray-200">
-                      <div className="w-4 h-4 rounded border-2 border-gray-300" />
-                      <span className="text-xs text-gray-700">Profile submitted to IRCC</span>
-                    </div>
-                  </div>
-                  
-                  {/* CTA Button */}
-                  <div className={cn(
-                    "mt-4 transition-all duration-500",
-                    isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
-                  )} style={{ transitionDelay: "1000ms" }}>
-                    <div className="flex items-center justify-center gap-2 bg-eldo-blue text-white text-xs font-medium py-2.5 px-4 rounded-lg">
-                      Continue Application
-                      <ArrowRight className="h-3.5 w-3.5" />
                     </div>
                   </div>
                 </div>
@@ -202,9 +189,15 @@ const DashboardFramingSection = () => {
                   "p-5 border-t border-gray-100 transition-all duration-500",
                   isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
                 )} style={{ transitionDelay: "900ms" }}>
-                  <div className="flex items-center gap-2 mb-3">
-                    <FileText className="h-4 w-4 text-amber-500" />
-                    <span className="text-sm font-medium text-gray-700">Documents for this stage</span>
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center gap-2">
+                      <FileText className="h-4 w-4 text-amber-500" />
+                      <span className="text-sm font-medium text-gray-700">Documents for this stage</span>
+                    </div>
+                    <div className="flex items-center gap-1.5 px-2 py-1 bg-eldo-purple/10 rounded-full">
+                      <Scan className="h-3 w-3 text-eldo-purple animate-pulse" />
+                      <span className="text-[9px] text-eldo-purple font-medium">Auto-scanned</span>
+                    </div>
                   </div>
                   <div className="space-y-2">
                     <div className="flex items-center justify-between p-2.5 rounded-lg bg-green-50 border border-green-200">
