@@ -45,7 +45,7 @@ const ProcessSection = () => {
       clearInterval(intervalRef.current);
       intervalRef.current = setInterval(() => {
         setActiveStep((prev) => (prev < steps.length ? prev + 1 : 1));
-      }, 4000);
+      }, 6000);
     }
   };
 
@@ -58,7 +58,7 @@ const ProcessSection = () => {
           setIsVisible(true);
           intervalRef.current = setInterval(() => {
             setActiveStep((prev) => (prev < steps.length ? prev + 1 : 1));
-          }, 4000);
+          }, 6000);
         }
       },
       { threshold: 0.3 }
