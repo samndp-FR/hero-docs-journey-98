@@ -364,10 +364,10 @@ const ProcessSection = () => {
                 </div>
               )}
               
-              {/* Step 5: Apply - Chrome Extension with Chrome colors */}
+              {/* Step 5: Apply - Chrome Extension with IRCC-style form */}
               {activeStep === 5 && (
-                <div className="animate-fade-in glass-card rounded-xl p-6 w-full max-w-sm shadow-xl">
-                  <div className="flex items-center justify-between mb-5">
+                <div className="animate-fade-in glass-card rounded-xl p-5 w-full max-w-md shadow-xl">
+                  <div className="flex items-center justify-between mb-4">
                     {/* Chrome-colored badge */}
                     <div className="h-7 px-3 bg-gradient-to-r from-[#EA4335]/10 via-[#FBBC05]/10 to-[#34A853]/10 rounded-full flex items-center border border-[#4285F4]/30">
                       <div className="w-4 h-4 mr-2 rounded-full bg-gradient-to-br from-[#EA4335] via-[#FBBC05] to-[#34A853] flex items-center justify-center">
@@ -381,55 +381,85 @@ const ProcessSection = () => {
                     </div>
                   </div>
                   
-                  {/* Simulated IRCC website with Chrome-colored auto-fill */}
-                  <div className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden mb-4">
-                    {/* Browser chrome bar with Chrome colors */}
-                    <div className="bg-gradient-to-r from-gray-100 to-gray-50 px-3 py-2 border-b border-gray-200 flex items-center gap-2">
+                  {/* IRCC-style Express Entry form */}
+                  <div className="bg-white rounded-lg border border-gray-300 shadow-sm overflow-hidden mb-4">
+                    {/* Browser chrome bar */}
+                    <div className="bg-gradient-to-r from-gray-100 to-gray-50 px-3 py-1.5 border-b border-gray-200 flex items-center gap-2">
                       <div className="flex gap-1.5">
-                        <div className="w-2.5 h-2.5 rounded-full bg-[#EA4335]"></div>
-                        <div className="w-2.5 h-2.5 rounded-full bg-[#FBBC05]"></div>
-                        <div className="w-2.5 h-2.5 rounded-full bg-[#34A853]"></div>
+                        <div className="w-2 h-2 rounded-full bg-[#EA4335]"></div>
+                        <div className="w-2 h-2 rounded-full bg-[#FBBC05]"></div>
+                        <div className="w-2 h-2 rounded-full bg-[#34A853]"></div>
                       </div>
-                      <div className="flex-1 bg-white rounded-full px-3 py-1 text-[10px] text-gray-500 truncate border border-gray-200 flex items-center gap-1">
-                        <div className="w-3 h-3 rounded-full bg-[#4285F4]/20 flex items-center justify-center">
-                          <div className="w-1.5 h-1.5 rounded-full bg-[#4285F4]"></div>
-                        </div>
-                        ircc.canada.ca/english/immigrate/skilled/profile...
+                      <div className="flex-1 bg-white rounded px-2 py-0.5 text-[9px] text-gray-500 truncate border border-gray-200">
+                        ircc.canada.ca/english/immigrate/skilled/profile
                       </div>
                     </div>
                     
-                    {/* Form being auto-filled with Chrome accent colors */}
-                    <div className="p-3 space-y-2">
-                      <div className="animate-fade-in" style={{ animationDelay: "0.1s" }}>
-                        <div className="text-[10px] text-gray-500 mb-1">Full Name</div>
-                        <div className="h-7 bg-[#34A853]/10 border border-[#34A853]/40 rounded px-2 flex items-center relative overflow-hidden">
-                          <span className="text-xs text-gray-800 typewriter-text">John William Smith</span>
-                          <Zap size={12} className="absolute right-2 text-[#34A853]" />
+                    {/* IRCC Form content */}
+                    <div className="p-3">
+                      {/* Blue header bar like IRCC */}
+                      <div className="bg-[#26374a] text-white px-3 py-2 rounded-t text-[11px] font-medium">
+                        John Smith: Candidate Express Entry
+                      </div>
+                      
+                      {/* Form table header */}
+                      <div className="grid grid-cols-[1fr,auto,auto] bg-[#f8f8f8] border-x border-b border-gray-300 text-[9px] font-medium text-gray-700">
+                        <div className="px-2 py-1.5 border-r border-gray-300">Form name</div>
+                        <div className="px-2 py-1.5 border-r border-gray-300 w-20 text-center">Status</div>
+                        <div className="px-2 py-1.5 w-16 text-center">Options</div>
+                      </div>
+                      
+                      {/* Form rows with auto-fill animation */}
+                      <div className="animate-fade-in grid grid-cols-[1fr,auto,auto] border-x border-b border-gray-300 text-[10px]" style={{ animationDelay: "0.1s" }}>
+                        <div className="px-2 py-1.5 border-r border-gray-300 text-gray-800">Personal details</div>
+                        <div className="px-2 py-1.5 border-r border-gray-300 w-20 flex items-center justify-center gap-1">
+                          <CheckCircle size={10} className="text-[#34A853]" />
+                          <span className="text-[#34A853] text-[9px]">Complete</span>
+                        </div>
+                        <div className="px-2 py-1.5 w-16 flex justify-center">
+                          <Zap size={10} className="text-[#34A853]" />
                         </div>
                       </div>
                       
-                      <div className="animate-fade-in" style={{ animationDelay: "0.3s" }}>
-                        <div className="text-[10px] text-gray-500 mb-1">Email Address</div>
-                        <div className="h-7 bg-[#34A853]/10 border border-[#34A853]/40 rounded px-2 flex items-center relative overflow-hidden">
-                          <span className="text-xs text-gray-800 typewriter-text-2">john.smith@email.com</span>
-                          <Zap size={12} className="absolute right-2 text-[#34A853]" />
+                      <div className="animate-fade-in grid grid-cols-[1fr,auto,auto] border-x border-b border-gray-300 text-[10px]" style={{ animationDelay: "0.2s" }}>
+                        <div className="px-2 py-1.5 border-r border-gray-300 text-gray-800">Contact details</div>
+                        <div className="px-2 py-1.5 border-r border-gray-300 w-20 flex items-center justify-center gap-1">
+                          <CheckCircle size={10} className="text-[#34A853]" />
+                          <span className="text-[#34A853] text-[9px]">Complete</span>
+                        </div>
+                        <div className="px-2 py-1.5 w-16 flex justify-center">
+                          <Zap size={10} className="text-[#34A853]" />
                         </div>
                       </div>
                       
-                      <div className="animate-fade-in" style={{ animationDelay: "0.5s" }}>
-                        <div className="text-[10px] text-gray-500 mb-1">Passport Number</div>
-                        <div className="h-7 bg-[#4285F4]/10 border border-[#4285F4]/40 rounded px-2 flex items-center animate-pulse">
-                          <span className="text-xs text-[#4285F4]">Auto-filling...</span>
-                          <MousePointer size={12} className="absolute right-2 text-[#4285F4] animate-bounce" />
+                      <div className="animate-fade-in grid grid-cols-[1fr,auto,auto] border-x border-b border-gray-300 text-[10px] bg-[#4285F4]/5" style={{ animationDelay: "0.3s" }}>
+                        <div className="px-2 py-1.5 border-r border-gray-300 text-gray-800">Study and languages</div>
+                        <div className="px-2 py-1.5 border-r border-gray-300 w-20 flex items-center justify-center gap-1">
+                          <div className="w-2 h-2 rounded-full bg-[#4285F4] animate-pulse"></div>
+                          <span className="text-[#4285F4] text-[9px] typewriter-text">Filling...</span>
+                        </div>
+                        <div className="px-2 py-1.5 w-16 flex justify-center">
+                          <MousePointer size={10} className="text-[#4285F4] animate-bounce" />
+                        </div>
+                      </div>
+                      
+                      <div className="animate-fade-in grid grid-cols-[1fr,auto,auto] border-x border-b border-gray-300 text-[10px]" style={{ animationDelay: "0.4s" }}>
+                        <div className="px-2 py-1.5 border-r border-gray-300 text-gray-800">Work history</div>
+                        <div className="px-2 py-1.5 border-r border-gray-300 w-20 flex items-center justify-center gap-1">
+                          <div className="w-2 h-2 rounded-full bg-[#9f1d21]"></div>
+                          <span className="text-[#9f1d21] text-[9px]">Not started</span>
+                        </div>
+                        <div className="px-2 py-1.5 w-16 flex justify-center">
+                          <span className="text-[8px] bg-[#26374a] text-white px-1.5 py-0.5 rounded">Start</span>
                         </div>
                       </div>
                     </div>
                   </div>
                   
-                  <div className="animate-fade-in space-y-3" style={{ animationDelay: "0.6s" }}>
+                  <div className="animate-fade-in space-y-2" style={{ animationDelay: "0.5s" }}>
                     <div className="flex items-center gap-2 text-xs text-gray-600">
                       <CheckCircle size={14} className="text-[#34A853]" />
-                      <span>24 fields auto-filled</span>
+                      <span>Auto-fills all 6 IRCC sections</span>
                     </div>
                     <div className="flex items-center gap-2 text-xs text-gray-600">
                       <CheckCircle size={14} className="text-[#34A853]" />
@@ -438,7 +468,7 @@ const ProcessSection = () => {
                   </div>
                   
                   {/* Chrome-colored CTA button */}
-                  <div className="animate-fade-in mt-4 flex items-center justify-center" style={{ animationDelay: "0.7s" }}>
+                  <div className="animate-fade-in mt-4 flex items-center justify-center" style={{ animationDelay: "0.6s" }}>
                     <div className="px-4 py-2.5 bg-gradient-to-r from-[#EA4335] via-[#FBBC05] via-[#34A853] to-[#4285F4] rounded-lg flex items-center gap-2 text-white text-sm font-medium shadow-lg cursor-pointer hover:shadow-xl transition-all hover:scale-105">
                       <div className="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center">
                         <div className="w-2 h-2 rounded-full bg-white"></div>
