@@ -2,26 +2,20 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { cn } from '@/lib/utils';
 import { 
-  BarChart, 
-  Activity, 
-  Timer, 
-  Mic, 
   ChevronRight,
-  User,
   Briefcase,
   GraduationCap,
   Globe,
-  FileText,
   CheckCircle,
   AlertCircle,
   Scan,
   Upload,
   Eye,
   AlertTriangle,
-  Chrome,
   Zap,
   MousePointer,
-  ArrowRight
+  ArrowRight,
+  TrendingUp
 } from 'lucide-react';
 
 interface Step {
@@ -101,70 +95,74 @@ const ProcessSection = () => {
                 isVisible ? "opacity-100" : "opacity-0"
               )}
             >
-              {/* Step 1: Assess - CRS Score Questionnaire */}
+              {/* Step 1: Assess - CRS Score Calculator (closer to actual) */}
               {activeStep === 1 && (
-                <div className="animate-fade-in glass-card rounded-xl p-6 w-full max-w-sm shadow-xl">
-                  <div className="h-7 w-44 bg-primary-blue/10 rounded-full mb-5 flex items-center px-3 border border-primary-blue/20">
-                    <span className="text-xs text-primary-blue font-medium">Questionnaire Progress</span>
-                  </div>
-                  
-                  <div className="space-y-4 mb-6">
-                    <div className="animate-fade-in" style={{ animationDelay: "0.1s" }}>
-                      <div className="h-6 w-full bg-gray-100 rounded-md mb-2 flex items-center px-3">
-                        <span className="text-xs text-gray-600">Are you currently in Canada?</span>
+                <div className="animate-fade-in glass-card rounded-xl p-6 w-full max-w-md shadow-xl">
+                  {/* Running Score Header - like the actual sticky tracker */}
+                  <div className="bg-gradient-to-br from-primary-blue/10 to-primary-blue/5 rounded-lg p-4 mb-5 border border-primary-blue/20">
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center gap-2">
+                        <TrendingUp size={16} className="text-primary-blue" />
+                        <span className="text-xs font-medium text-gray-600">Running Score</span>
                       </div>
-                      <div className="flex gap-2 items-center">
-                        <div className="h-8 w-16 bg-gray-100 border border-gray-200 rounded flex items-center justify-center cursor-pointer hover:bg-gray-200 transition-colors">
-                          <span className="text-xs text-gray-700">Yes</span>
-                        </div>
-                        <div className="h-8 w-16 bg-primary-blue/10 border border-primary-blue/30 rounded flex items-center justify-center">
-                          <span className="text-xs text-primary-blue font-medium">No</span>
-                        </div>
-                        <Mic size={18} className="text-primary-blue animate-pulse ml-2" />
+                      <div className="text-right">
+                        <span className="text-2xl font-bold text-primary-blue">467</span>
+                        <span className="text-xs text-gray-500"> / 1,200</span>
                       </div>
                     </div>
-                    
-                    <div className="animate-fade-in" style={{ animationDelay: "0.2s" }}>
-                      <div className="flex items-center gap-2 mb-2">
-                        <BarChart className="text-gray-500" size={14} />
-                        <div className="text-xs text-gray-600">Your points: 490</div>
+                    <div className="h-2 w-full bg-gray-200 rounded-full overflow-hidden">
+                      <div className="h-full w-[39%] bg-primary-blue rounded-full transition-all duration-1000"></div>
+                    </div>
+                    <div className="flex flex-wrap gap-1.5 mt-3">
+                      <span className="px-2 py-0.5 bg-primary-blue/10 rounded text-[10px] text-primary-blue font-medium">Age: 110</span>
+                      <span className="px-2 py-0.5 bg-primary-blue/10 rounded text-[10px] text-primary-blue font-medium">Education: 120</span>
+                      <span className="px-2 py-0.5 bg-gray-100 rounded text-[10px] text-gray-500">Experience: 0</span>
+                    </div>
+                  </div>
+                  
+                  {/* Question section */}
+                  <div className="space-y-4">
+                    <div className="animate-fade-in" style={{ animationDelay: "0.1s" }}>
+                      <div className="text-xs text-gray-500 uppercase tracking-wider mb-2">Personal Information</div>
+                      <div className="text-sm font-medium text-gray-800 mb-2">3) How old are you?</div>
+                      <div className="relative">
+                        <div className="h-10 w-full bg-white border border-gray-300 rounded-md px-3 flex items-center justify-between cursor-pointer hover:border-primary-blue transition-colors">
+                          <span className="text-sm text-gray-800">20-29</span>
+                          <ChevronRight size={16} className="text-gray-400 rotate-90" />
+                        </div>
                       </div>
-                      <div className="h-5 w-full bg-gray-100 rounded-full overflow-hidden">
-                        <div className="h-full w-[82%] bg-gradient-to-r from-green-400 to-green-500 rounded-full transition-all duration-1000"></div>
+                      {/* Score Indicator like the actual */}
+                      <div className="mt-3 p-3 rounded-lg bg-gray-50 border border-gray-200">
+                        <div className="flex items-center justify-between mb-2">
+                          <div className="flex items-center gap-2">
+                            <Zap size={14} className="text-primary-blue" />
+                            <span className="text-[10px] text-gray-500">Point Contribution</span>
+                          </div>
+                          <span className="text-[10px] px-2 py-0.5 bg-green-100 text-green-700 rounded-full font-medium">Excellent</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <div className="flex-1 h-1.5 bg-gray-200 rounded-full overflow-hidden">
+                            <div className="h-full w-full bg-green-500 rounded-full"></div>
+                          </div>
+                          <span className="text-sm font-bold text-gray-800">110<span className="text-gray-400 font-normal"> / 110</span></span>
+                        </div>
                       </div>
-                      <div className="text-right text-xs text-green-600 font-medium mt-1">Top 3% of applicants</div>
                     </div>
                     
                     <div className="animate-fade-in" style={{ animationDelay: "0.3s" }}>
-                      <div className="flex items-center gap-2 mb-2">
-                        <Activity className="text-gray-500" size={14} />
-                        <div className="text-xs text-gray-600">Your chances</div>
+                      <div className="text-sm font-medium text-gray-800 mb-2">4) What is your level of education?</div>
+                      <div className="relative">
+                        <div className="h-10 w-full bg-primary-blue/5 border-2 border-primary-blue rounded-md px-3 flex items-center justify-between">
+                          <span className="text-sm text-primary-blue font-medium">Bachelor's degree</span>
+                          <CheckCircle size={16} className="text-primary-blue" />
+                        </div>
                       </div>
-                      <div className="h-5 w-full bg-gray-100 rounded-full overflow-hidden">
-                        <div className="h-full w-3/4 bg-gradient-to-r from-green-400 to-green-500 rounded-full transition-all duration-1000"></div>
-                      </div>
-                      <div className="text-right text-xs text-green-600 font-medium mt-1">High</div>
-                    </div>
-                    
-                    <div className="animate-fade-in" style={{ animationDelay: "0.4s" }}>
-                      <div className="flex items-center gap-2 mb-2">
-                        <Timer className="text-gray-500" size={14} />
-                        <div className="text-xs text-gray-600">Timeline</div>
-                      </div>
-                      <div className="h-5 w-full bg-gray-100 rounded-full overflow-hidden">
-                        <div className="h-full w-1/2 bg-gradient-to-r from-amber-400 to-amber-500 rounded-full transition-all duration-1000"></div>
-                      </div>
-                      <div className="text-right text-xs text-amber-600 font-medium mt-1">3-6 months</div>
                     </div>
                   </div>
                   
-                  <div className="flex justify-between items-center animate-fade-in" style={{ animationDelay: "0.5s" }}>
-                    <div className="flex items-center gap-2">
-                      <Mic size={16} className="text-primary-blue" />
-                      <span className="text-xs text-gray-600">Voice enabled</span>
-                    </div>
+                  <div className="flex justify-end mt-6 animate-fade-in" style={{ animationDelay: "0.5s" }}>
                     <div className="h-9 px-5 bg-primary-blue rounded-lg flex items-center justify-center text-white text-sm font-medium hover:bg-primary-blue/90 transition-colors cursor-pointer shadow-md">
-                      Next
+                      Continue
                       <ChevronRight size={16} className="ml-1" />
                     </div>
                   </div>
@@ -366,57 +364,63 @@ const ProcessSection = () => {
                 </div>
               )}
               
-              {/* Step 5: Apply - Chrome Extension */}
+              {/* Step 5: Apply - Chrome Extension with Chrome colors */}
               {activeStep === 5 && (
                 <div className="animate-fade-in glass-card rounded-xl p-6 w-full max-w-sm shadow-xl">
                   <div className="flex items-center justify-between mb-5">
-                    <div className="h-7 px-3 bg-gradient-to-r from-blue-500/10 to-green-500/10 rounded-full flex items-center border border-blue-500/20">
-                      <Chrome size={14} className="text-blue-600 mr-2" />
-                      <span className="text-xs text-blue-700 font-medium">Chrome Extension</span>
+                    {/* Chrome-colored badge */}
+                    <div className="h-7 px-3 bg-gradient-to-r from-[#EA4335]/10 via-[#FBBC05]/10 to-[#34A853]/10 rounded-full flex items-center border border-[#4285F4]/30">
+                      <div className="w-4 h-4 mr-2 rounded-full bg-gradient-to-br from-[#EA4335] via-[#FBBC05] to-[#34A853] flex items-center justify-center">
+                        <div className="w-1.5 h-1.5 rounded-full bg-[#4285F4] ring-1 ring-white"></div>
+                      </div>
+                      <span className="text-xs font-medium bg-gradient-to-r from-[#EA4335] via-[#34A853] to-[#4285F4] bg-clip-text text-transparent">Chrome Extension</span>
                     </div>
-                    <div className="flex items-center gap-1 px-2 py-1 bg-green-100 rounded-full">
-                      <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse"></div>
-                      <span className="text-[10px] text-green-700 font-medium">Active</span>
+                    <div className="flex items-center gap-1 px-2 py-1 bg-[#34A853]/10 rounded-full border border-[#34A853]/30">
+                      <div className="h-2 w-2 rounded-full bg-[#34A853] animate-pulse"></div>
+                      <span className="text-[10px] text-[#34A853] font-medium">Active</span>
                     </div>
                   </div>
                   
-                  {/* Simulated IRCC website with auto-fill */}
+                  {/* Simulated IRCC website with Chrome-colored auto-fill */}
                   <div className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden mb-4">
-                    {/* Browser chrome */}
-                    <div className="bg-gray-100 px-3 py-2 border-b border-gray-200 flex items-center gap-2">
+                    {/* Browser chrome bar with Chrome colors */}
+                    <div className="bg-gradient-to-r from-gray-100 to-gray-50 px-3 py-2 border-b border-gray-200 flex items-center gap-2">
                       <div className="flex gap-1.5">
-                        <div className="w-2.5 h-2.5 rounded-full bg-red-400"></div>
-                        <div className="w-2.5 h-2.5 rounded-full bg-amber-400"></div>
-                        <div className="w-2.5 h-2.5 rounded-full bg-green-400"></div>
+                        <div className="w-2.5 h-2.5 rounded-full bg-[#EA4335]"></div>
+                        <div className="w-2.5 h-2.5 rounded-full bg-[#FBBC05]"></div>
+                        <div className="w-2.5 h-2.5 rounded-full bg-[#34A853]"></div>
                       </div>
-                      <div className="flex-1 bg-white rounded px-2 py-1 text-[10px] text-gray-500 truncate">
+                      <div className="flex-1 bg-white rounded-full px-3 py-1 text-[10px] text-gray-500 truncate border border-gray-200 flex items-center gap-1">
+                        <div className="w-3 h-3 rounded-full bg-[#4285F4]/20 flex items-center justify-center">
+                          <div className="w-1.5 h-1.5 rounded-full bg-[#4285F4]"></div>
+                        </div>
                         ircc.canada.ca/english/immigrate/skilled/profile...
                       </div>
                     </div>
                     
-                    {/* Form being auto-filled */}
+                    {/* Form being auto-filled with Chrome accent colors */}
                     <div className="p-3 space-y-2">
                       <div className="animate-fade-in" style={{ animationDelay: "0.1s" }}>
                         <div className="text-[10px] text-gray-500 mb-1">Full Name</div>
-                        <div className="h-7 bg-green-50 border border-green-300 rounded px-2 flex items-center relative overflow-hidden">
+                        <div className="h-7 bg-[#34A853]/10 border border-[#34A853]/40 rounded px-2 flex items-center relative overflow-hidden">
                           <span className="text-xs text-gray-800 typewriter-text">John William Smith</span>
-                          <Zap size={12} className="absolute right-2 text-green-500" />
+                          <Zap size={12} className="absolute right-2 text-[#34A853]" />
                         </div>
                       </div>
                       
                       <div className="animate-fade-in" style={{ animationDelay: "0.3s" }}>
                         <div className="text-[10px] text-gray-500 mb-1">Email Address</div>
-                        <div className="h-7 bg-green-50 border border-green-300 rounded px-2 flex items-center relative overflow-hidden">
+                        <div className="h-7 bg-[#34A853]/10 border border-[#34A853]/40 rounded px-2 flex items-center relative overflow-hidden">
                           <span className="text-xs text-gray-800 typewriter-text-2">john.smith@email.com</span>
-                          <Zap size={12} className="absolute right-2 text-green-500" />
+                          <Zap size={12} className="absolute right-2 text-[#34A853]" />
                         </div>
                       </div>
                       
                       <div className="animate-fade-in" style={{ animationDelay: "0.5s" }}>
                         <div className="text-[10px] text-gray-500 mb-1">Passport Number</div>
-                        <div className="h-7 bg-blue-50 border border-blue-300 rounded px-2 flex items-center animate-pulse">
-                          <span className="text-xs text-blue-600">Auto-filling...</span>
-                          <MousePointer size={12} className="absolute right-2 text-blue-500 animate-bounce" />
+                        <div className="h-7 bg-[#4285F4]/10 border border-[#4285F4]/40 rounded px-2 flex items-center animate-pulse">
+                          <span className="text-xs text-[#4285F4]">Auto-filling...</span>
+                          <MousePointer size={12} className="absolute right-2 text-[#4285F4] animate-bounce" />
                         </div>
                       </div>
                     </div>
@@ -424,18 +428,21 @@ const ProcessSection = () => {
                   
                   <div className="animate-fade-in space-y-3" style={{ animationDelay: "0.6s" }}>
                     <div className="flex items-center gap-2 text-xs text-gray-600">
-                      <CheckCircle size={14} className="text-green-500" />
+                      <CheckCircle size={14} className="text-[#34A853]" />
                       <span>24 fields auto-filled</span>
                     </div>
                     <div className="flex items-center gap-2 text-xs text-gray-600">
-                      <CheckCircle size={14} className="text-green-500" />
+                      <CheckCircle size={14} className="text-[#34A853]" />
                       <span>You review before submitting</span>
                     </div>
                   </div>
                   
+                  {/* Chrome-colored CTA button */}
                   <div className="animate-fade-in mt-4 flex items-center justify-center" style={{ animationDelay: "0.7s" }}>
-                    <div className="px-4 py-2 bg-gradient-to-r from-blue-500 to-green-500 rounded-lg flex items-center gap-2 text-white text-sm font-medium shadow-lg cursor-pointer hover:shadow-xl transition-shadow">
-                      <Chrome size={16} />
+                    <div className="px-4 py-2.5 bg-gradient-to-r from-[#EA4335] via-[#FBBC05] via-[#34A853] to-[#4285F4] rounded-lg flex items-center gap-2 text-white text-sm font-medium shadow-lg cursor-pointer hover:shadow-xl transition-all hover:scale-105">
+                      <div className="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center">
+                        <div className="w-2 h-2 rounded-full bg-white"></div>
+                      </div>
                       <span>Get the Extension</span>
                       <ArrowRight size={14} />
                     </div>
