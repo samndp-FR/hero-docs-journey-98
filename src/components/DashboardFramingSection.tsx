@@ -1,7 +1,7 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { cn } from '@/lib/utils';
-import { CheckCircle, Clock, TrendingUp, ArrowRight } from 'lucide-react';
+import { CheckCircle, Clock, TrendingUp, ArrowRight, FileText, AlertCircle } from 'lucide-react';
 
 const DashboardFramingSection = () => {
   const [isVisible, setIsVisible] = useState(false);
@@ -193,6 +193,40 @@ const DashboardFramingSection = () => {
                     <div className="flex items-center justify-center gap-2 bg-eldo-blue text-white text-xs font-medium py-2.5 px-4 rounded-lg">
                       Continue Application
                       <ArrowRight className="h-3.5 w-3.5" />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Document Reminder Section */}
+                <div className={cn(
+                  "p-5 border-t border-gray-100 transition-all duration-500",
+                  isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+                )} style={{ transitionDelay: "900ms" }}>
+                  <div className="flex items-center gap-2 mb-3">
+                    <FileText className="h-4 w-4 text-amber-500" />
+                    <span className="text-sm font-medium text-gray-700">Documents for this stage</span>
+                  </div>
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between p-2.5 rounded-lg bg-green-50 border border-green-200">
+                      <div className="flex items-center gap-2">
+                        <CheckCircle className="h-3.5 w-3.5 text-green-600" />
+                        <span className="text-xs text-green-700">Language Test Results</span>
+                      </div>
+                      <span className="text-[10px] text-green-500 font-medium">Ready</span>
+                    </div>
+                    <div className="flex items-center justify-between p-2.5 rounded-lg bg-amber-50 border border-amber-200">
+                      <div className="flex items-center gap-2">
+                        <AlertCircle className="h-3.5 w-3.5 text-amber-500" />
+                        <span className="text-xs text-amber-700">Educational Credentials</span>
+                      </div>
+                      <span className="text-[10px] text-amber-500 font-medium">Needed</span>
+                    </div>
+                    <div className="flex items-center justify-between p-2.5 rounded-lg bg-amber-50 border border-amber-200">
+                      <div className="flex items-center gap-2">
+                        <AlertCircle className="h-3.5 w-3.5 text-amber-500" />
+                        <span className="text-xs text-amber-700">Work Experience Letters</span>
+                      </div>
+                      <span className="text-[10px] text-amber-500 font-medium">Needed</span>
                     </div>
                   </div>
                 </div>
