@@ -1,7 +1,7 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { cn } from '@/lib/utils';
-import { LayoutDashboard, CheckCircle, Bell, FileText, TrendingUp } from 'lucide-react';
+import { CheckCircle, Clock, TrendingUp, ArrowRight } from 'lucide-react';
 
 const DashboardFramingSection = () => {
   const [isVisible, setIsVisible] = useState(false);
@@ -28,6 +28,14 @@ const DashboardFramingSection = () => {
     };
   }, []);
 
+  const stages = [
+    { label: 'Get Ready', completed: true },
+    { label: 'Build Profile', current: true },
+    { label: 'Wait for ITA', future: true },
+    { label: 'Apply for PR', future: true },
+    { label: 'Wait for IRCC', future: true },
+  ];
+
   return (
     <section className="py-20 bg-gradient-to-b from-white to-eldo-soft-blue/30" ref={sectionRef}>
       <div className="container mx-auto px-6">
@@ -51,100 +59,152 @@ const DashboardFramingSection = () => {
             </p>
           </div>
 
-          {/* Dashboard Preview Animation */}
+          {/* Dashboard Preview - Matching actual dashboard design */}
           <div className={cn(
             "transition-all duration-700 delay-300",
             isVisible ? "opacity-100 translate-x-0" : "opacity-0 translate-x-10"
           )}>
-            <div className="relative bg-gradient-to-br from-eldo-soft-blue/50 to-eldo-light-purple/30 rounded-2xl p-6 md:p-8 overflow-hidden">
-              {/* Dashboard mockup */}
-              <div className="glass-card rounded-xl p-5 animate-fade-in">
-                {/* Header */}
-                <div className="flex items-center justify-between mb-6">
-                  <div className="flex items-center gap-3">
-                    <div className="h-10 w-10 rounded-full bg-eldo-blue/20 flex items-center justify-center">
-                      <LayoutDashboard size={20} className="text-eldo-blue" />
-                    </div>
-                    <div>
-                      <div className="text-sm font-semibold text-eldo-dark">Application Overview</div>
-                      <div className="text-xs text-eldo-dark/60">Express Entry</div>
-                    </div>
-                  </div>
-                  <div className="relative">
-                    <Bell size={18} className="text-eldo-dark/60" />
-                    <div className="absolute -top-1 -right-1 h-2 w-2 bg-amber-500 rounded-full animate-pulse"></div>
-                  </div>
-                </div>
-
-                {/* Status cards */}
-                <div className="grid grid-cols-2 gap-3 mb-5">
+            <div className="relative">
+              {/* Dashboard mockup card */}
+              <div className="bg-white rounded-xl border border-gray-200 shadow-xl overflow-hidden">
+                
+                {/* Stage Header Card */}
+                <div className="p-5 border-b border-gray-100">
                   <div className={cn(
-                    "bg-green-50 rounded-lg p-3 transition-all duration-500",
+                    "transition-all duration-500",
                     isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
                   )} style={{ transitionDelay: "400ms" }}>
-                    <div className="flex items-center gap-2 mb-1">
-                      <CheckCircle size={14} className="text-green-600" />
-                      <span className="text-xs font-medium text-green-700">Completed</span>
+                    <div className="inline-flex items-center px-2.5 py-1 rounded-md bg-eldo-blue/10 text-eldo-blue text-xs font-medium mb-2">
+                      Current Stage
                     </div>
-                    <div className="text-xl font-bold text-green-800">3/5</div>
-                    <div className="text-[10px] text-green-600">stages done</div>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-1">Build Profile</h3>
+                    <p className="text-sm text-gray-500">You're in the Express Entry pool.</p>
                   </div>
                   
+                  {/* Progress Timeline */}
                   <div className={cn(
-                    "bg-amber-50 rounded-lg p-3 transition-all duration-500",
+                    "mt-5 pt-4 border-t border-gray-100 transition-all duration-500",
                     isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
                   )} style={{ transitionDelay: "500ms" }}>
-                    <div className="flex items-center gap-2 mb-1">
-                      <FileText size={14} className="text-amber-600" />
-                      <span className="text-xs font-medium text-amber-700">Pending</span>
+                    <div className="relative">
+                      {/* Background line */}
+                      <div className="absolute top-2.5 left-0 right-0 h-0.5 bg-gray-200" />
+                      {/* Progress line */}
+                      <div 
+                        className={cn(
+                          "absolute top-2.5 left-0 h-0.5 bg-green-500 transition-all duration-1000",
+                          isVisible ? "w-[20%]" : "w-0"
+                        )}
+                        style={{ transitionDelay: "800ms" }}
+                      />
+                      
+                      {/* Dots */}
+                      <div className="relative flex justify-between">
+                        {stages.map((stage, index) => (
+                          <div key={stage.label} className="flex flex-col items-center">
+                            <div className={cn(
+                              "w-5 h-5 rounded-full flex items-center justify-center transition-all duration-500",
+                              stage.completed ? "bg-green-500" : 
+                              stage.current ? "bg-eldo-blue" : 
+                              "bg-gray-200 border-2 border-dashed border-gray-300"
+                            )} style={{ transitionDelay: `${600 + index * 100}ms` }}>
+                              {stage.completed && <CheckCircle className="h-3 w-3 text-white" />}
+                              {stage.current && <div className="w-1.5 h-1.5 bg-white rounded-full" />}
+                            </div>
+                            <span className={cn(
+                              "text-[10px] mt-1.5 font-medium text-center max-w-[50px] leading-tight",
+                              stage.future ? "text-gray-300" : "text-gray-700"
+                            )}>
+                              {stage.label}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
                     </div>
-                    <div className="text-xl font-bold text-amber-800">2</div>
-                    <div className="text-[10px] text-amber-600">documents needed</div>
+                    
+                    {/* Estimated time */}
+                    <div className={cn(
+                      "flex items-center justify-between text-xs mt-4 p-2.5 bg-gray-50 rounded-lg transition-all duration-500",
+                      isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+                    )} style={{ transitionDelay: "900ms" }}>
+                      <div className="flex items-center gap-1.5">
+                        <Clock className="h-3.5 w-3.5 text-gray-400" />
+                        <span className="text-gray-500">Estimated time to PR:</span>
+                      </div>
+                      <span className="font-medium text-gray-700">6-12 months</span>
+                    </div>
                   </div>
                 </div>
 
-                {/* Progress section */}
+                {/* CRS Outlook Card */}
                 <div className={cn(
-                  "bg-eldo-soft-blue/50 rounded-lg p-3 mb-4 transition-all duration-500",
-                  isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
-                )} style={{ transitionDelay: "600ms" }}>
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-xs font-medium text-eldo-dark">Overall Progress</span>
-                    <span className="text-xs font-bold text-eldo-blue">67%</span>
-                  </div>
-                  <div className="h-2 bg-white rounded-full overflow-hidden">
-                    <div 
-                      className={cn(
-                        "h-full bg-gradient-to-r from-eldo-blue to-eldo-purple rounded-full transition-all duration-1000",
-                        isVisible ? "w-[67%]" : "w-0"
-                      )}
-                      style={{ transitionDelay: "800ms" }}
-                    ></div>
-                  </div>
-                </div>
-
-                {/* Next step indicator */}
-                <div className={cn(
-                  "flex items-center gap-3 p-3 bg-eldo-blue/10 rounded-lg border border-eldo-blue/20 transition-all duration-500",
+                  "p-5 border-b border-gray-100 transition-all duration-500",
                   isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
                 )} style={{ transitionDelay: "700ms" }}>
-                  <div className="h-8 w-8 rounded-full bg-eldo-blue flex items-center justify-center">
-                    <TrendingUp size={14} className="text-white" />
+                  <div className="flex items-center gap-2 mb-3">
+                    <TrendingUp className="h-4 w-4 text-eldo-blue" />
+                    <span className="text-sm font-medium text-gray-700">CRS Outlook</span>
                   </div>
-                  <div className="flex-1">
-                    <div className="text-xs font-medium text-eldo-dark">Next: Upload Language Test</div>
-                    <div className="text-[10px] text-eldo-dark/60">Required for profile submission</div>
+                  <div className="flex items-center gap-6">
+                    <div>
+                      <p className="text-[10px] text-gray-500 uppercase tracking-wide">Estimated</p>
+                      <p className="text-2xl font-bold text-gray-900">~465</p>
+                    </div>
+                    <div className="h-10 w-px bg-gray-200" />
+                    <div>
+                      <p className="text-[10px] text-gray-500 uppercase tracking-wide">Cutoff</p>
+                      <p className="text-lg font-semibold text-gray-500">470-480</p>
+                    </div>
+                    <div className="h-10 w-px bg-gray-200" />
+                    <div>
+                      <div className="flex items-center gap-1.5">
+                        <div className="w-2 h-2 rounded-full bg-green-500" />
+                        <span className="text-sm font-medium text-green-600">Competitive</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Checklist Preview */}
+                <div className={cn(
+                  "p-5 transition-all duration-500",
+                  isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+                )} style={{ transitionDelay: "800ms" }}>
+                  <p className="text-sm font-medium text-gray-700 mb-3">Build Profile Checklist</p>
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2.5 p-2.5 rounded-lg bg-green-50 border border-green-200">
+                      <div className="w-4 h-4 rounded bg-green-500 flex items-center justify-center">
+                        <CheckCircle className="h-3 w-3 text-white" />
+                      </div>
+                      <span className="text-xs text-green-700">CRS score estimated</span>
+                      <span className="text-[10px] text-green-500 ml-auto">Auto</span>
+                    </div>
+                    <div className="flex items-center gap-2.5 p-2.5 rounded-lg bg-gray-50 border border-gray-200">
+                      <div className="w-4 h-4 rounded border-2 border-gray-300" />
+                      <span className="text-xs text-gray-700">Profile submitted to IRCC</span>
+                    </div>
+                  </div>
+                  
+                  {/* CTA Button */}
+                  <div className={cn(
+                    "mt-4 transition-all duration-500",
+                    isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+                  )} style={{ transitionDelay: "1000ms" }}>
+                    <div className="flex items-center justify-center gap-2 bg-eldo-blue text-white text-xs font-medium py-2.5 px-4 rounded-lg">
+                      Continue Application
+                      <ArrowRight className="h-3.5 w-3.5" />
+                    </div>
                   </div>
                 </div>
               </div>
 
               {/* Floating decorative elements */}
               <div className={cn(
-                "absolute -top-4 -right-4 h-24 w-24 bg-eldo-blue/10 rounded-full blur-xl transition-all duration-1000",
+                "absolute -top-6 -right-6 h-28 w-28 bg-eldo-blue/10 rounded-full blur-2xl transition-all duration-1000",
                 isVisible ? "opacity-100 scale-100" : "opacity-0 scale-50"
               )}></div>
               <div className={cn(
-                "absolute -bottom-6 -left-6 h-32 w-32 bg-eldo-purple/10 rounded-full blur-xl transition-all duration-1000 delay-200",
+                "absolute -bottom-8 -left-8 h-36 w-36 bg-eldo-purple/10 rounded-full blur-2xl transition-all duration-1000 delay-200",
                 isVisible ? "opacity-100 scale-100" : "opacity-0 scale-50"
               )}></div>
             </div>
