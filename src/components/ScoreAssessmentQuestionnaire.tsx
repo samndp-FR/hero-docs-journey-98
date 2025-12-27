@@ -3,13 +3,194 @@ import React, { useState, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Calculator, FileText, Award, TrendingUp, Zap, BadgePlus, AlertTriangle } from 'lucide-react';
+import { Calculator, FileText, Award, TrendingUp, Zap, BadgePlus, AlertTriangle, Stethoscope, Cpu, Hammer, Wheat, GraduationCap, UserCheck, Search, ChevronDown, ChevronUp } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
+import { Input } from '@/components/ui/input';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 
 interface ScoreAssessmentQuestionnaireProps {
   onComplete: (results: any) => void;
   onCancel: () => void;
 }
+
+// Occupation categories with NOC codes
+const OCCUPATION_CATEGORIES = {
+  healthcare: {
+    id: 'healthcare',
+    label: 'Healthcare and Social Services',
+    icon: Stethoscope,
+    color: 'text-rose-600 bg-rose-50 border-rose-200',
+    occupations: [
+      { name: 'Animal health technologists and veterinary technicians', noc: '32104', teer: 2 },
+      { name: 'Audiologists and speech language pathologists', noc: '31112', teer: 1 },
+      { name: 'Cardiology technologists and electrophysiological diagnostic technologists', noc: '32123', teer: 2 },
+      { name: 'Chiropractors', noc: '31201', teer: 1 },
+      { name: 'Dental hygienists and dental therapists', noc: '32111', teer: 2 },
+      { name: 'Dentists', noc: '31110', teer: 1 },
+      { name: 'Dieticians and nutritionists', noc: '31121', teer: 1 },
+      { name: 'General practitioners and family physicians', noc: '31102', teer: 1 },
+      { name: 'Licensed practical nurses', noc: '32101', teer: 2 },
+      { name: 'Massage therapists', noc: '32201', teer: 2 },
+      { name: 'Medical laboratory assistants and related technical occupations', noc: '33101', teer: 3 },
+      { name: 'Medical laboratory technologists', noc: '32120', teer: 2 },
+      { name: 'Medical radiation technologists', noc: '32121', teer: 2 },
+      { name: 'Medical sonographers', noc: '32122', teer: 2 },
+      { name: 'Nurse aides, orderlies and patient service associates', noc: '33102', teer: 3 },
+      { name: 'Occupational therapists', noc: '31203', teer: 1 },
+      { name: 'Opticians', noc: '32113', teer: 2 },
+      { name: 'Optometrists', noc: '31111', teer: 1 },
+      { name: 'Other assisting occupations in support of health services', noc: '33109', teer: 3 },
+      { name: 'Other professional occupations in health diagnosing and treating', noc: '31209', teer: 1 },
+      { name: 'Paramedical occupations', noc: '32102', teer: 2 },
+      { name: 'Pharmacists', noc: '31120', teer: 1 },
+      { name: 'Pharmacy technical assistants and pharmacy assistants', noc: '33103', teer: 3 },
+      { name: 'Physician assistants, midwives and allied health professionals', noc: '31302', teer: 1 },
+      { name: 'Physiotherapists', noc: '31202', teer: 1 },
+      { name: 'Psychologists', noc: '31200', teer: 1 },
+      { name: 'Registered nurses and registered psychiatric nurses', noc: '31301', teer: 1 },
+      { name: 'Respiratory therapists, clinical perfusionists and cardiopulmonary technologists', noc: '32103', teer: 2 },
+      { name: 'Social workers', noc: '41300', teer: 1 },
+      { name: 'Specialist physicians', noc: '31100', teer: 1 },
+      { name: 'Traditional Chinese medicine practitioners and acupuncturists', noc: '32200', teer: 2 },
+      { name: 'Veterinarians', noc: '31103', teer: 1 },
+    ]
+  },
+  stem: {
+    id: 'stem',
+    label: 'Science, Technology, Engineering and Math (STEM)',
+    icon: Cpu,
+    color: 'text-blue-600 bg-blue-50 border-blue-200',
+    occupations: [
+      { name: 'Architects', noc: '21200', teer: 1 },
+      { name: 'Biologists and related scientists', noc: '21110', teer: 1 },
+      { name: 'Business systems specialists', noc: '21221', teer: 1 },
+      { name: 'Chemical engineers', noc: '21301', teer: 1 },
+      { name: 'Chemists', noc: '21100', teer: 1 },
+      { name: 'Civil engineers', noc: '21300', teer: 1 },
+      { name: 'Computer and information systems managers', noc: '20012', teer: 0 },
+      { name: 'Computer engineers', noc: '21311', teer: 1 },
+      { name: 'Computer systems developers and programmers', noc: '21230', teer: 1 },
+      { name: 'Cybersecurity specialists', noc: '21220', teer: 1 },
+      { name: 'Data scientists', noc: '21211', teer: 1 },
+      { name: 'Database analysts and data administrators', noc: '21223', teer: 1 },
+      { name: 'Electrical and electronics engineers', noc: '21310', teer: 1 },
+      { name: 'Electrical and electronics engineering technologists and technicians', noc: '22310', teer: 2 },
+      { name: 'Engineering managers', noc: '20010', teer: 0 },
+      { name: 'Geoscientists and oceanographers', noc: '21102', teer: 1 },
+      { name: 'Industrial and manufacturing engineers', noc: '21321', teer: 1 },
+      { name: 'Information systems specialists', noc: '21222', teer: 1 },
+      { name: 'Land surveyors', noc: '21203', teer: 1 },
+      { name: 'Landscape architects', noc: '21201', teer: 1 },
+      { name: 'Mathematicians, statisticians and actuaries', noc: '21210', teer: 1 },
+      { name: 'Mechanical engineers', noc: '21302', teer: 1 },
+      { name: 'Metallurgical and materials engineers', noc: '21322', teer: 1 },
+      { name: 'Natural and applied science policy researchers, consultants and program officers', noc: '41400', teer: 1 },
+      { name: 'Physicists and astronomers', noc: '21101', teer: 1 },
+      { name: 'Software developers and programmers', noc: '21232', teer: 1 },
+      { name: 'Software engineers and designers', noc: '21231', teer: 1 },
+      { name: 'Urban and land use planners', noc: '21202', teer: 1 },
+      { name: 'Web designers', noc: '21233', teer: 1 },
+      { name: 'Web developers and programmers', noc: '21234', teer: 1 },
+    ]
+  },
+  trade: {
+    id: 'trade',
+    label: 'Trade Occupations',
+    icon: Hammer,
+    color: 'text-amber-600 bg-amber-50 border-amber-200',
+    occupations: [
+      { name: 'Aircraft mechanics and aircraft inspectors', noc: '72410', teer: 2 },
+      { name: 'Automotive service technicians, truck and bus mechanics', noc: '72410', teer: 2 },
+      { name: 'Bricklayers', noc: '72320', teer: 2 },
+      { name: 'Cabinetmakers', noc: '72310', teer: 2 },
+      { name: 'Carpenters', noc: '72310', teer: 2 },
+      { name: 'Concrete finishers', noc: '73102', teer: 3 },
+      { name: 'Construction millwrights and industrial mechanics', noc: '72400', teer: 2 },
+      { name: 'Contractors and supervisors, other construction trades', noc: '72014', teer: 2 },
+      { name: 'Crane operators', noc: '72500', teer: 2 },
+      { name: 'Electricians', noc: '72200', teer: 2 },
+      { name: 'Floor covering installers', noc: '73110', teer: 3 },
+      { name: 'Gas fitters', noc: '72401', teer: 2 },
+      { name: 'Glaziers', noc: '73111', teer: 3 },
+      { name: 'Heavy equipment operators', noc: '72501', teer: 2 },
+      { name: 'Heavy-duty equipment mechanics', noc: '72402', teer: 2 },
+      { name: 'Industrial electricians', noc: '72201', teer: 2 },
+      { name: 'Ironworkers', noc: '72321', teer: 2 },
+      { name: 'Machinists and machining and tooling inspectors', noc: '72100', teer: 2 },
+      { name: 'Painters and decorators', noc: '73112', teer: 3 },
+      { name: 'Plumbers', noc: '72300', teer: 2 },
+      { name: 'Refrigeration and air conditioning mechanics', noc: '72402', teer: 2 },
+      { name: 'Roofers and shinglers', noc: '73113', teer: 3 },
+      { name: 'Sheet metal workers', noc: '72102', teer: 2 },
+      { name: 'Steamfitters, pipefitters and sprinkler system installers', noc: '72301', teer: 2 },
+      { name: 'Tile setters', noc: '73114', teer: 3 },
+      { name: 'Tool and die makers', noc: '72101', teer: 2 },
+      { name: 'Welders and related machine operators', noc: '72106', teer: 2 },
+    ]
+  },
+  agriculture: {
+    id: 'agriculture',
+    label: 'Agriculture and Agri-Food',
+    icon: Wheat,
+    color: 'text-green-600 bg-green-50 border-green-200',
+    occupations: [
+      { name: 'Agricultural and fish products inspectors', noc: '22112', teer: 2 },
+      { name: 'Agricultural representatives, consultants and specialists', noc: '22114', teer: 2 },
+      { name: 'Agricultural service contractors and farm supervisors', noc: '82030', teer: 2 },
+      { name: 'Butchers - retail and wholesale', noc: '63201', teer: 3 },
+      { name: 'Contractors and supervisors, landscaping, grounds maintenance and horticulture services', noc: '82031', teer: 2 },
+      { name: 'Farm workers', noc: '85100', teer: 5 },
+      { name: 'Food and beverage processing workers', noc: '94140', teer: 4 },
+      { name: 'Food processing labourers', noc: '95106', teer: 5 },
+      { name: 'General farm workers', noc: '85100', teer: 5 },
+      { name: 'Harvesting labourers', noc: '85101', teer: 5 },
+      { name: 'Industrial butchers and meat cutters, poultry preparers', noc: '94141', teer: 4 },
+      { name: 'Landscape and horticulture technicians and specialists', noc: '22114', teer: 2 },
+      { name: 'Livestock labourers', noc: '85102', teer: 5 },
+      { name: 'Managers in agriculture', noc: '80020', teer: 0 },
+      { name: 'Nursery and greenhouse workers', noc: '85103', teer: 5 },
+      { name: 'Process control and machine operators, food and beverage processing', noc: '94140', teer: 4 },
+      { name: 'Testers and graders, food and beverage processing', noc: '94142', teer: 4 },
+    ]
+  },
+  education: {
+    id: 'education',
+    label: 'Education Occupations',
+    icon: GraduationCap,
+    color: 'text-purple-600 bg-purple-50 border-purple-200',
+    occupations: [
+      { name: 'Elementary and secondary school teacher assistants', noc: '43100', teer: 3 },
+      { name: 'Instructors of persons with disabilities', noc: '42203', teer: 2 },
+      { name: 'Early childhood educators and assistants', noc: '42202', teer: 2 },
+      { name: 'Elementary school and kindergarten teachers', noc: '41221', teer: 1 },
+      { name: 'Secondary school teachers', noc: '41220', teer: 1 },
+      { name: 'College and other vocational instructors', noc: '41210', teer: 1 },
+      { name: 'University professors and lecturers', noc: '41200', teer: 1 },
+      { name: 'Educational counsellors', noc: '41320', teer: 1 },
+      { name: 'Other instructors', noc: '42201', teer: 2 },
+    ]
+  },
+  physicians: {
+    id: 'physicians',
+    label: 'Physicians with Canadian Work Experience',
+    icon: UserCheck,
+    color: 'text-teal-600 bg-teal-50 border-teal-200',
+    occupations: [
+      { name: 'General practitioners and family physicians', noc: '31102', teer: 1 },
+      { name: 'Specialist physicians', noc: '31100', teer: 1 },
+      { name: 'Psychiatrists', noc: '31100', teer: 1 },
+      { name: 'Surgeons', noc: '31100', teer: 1 },
+      { name: 'Anesthesiologists', noc: '31100', teer: 1 },
+      { name: 'Radiologists', noc: '31100', teer: 1 },
+      { name: 'Pathologists', noc: '31100', teer: 1 },
+      { name: 'Cardiologists', noc: '31100', teer: 1 },
+      { name: 'Neurologists', noc: '31100', teer: 1 },
+      { name: 'Pediatricians', noc: '31100', teer: 1 },
+      { name: 'Obstetricians and gynecologists', noc: '31100', teer: 1 },
+    ]
+  }
+};
 
 // CRS Points reference data
 const CRS_POINTS = {
@@ -332,7 +513,13 @@ const ScoreAssessmentQuestionnaire: React.FC<ScoreAssessmentQuestionnaireProps> 
     q12iiListening: '',
     q12iiReading: '',
     q12iiWriting: '',
+    occupationCategory: '',
+    selectedOccupation: '',
   });
+
+  // Category-based assessment state
+  const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
+  const [occupationSearch, setOccupationSearch] = useState('');
 
   // Calculate spouse score based on answers
   const calculateSpouseScore = useMemo(() => {
@@ -782,6 +969,180 @@ const ScoreAssessmentQuestionnaire: React.FC<ScoreAssessmentQuestionnaireProps> 
                   isAnswered={!!formData.q9}
                 />
               </div>
+            </div>
+
+            {/* Category-Based Assessment Section */}
+            <div className="space-y-6">
+              <h3 className="text-xl font-semibold text-foreground border-b border-border pb-2">
+                Category-Based Assessment
+              </h3>
+              <p className="text-sm text-muted-foreground">
+                Select your occupation category to see if you qualify for category-based Express Entry draws. 
+                These draws target specific occupations that are in high demand in Canada.
+              </p>
+
+              {/* Category Selection */}
+              <div className="space-y-4">
+                {Object.values(OCCUPATION_CATEGORIES).map((category) => {
+                  const CategoryIcon = category.icon;
+                  const isExpanded = expandedCategory === category.id;
+                  const isSelected = formData.occupationCategory === category.id;
+                  
+                  // Filter occupations based on search
+                  const filteredOccupations = category.occupations.filter(occ => 
+                    occ.name.toLowerCase().includes(occupationSearch.toLowerCase()) ||
+                    occ.noc.includes(occupationSearch)
+                  );
+
+                  return (
+                    <Card 
+                      key={category.id} 
+                      className={`border-2 transition-all ${isSelected ? category.color : 'border-border hover:border-primary/30'}`}
+                    >
+                      <Collapsible open={isExpanded} onOpenChange={() => {
+                        setExpandedCategory(isExpanded ? null : category.id);
+                        setOccupationSearch('');
+                      }}>
+                        <CollapsibleTrigger asChild>
+                          <CardHeader className={`cursor-pointer ${isSelected ? category.color : ''}`}>
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-3">
+                                <div className={`p-2 rounded-lg ${category.color}`}>
+                                  <CategoryIcon className="h-5 w-5" />
+                                </div>
+                                <div>
+                                  <CardTitle className="text-base font-semibold">{category.label}</CardTitle>
+                                  <p className="text-xs text-muted-foreground mt-1">
+                                    {category.occupations.length} eligible occupations
+                                  </p>
+                                </div>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                {isSelected && formData.selectedOccupation && (
+                                  <Badge variant="secondary" className="text-xs">
+                                    Selected
+                                  </Badge>
+                                )}
+                                {isExpanded ? (
+                                  <ChevronUp className="h-5 w-5 text-muted-foreground" />
+                                ) : (
+                                  <ChevronDown className="h-5 w-5 text-muted-foreground" />
+                                )}
+                              </div>
+                            </div>
+                          </CardHeader>
+                        </CollapsibleTrigger>
+                        
+                        <CollapsibleContent>
+                          <CardContent className="pt-0">
+                            {/* Search Input */}
+                            <div className="relative mb-4">
+                              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                              <Input
+                                placeholder="Search by occupation or NOC code..."
+                                value={occupationSearch}
+                                onChange={(e) => setOccupationSearch(e.target.value)}
+                                className="pl-10"
+                              />
+                            </div>
+
+                            {/* Occupations Table */}
+                            <ScrollArea className="h-[300px] rounded-md border">
+                              <div className="p-4">
+                                <table className="w-full">
+                                  <thead>
+                                    <tr className="border-b border-border">
+                                      <th className="text-left py-2 px-3 text-sm font-semibold text-muted-foreground">Occupation</th>
+                                      <th className="text-left py-2 px-3 text-sm font-semibold text-muted-foreground w-24">NOC Code</th>
+                                      <th className="text-left py-2 px-3 text-sm font-semibold text-muted-foreground w-20">TEER</th>
+                                      <th className="w-20"></th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    {filteredOccupations.length === 0 ? (
+                                      <tr>
+                                        <td colSpan={4} className="text-center py-8 text-muted-foreground">
+                                          No occupations found matching your search.
+                                        </td>
+                                      </tr>
+                                    ) : (
+                                      filteredOccupations.map((occupation, idx) => {
+                                        const isOccupationSelected = formData.selectedOccupation === occupation.noc + '-' + occupation.name;
+                                        return (
+                                          <tr 
+                                            key={idx} 
+                                            className={`border-b border-border/50 hover:bg-muted/50 transition-colors ${isOccupationSelected ? 'bg-primary/10' : ''}`}
+                                          >
+                                            <td className="py-3 px-3 text-sm">{occupation.name}</td>
+                                            <td className="py-3 px-3 text-sm font-mono">{occupation.noc}</td>
+                                            <td className="py-3 px-3">
+                                              <Badge variant="outline" className="text-xs">
+                                                {occupation.teer}
+                                              </Badge>
+                                            </td>
+                                            <td className="py-3 px-3">
+                                              <Button
+                                                type="button"
+                                                size="sm"
+                                                variant={isOccupationSelected ? "default" : "outline"}
+                                                onClick={() => {
+                                                  setFormData(prev => ({
+                                                    ...prev,
+                                                    occupationCategory: category.id,
+                                                    selectedOccupation: isOccupationSelected ? '' : occupation.noc + '-' + occupation.name
+                                                  }));
+                                                }}
+                                              >
+                                                {isOccupationSelected ? 'Selected' : 'Select'}
+                                              </Button>
+                                            </td>
+                                          </tr>
+                                        );
+                                      })
+                                    )}
+                                  </tbody>
+                                </table>
+                              </div>
+                            </ScrollArea>
+
+                            {/* Selected Occupation Display */}
+                            {isSelected && formData.selectedOccupation && (
+                              <div className="mt-4 p-3 rounded-lg bg-primary/5 border border-primary/20">
+                                <div className="flex items-center gap-2">
+                                  <Badge className="bg-primary text-primary-foreground">Selected Occupation</Badge>
+                                </div>
+                                <p className="mt-2 text-sm font-medium">
+                                  {formData.selectedOccupation.split('-').slice(1).join('-')}
+                                </p>
+                                <p className="text-xs text-muted-foreground mt-1">
+                                  NOC: {formData.selectedOccupation.split('-')[0]}
+                                </p>
+                              </div>
+                            )}
+                          </CardContent>
+                        </CollapsibleContent>
+                      </Collapsible>
+                    </Card>
+                  );
+                })}
+              </div>
+
+              {/* Category Assessment Note */}
+              {formData.selectedOccupation && (
+                <div className="p-4 rounded-lg bg-emerald-50 border border-emerald-200">
+                  <div className="flex items-start gap-3">
+                    <div className="p-2 bg-emerald-100 rounded-lg">
+                      <Award className="h-5 w-5 text-emerald-600" />
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-emerald-800">Category-Based Draw Eligible</h4>
+                      <p className="text-sm text-emerald-700 mt-1">
+                        Your selected occupation may qualify you for category-based Express Entry draws, which often have lower CRS cutoff scores than general draws.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Action Buttons */}
