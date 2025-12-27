@@ -3,7 +3,7 @@ import React, { useState, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Calculator, FileText, Award, TrendingUp, Zap, Sparkles, AlertTriangle } from 'lucide-react';
+import { Calculator, FileText, Award, TrendingUp, Zap, BadgePlus, AlertTriangle } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 
 interface ScoreAssessmentQuestionnaireProps {
@@ -221,7 +221,7 @@ const ScoreIndicator: React.FC<ScoreIndicatorProps> = ({ current, max, label, is
       {bonusFactors && isAnswered && (
         <div className="mt-4 pt-3 border-t border-border/50">
           <div className="flex items-center gap-2 mb-3">
-            <Sparkles className="h-4 w-4 text-violet-500" />
+            <BadgePlus className="h-4 w-4 text-violet-500" />
             <span className="text-xs font-semibold text-violet-700">Skill Transferability Bonus</span>
             <Badge variant="outline" className="text-xs bg-violet-50 text-violet-600 border-violet-200">
               Max +{bonusFactors.maxBonus}
@@ -473,7 +473,7 @@ const ScoreAssessmentQuestionnaire: React.FC<ScoreAssessmentQuestionnaireProps> 
                 variant="outline" 
                 className="text-xs bg-violet-100 border-violet-300 text-violet-700"
               >
-                <Sparkles className="h-3 w-3 mr-1" />
+                <BadgePlus className="h-3 w-3 mr-1" />
                 Skill Transferability: +{skillTransferability.totalCappedBonus}
               </Badge>
             )}
