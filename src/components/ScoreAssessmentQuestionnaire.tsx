@@ -3,7 +3,7 @@ import React, { useState, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Calculator, FileText, Award, TrendingUp, Zap } from 'lucide-react';
+import { Calculator, FileText, Award, TrendingUp, Zap, Gift, AlertTriangle } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 
 interface ScoreAssessmentQuestionnaireProps {
@@ -83,14 +83,81 @@ const CRS_POINTS = {
   }
 };
 
+// Skill Transferability - bonus points that unlock under certain conditions
+const SKILL_TRANSFERABILITY = {
+  education: {
+    label: 'Education Transferability',
+    maxPoints: 50, // Combined cap
+    factors: {
+      languageProficiency: {
+        label: 'Language + Education',
+        maxPoints: 50,
+        // Points based on education level and CLB
+        getPoints: (educationLevel: string, hasLanguage: boolean) => {
+          if (!hasLanguage || !educationLevel || educationLevel === 'A' || educationLevel === 'B') return 0;
+          const eduPointMap: Record<string, number> = {
+            'C': 13, 'D': 19, 'E': 25, 'F': 25, 'G': 25, 'H': 25
+          };
+          return eduPointMap[educationLevel] || 0;
+        }
+      },
+      canadianExperience: {
+        label: 'Canadian Experience + Education',
+        maxPoints: 50,
+        getPoints: (educationLevel: string, canadianExp: string) => {
+          if (!canadianExp || canadianExp === 'A' || !educationLevel || educationLevel === 'A' || educationLevel === 'B') return 0;
+          const eduPointMap: Record<string, number> = {
+            'C': 13, 'D': 19, 'E': 25, 'F': 25, 'G': 25, 'H': 25
+          };
+          return eduPointMap[educationLevel] || 0;
+        }
+      }
+    }
+  },
+  foreignExp: {
+    label: 'Foreign Experience Transferability',
+    maxPoints: 50, // Combined cap
+    factors: {
+      languageProficiency: {
+        label: 'Language + Foreign Experience',
+        maxPoints: 50,
+        getPoints: (foreignExp: string, hasLanguage: boolean) => {
+          if (!hasLanguage || !foreignExp || foreignExp === 'A') return 0;
+          const expPointMap: Record<string, number> = {
+            'B': 13, 'C': 19, 'D': 25
+          };
+          return expPointMap[foreignExp] || 0;
+        }
+      },
+      canadianExperience: {
+        label: 'Canadian + Foreign Experience',
+        maxPoints: 50,
+        getPoints: (foreignExp: string, canadianExp: string) => {
+          if (!canadianExp || canadianExp === 'A' || !foreignExp || foreignExp === 'A') return 0;
+          const expPointMap: Record<string, number> = {
+            'B': 13, 'C': 19, 'D': 25
+          };
+          return expPointMap[foreignExp] || 0;
+        }
+      }
+    }
+  }
+};
+
 interface ScoreIndicatorProps {
   current: number;
   max: number;
   label: string;
   isAnswered: boolean;
+  bonusFactors?: {
+    languageBonus: number;
+    canadianExpBonus: number;
+    maxBonus: number;
+    cappedBonus: number;
+  };
 }
 
-const ScoreIndicator: React.FC<ScoreIndicatorProps> = ({ current, max, label, isAnswered }) => {
+const ScoreIndicator: React.FC<ScoreIndicatorProps> = ({ current, max, label, isAnswered, bonusFactors }) => {
   const percentage = max > 0 ? (current / max) * 100 : 0;
   
   const getPerformanceColor = () => {
@@ -107,6 +174,9 @@ const ScoreIndicator: React.FC<ScoreIndicatorProps> = ({ current, max, label, is
     if (percentage > 0) return 'Room to improve';
     return 'No points';
   };
+
+  const hasBonusPoints = bonusFactors && (bonusFactors.languageBonus > 0 || bonusFactors.canadianExpBonus > 0);
+  const isCapped = bonusFactors && (bonusFactors.languageBonus + bonusFactors.canadianExpBonus) > bonusFactors.maxBonus;
 
   return (
     <div className="mt-3 p-3 rounded-lg bg-muted/30 border border-border/50">
@@ -144,6 +214,84 @@ const ScoreIndicator: React.FC<ScoreIndicatorProps> = ({ current, max, label, is
         <div className="mt-2 flex items-center gap-1 text-xs text-muted-foreground">
           <TrendingUp className="h-3 w-3" />
           <span>+{max - current} points potential</span>
+        </div>
+      )}
+
+      {/* Skill Transferability Bonus Section */}
+      {bonusFactors && isAnswered && (
+        <div className="mt-4 pt-3 border-t border-border/50">
+          <div className="flex items-center gap-2 mb-3">
+            <Gift className="h-4 w-4 text-violet-500" />
+            <span className="text-xs font-semibold text-violet-700">Skill Transferability Bonus</span>
+            <Badge variant="outline" className="text-xs bg-violet-50 text-violet-600 border-violet-200">
+              Max +{bonusFactors.maxBonus}
+            </Badge>
+          </div>
+          
+          <div className="space-y-2">
+            {/* Language Proficiency Bonus */}
+            <div className="flex items-center justify-between text-xs">
+              <span className="text-muted-foreground">Language Proficiency</span>
+              <div className="flex items-center gap-2">
+                <span className={`font-medium ${bonusFactors.languageBonus > 0 ? 'text-violet-600' : 'text-muted-foreground'}`}>
+                  +{bonusFactors.languageBonus}
+                </span>
+                {bonusFactors.languageBonus > 0 && (
+                  <Badge variant="outline" className="text-[10px] bg-violet-100 text-violet-700 border-violet-200 px-1.5 py-0">
+                    Unlocked
+                  </Badge>
+                )}
+              </div>
+            </div>
+            
+            {/* Canadian Experience Bonus */}
+            <div className="flex items-center justify-between text-xs">
+              <span className="text-muted-foreground">Canadian Experience</span>
+              <div className="flex items-center gap-2">
+                <span className={`font-medium ${bonusFactors.canadianExpBonus > 0 ? 'text-violet-600' : 'text-muted-foreground'}`}>
+                  +{bonusFactors.canadianExpBonus}
+                </span>
+                {bonusFactors.canadianExpBonus > 0 && (
+                  <Badge variant="outline" className="text-[10px] bg-violet-100 text-violet-700 border-violet-200 px-1.5 py-0">
+                    Unlocked
+                  </Badge>
+                )}
+              </div>
+            </div>
+
+            {/* Capped Total */}
+            {hasBonusPoints && (
+              <div className="mt-2 pt-2 border-t border-dashed border-violet-200">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-xs font-medium text-violet-700">Total Bonus</span>
+                    {isCapped && (
+                      <div className="flex items-center gap-1 text-amber-600">
+                        <AlertTriangle className="h-3 w-3" />
+                        <span className="text-[10px]">Capped</span>
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {isCapped && (
+                      <span className="text-xs text-muted-foreground line-through">
+                        +{bonusFactors.languageBonus + bonusFactors.canadianExpBonus}
+                      </span>
+                    )}
+                    <span className="text-sm font-bold text-violet-700">
+                      +{bonusFactors.cappedBonus}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            )}
+            
+            {!hasBonusPoints && (
+              <div className="mt-2 p-2 bg-muted/50 rounded text-[10px] text-muted-foreground">
+                Complete language tests and/or gain Canadian experience to unlock transferability bonuses
+              </div>
+            )}
+          </div>
         </div>
       )}
     </div>
@@ -212,12 +360,50 @@ const ScoreAssessmentQuestionnaire: React.FC<ScoreAssessmentQuestionnaireProps> 
     };
   }, [formData, calculateSpouseScore]);
 
+  // Calculate skill transferability bonuses
+  const skillTransferability = useMemo(() => {
+    // Determine if user has language proficiency (answered language test questions)
+    const hasLanguageProficiency = !!(formData.q5ia);
+    const canadianExp = formData.q6i;
+    const foreignExp = formData.q6ii;
+    const educationLevel = formData.q4;
+
+    // Education transferability (max 50 combined)
+    const eduLanguageBonus = SKILL_TRANSFERABILITY.education.factors.languageProficiency.getPoints(educationLevel, hasLanguageProficiency);
+    const eduCanadianExpBonus = SKILL_TRANSFERABILITY.education.factors.canadianExperience.getPoints(educationLevel, canadianExp);
+    const eduTotalRaw = eduLanguageBonus + eduCanadianExpBonus;
+    const eduCappedBonus = Math.min(eduTotalRaw, SKILL_TRANSFERABILITY.education.maxPoints);
+
+    // Foreign experience transferability (max 50 combined)
+    const foreignLanguageBonus = SKILL_TRANSFERABILITY.foreignExp.factors.languageProficiency.getPoints(foreignExp, hasLanguageProficiency);
+    const foreignCanadianExpBonus = SKILL_TRANSFERABILITY.foreignExp.factors.canadianExperience.getPoints(foreignExp, canadianExp);
+    const foreignTotalRaw = foreignLanguageBonus + foreignCanadianExpBonus;
+    const foreignCappedBonus = Math.min(foreignTotalRaw, SKILL_TRANSFERABILITY.foreignExp.maxPoints);
+
+    return {
+      education: {
+        languageBonus: eduLanguageBonus,
+        canadianExpBonus: eduCanadianExpBonus,
+        maxBonus: SKILL_TRANSFERABILITY.education.maxPoints,
+        cappedBonus: eduCappedBonus,
+      },
+      foreignExp: {
+        languageBonus: foreignLanguageBonus,
+        canadianExpBonus: foreignCanadianExpBonus,
+        maxBonus: SKILL_TRANSFERABILITY.foreignExp.maxPoints,
+        cappedBonus: foreignCappedBonus,
+      },
+      totalCappedBonus: eduCappedBonus + foreignCappedBonus,
+    };
+  }, [formData]);
+
   const totalCurrentScore = useMemo(() => {
-    return Object.values(currentScores).reduce((sum, score) => sum + score, 0);
-  }, [currentScores]);
+    const baseScore = Object.values(currentScores).reduce((sum, score) => sum + score, 0);
+    return baseScore + skillTransferability.totalCappedBonus;
+  }, [currentScores, skillTransferability]);
 
   const totalMaxScore = useMemo(() => {
-    return CRS_POINTS.age.maxPoints + CRS_POINTS.education.maxPoints + CRS_POINTS.canadianExp.maxPoints + CRS_POINTS.foreignExp.maxPoints + CRS_POINTS.provincialNom.maxPoints + CRS_POINTS.spouse.maxPoints;
+    return CRS_POINTS.age.maxPoints + CRS_POINTS.education.maxPoints + CRS_POINTS.canadianExp.maxPoints + CRS_POINTS.foreignExp.maxPoints + CRS_POINTS.provincialNom.maxPoints + CRS_POINTS.spouse.maxPoints + 100; // +100 for skill transferability max
   }, []);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLSelectElement | HTMLInputElement>) => {
@@ -282,6 +468,15 @@ const ScoreAssessmentQuestionnaire: React.FC<ScoreAssessmentQuestionnaireProps> 
                 {CRS_POINTS[key as keyof typeof CRS_POINTS]?.label}: {score}
               </Badge>
             ))}
+            {skillTransferability.totalCappedBonus > 0 && (
+              <Badge 
+                variant="outline" 
+                className="text-xs bg-violet-100 border-violet-300 text-violet-700"
+              >
+                <Gift className="h-3 w-3 mr-1" />
+                Skill Transferability: +{skillTransferability.totalCappedBonus}
+              </Badge>
+            )}
           </div>
         </CardContent>
       </Card>
@@ -443,6 +638,7 @@ const ScoreAssessmentQuestionnaire: React.FC<ScoreAssessmentQuestionnaireProps> 
                   max={CRS_POINTS.education.maxPoints} 
                   label="Education Points"
                   isAnswered={!!formData.q4}
+                  bonusFactors={skillTransferability.education}
                 />
               </div>
             </div>
@@ -549,6 +745,7 @@ const ScoreAssessmentQuestionnaire: React.FC<ScoreAssessmentQuestionnaireProps> 
                   max={CRS_POINTS.foreignExp.maxPoints} 
                   label="Foreign Experience Points"
                   isAnswered={!!formData.q6ii}
+                  bonusFactors={skillTransferability.foreignExp}
                 />
               </div>
             </div>
