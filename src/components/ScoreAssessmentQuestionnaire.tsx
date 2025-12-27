@@ -413,7 +413,12 @@ const ScoreAssessmentQuestionnaire: React.FC<ScoreAssessmentQuestionnaireProps> 
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onComplete({ ...formData, calculatedScores: currentScores, totalScore: totalCurrentScore });
+    onComplete({ 
+      ...formData, 
+      calculatedScores: currentScores, 
+      totalScore: totalCurrentScore,
+      skillTransferability 
+    });
   };
 
   return (
