@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { ArrowLeft, Trophy, Target, TrendingUp, ChevronDown, Calendar, Clock, MapPin, Stethoscope, Languages, Briefcase, GraduationCap, AlertCircle } from 'lucide-react';
+import { ArrowLeft, Trophy, Target, TrendingUp, ChevronDown, Calendar, Clock, MapPin, Stethoscope, Languages, Briefcase, GraduationCap, AlertCircle, Ticket } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 // Draw categories with recent cutoff data (mock data - would be API-driven in production)
@@ -299,7 +299,7 @@ const CRSAssessment = () => {
               <Card className={`border-2 ${getColorClasses(bestCategory.color).border}`}>
                 <CardHeader className={getColorClasses(bestCategory.color).bg}>
                   <CardTitle className={`flex items-center gap-2 ${getColorClasses(bestCategory.color).text}`}>
-                    <bestCategory.icon className="h-5 w-5" />
+                    <Ticket className="h-5 w-5" />
                     Best Draw Category Match
                   </CardTitle>
                 </CardHeader>
