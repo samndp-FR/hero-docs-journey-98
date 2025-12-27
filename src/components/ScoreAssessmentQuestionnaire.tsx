@@ -15,12 +15,15 @@ interface ScoreAssessmentQuestionnaireProps {
 }
 
 // Occupation categories with NOC codes
+const CATEGORY_ELIGIBILITY_TEXT = "To be eligible, you must have accumulated, within the past 3 years, at least 6 months of full-time, continuous work experience (or an equal amount of part-time experience) in a single occupation listed below (no matter your primary occupation), in Canada or abroad, and meet all of the requirements in the instructions for that round.";
+
 const OCCUPATION_CATEGORIES = {
   healthcare: {
     id: 'healthcare',
     label: 'Healthcare and Social Services',
     icon: Stethoscope,
     color: 'text-rose-600 bg-rose-50 border-rose-200',
+    description: CATEGORY_ELIGIBILITY_TEXT,
     occupations: [
       { name: 'Specialists in clinical and laboratory medicine', noc: '31100', teer: 1 },
       { name: 'Specialists in surgery', noc: '31101', teer: 1 },
@@ -66,6 +69,7 @@ const OCCUPATION_CATEGORIES = {
     label: 'Science, Technology, Engineering and Math (STEM)',
     icon: Cpu,
     color: 'text-blue-600 bg-blue-50 border-blue-200',
+    description: CATEGORY_ELIGIBILITY_TEXT,
     occupations: [
       { name: 'Architecture and science managers', noc: '20011', teer: 0 },
       { name: 'Cybersecurity specialists', noc: '21220', teer: 1 },
@@ -85,6 +89,7 @@ const OCCUPATION_CATEGORIES = {
     label: 'Trade Occupations',
     icon: Hammer,
     color: 'text-amber-600 bg-amber-50 border-amber-200',
+    description: CATEGORY_ELIGIBILITY_TEXT,
     occupations: [
       { name: 'Construction estimators', noc: '22303', teer: 2 },
       { name: 'Cooks', noc: '63200', teer: 3 },
@@ -118,6 +123,7 @@ const OCCUPATION_CATEGORIES = {
     label: 'Agriculture and Agri-Food',
     icon: Wheat,
     color: 'text-green-600 bg-green-50 border-green-200',
+    description: CATEGORY_ELIGIBILITY_TEXT,
     occupations: [
       { name: 'Butchers - retail and wholesale', noc: '63201', teer: 3 },
     ]
@@ -127,6 +133,7 @@ const OCCUPATION_CATEGORIES = {
     label: 'Education Occupations',
     icon: GraduationCap,
     color: 'text-purple-600 bg-purple-50 border-purple-200',
+    description: CATEGORY_ELIGIBILITY_TEXT,
     occupations: [
       { name: 'Secondary school teachers', noc: '41220', teer: 1 },
       { name: 'Elementary school and kindergarten teachers', noc: '41221', teer: 1 },
