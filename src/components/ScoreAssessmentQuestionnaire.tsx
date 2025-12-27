@@ -3,7 +3,7 @@ import React, { useState, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Calculator, FileText, Award, TrendingUp, Zap, BadgePlus, AlertTriangle, Stethoscope, Cpu, Hammer, Wheat, GraduationCap, UserCheck, Search, ChevronDown, ChevronUp } from 'lucide-react';
+import { Calculator, FileText, Award, TrendingUp, Zap, BadgePlus, AlertTriangle, Stethoscope, Cpu, Hammer, Wheat, GraduationCap, UserCheck, Search, ChevronDown, ChevronUp, CircleSlash, CheckCircle2, Info } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -22,38 +22,43 @@ const OCCUPATION_CATEGORIES = {
     icon: Stethoscope,
     color: 'text-rose-600 bg-rose-50 border-rose-200',
     occupations: [
-      { name: 'Animal health technologists and veterinary technicians', noc: '32104', teer: 2 },
-      { name: 'Audiologists and speech language pathologists', noc: '31112', teer: 1 },
-      { name: 'Cardiology technologists and electrophysiological diagnostic technologists', noc: '32123', teer: 2 },
-      { name: 'Chiropractors', noc: '31201', teer: 1 },
-      { name: 'Dental hygienists and dental therapists', noc: '32111', teer: 2 },
-      { name: 'Dentists', noc: '31110', teer: 1 },
-      { name: 'Dieticians and nutritionists', noc: '31121', teer: 1 },
+      { name: 'Specialists in clinical and laboratory medicine', noc: '31100', teer: 1 },
+      { name: 'Specialists in surgery', noc: '31101', teer: 1 },
       { name: 'General practitioners and family physicians', noc: '31102', teer: 1 },
+      { name: 'Veterinarians', noc: '31103', teer: 1 },
+      { name: 'Dentists', noc: '31110', teer: 1 },
+      { name: 'Optometrists', noc: '31111', teer: 1 },
+      { name: 'Audiologists and speech language pathologists', noc: '31112', teer: 1 },
+      { name: 'Pharmacists', noc: '31120', teer: 1 },
+      { name: 'Dieticians and nutritionists', noc: '31121', teer: 1 },
+      { name: 'Psychologists', noc: '31200', teer: 1 },
+      { name: 'Chiropractors', noc: '31201', teer: 1 },
+      { name: 'Physiotherapists', noc: '31202', teer: 1 },
+      { name: 'Occupational therapists', noc: '31203', teer: 1 },
+      { name: 'Other professional occupations in health diagnosing and treating', noc: '31209', teer: 1 },
+      { name: 'Nursing co-ordinators and supervisors', noc: '31300', teer: 1 },
+      { name: 'Registered nurses and registered psychiatric nurses', noc: '31301', teer: 1 },
+      { name: 'Nurse practitioners', noc: '31302', teer: 1 },
+      { name: 'Physician assistants, midwives and allied health professionals', noc: '31303', teer: 1 },
       { name: 'Licensed practical nurses', noc: '32101', teer: 2 },
-      { name: 'Massage therapists', noc: '32201', teer: 2 },
-      { name: 'Medical laboratory assistants and related technical occupations', noc: '33101', teer: 3 },
+      { name: 'Paramedical occupations', noc: '32102', teer: 2 },
+      { name: 'Respiratory therapists, clinical perfusionists and cardiopulmonary technologists', noc: '32103', teer: 2 },
+      { name: 'Animal health technologists and veterinary technicians', noc: '32104', teer: 2 },
+      { name: 'Other technical occupations in therapy and assessment', noc: '32109', teer: 2 },
+      { name: 'Dental hygienists and dental therapists', noc: '32111', teer: 2 },
       { name: 'Medical laboratory technologists', noc: '32120', teer: 2 },
       { name: 'Medical radiation technologists', noc: '32121', teer: 2 },
       { name: 'Medical sonographers', noc: '32122', teer: 2 },
+      { name: 'Cardiology technologists and electrophysiological diagnostic technologists', noc: '32123', teer: 2 },
+      { name: 'Pharmacy technicians', noc: '32124', teer: 2 },
+      { name: 'Other medical technologists and technicians', noc: '32129', teer: 2 },
+      { name: 'Massage therapists', noc: '32201', teer: 2 },
+      { name: 'Medical laboratory assistants and related technical occupations', noc: '33101', teer: 3 },
       { name: 'Nurse aides, orderlies and patient service associates', noc: '33102', teer: 3 },
-      { name: 'Occupational therapists', noc: '31203', teer: 1 },
-      { name: 'Opticians', noc: '32113', teer: 2 },
-      { name: 'Optometrists', noc: '31111', teer: 1 },
-      { name: 'Other assisting occupations in support of health services', noc: '33109', teer: 3 },
-      { name: 'Other professional occupations in health diagnosing and treating', noc: '31209', teer: 1 },
-      { name: 'Paramedical occupations', noc: '32102', teer: 2 },
-      { name: 'Pharmacists', noc: '31120', teer: 1 },
       { name: 'Pharmacy technical assistants and pharmacy assistants', noc: '33103', teer: 3 },
-      { name: 'Physician assistants, midwives and allied health professionals', noc: '31302', teer: 1 },
-      { name: 'Physiotherapists', noc: '31202', teer: 1 },
-      { name: 'Psychologists', noc: '31200', teer: 1 },
-      { name: 'Registered nurses and registered psychiatric nurses', noc: '31301', teer: 1 },
-      { name: 'Respiratory therapists, clinical perfusionists and cardiopulmonary technologists', noc: '32103', teer: 2 },
       { name: 'Social workers', noc: '41300', teer: 1 },
-      { name: 'Specialist physicians', noc: '31100', teer: 1 },
-      { name: 'Traditional Chinese medicine practitioners and acupuncturists', noc: '32200', teer: 2 },
-      { name: 'Veterinarians', noc: '31103', teer: 1 },
+      { name: 'Therapists in counselling and related specialized therapies', noc: '41301', teer: 1 },
+      { name: 'Social and community service workers', noc: '42201', teer: 2 },
     ]
   },
   stem: {
@@ -62,36 +67,17 @@ const OCCUPATION_CATEGORIES = {
     icon: Cpu,
     color: 'text-blue-600 bg-blue-50 border-blue-200',
     occupations: [
-      { name: 'Architects', noc: '21200', teer: 1 },
-      { name: 'Biologists and related scientists', noc: '21110', teer: 1 },
-      { name: 'Business systems specialists', noc: '21221', teer: 1 },
-      { name: 'Chemical engineers', noc: '21301', teer: 1 },
-      { name: 'Chemists', noc: '21100', teer: 1 },
-      { name: 'Civil engineers', noc: '21300', teer: 1 },
-      { name: 'Computer and information systems managers', noc: '20012', teer: 0 },
-      { name: 'Computer engineers', noc: '21311', teer: 1 },
-      { name: 'Computer systems developers and programmers', noc: '21230', teer: 1 },
+      { name: 'Architecture and science managers', noc: '20011', teer: 0 },
       { name: 'Cybersecurity specialists', noc: '21220', teer: 1 },
-      { name: 'Data scientists', noc: '21211', teer: 1 },
-      { name: 'Database analysts and data administrators', noc: '21223', teer: 1 },
+      { name: 'Civil Engineers', noc: '21300', teer: 1 },
+      { name: 'Mechanical Engineers', noc: '21301', teer: 1 },
       { name: 'Electrical and electronics engineers', noc: '21310', teer: 1 },
-      { name: 'Electrical and electronics engineering technologists and technicians', noc: '22310', teer: 2 },
-      { name: 'Engineering managers', noc: '20010', teer: 0 },
-      { name: 'Geoscientists and oceanographers', noc: '21102', teer: 1 },
       { name: 'Industrial and manufacturing engineers', noc: '21321', teer: 1 },
-      { name: 'Information systems specialists', noc: '21222', teer: 1 },
-      { name: 'Land surveyors', noc: '21203', teer: 1 },
-      { name: 'Landscape architects', noc: '21201', teer: 1 },
-      { name: 'Mathematicians, statisticians and actuaries', noc: '21210', teer: 1 },
-      { name: 'Mechanical engineers', noc: '21302', teer: 1 },
-      { name: 'Metallurgical and materials engineers', noc: '21322', teer: 1 },
-      { name: 'Natural and applied science policy researchers, consultants and program officers', noc: '41400', teer: 1 },
-      { name: 'Physicists and astronomers', noc: '21101', teer: 1 },
-      { name: 'Software developers and programmers', noc: '21232', teer: 1 },
-      { name: 'Software engineers and designers', noc: '21231', teer: 1 },
-      { name: 'Urban and land use planners', noc: '21202', teer: 1 },
-      { name: 'Web designers', noc: '21233', teer: 1 },
-      { name: 'Web developers and programmers', noc: '21234', teer: 1 },
+      { name: 'Geological Engineers', noc: '21331', teer: 1 },
+      { name: 'Civil engineering technologists and technicians', noc: '22300', teer: 2 },
+      { name: 'Mechanical Engineering Technologists and Technicians', noc: '22301', teer: 2 },
+      { name: 'Electrical and electronics engineering technologists and technicians', noc: '22310', teer: 2 },
+      { name: 'Insurance agents and brokers', noc: '63100', teer: 3 },
     ]
   },
   trade: {
@@ -100,33 +86,31 @@ const OCCUPATION_CATEGORIES = {
     icon: Hammer,
     color: 'text-amber-600 bg-amber-50 border-amber-200',
     occupations: [
-      { name: 'Aircraft mechanics and aircraft inspectors', noc: '72410', teer: 2 },
-      { name: 'Automotive service technicians, truck and bus mechanics', noc: '72410', teer: 2 },
-      { name: 'Bricklayers', noc: '72320', teer: 2 },
-      { name: 'Cabinetmakers', noc: '72310', teer: 2 },
-      { name: 'Carpenters', noc: '72310', teer: 2 },
-      { name: 'Concrete finishers', noc: '73102', teer: 3 },
-      { name: 'Construction millwrights and industrial mechanics', noc: '72400', teer: 2 },
-      { name: 'Contractors and supervisors, other construction trades', noc: '72014', teer: 2 },
-      { name: 'Crane operators', noc: '72500', teer: 2 },
-      { name: 'Electricians', noc: '72200', teer: 2 },
-      { name: 'Floor covering installers', noc: '73110', teer: 3 },
-      { name: 'Gas fitters', noc: '72401', teer: 2 },
-      { name: 'Glaziers', noc: '73111', teer: 3 },
-      { name: 'Heavy equipment operators', noc: '72501', teer: 2 },
-      { name: 'Heavy-duty equipment mechanics', noc: '72402', teer: 2 },
-      { name: 'Industrial electricians', noc: '72201', teer: 2 },
-      { name: 'Ironworkers', noc: '72321', teer: 2 },
+      { name: 'Construction estimators', noc: '22303', teer: 2 },
+      { name: 'Cooks', noc: '63200', teer: 3 },
+      { name: 'Construction managers', noc: '70010', teer: 0 },
+      { name: 'Home building and renovation managers', noc: '70011', teer: 0 },
       { name: 'Machinists and machining and tooling inspectors', noc: '72100', teer: 2 },
-      { name: 'Painters and decorators', noc: '73112', teer: 3 },
-      { name: 'Plumbers', noc: '72300', teer: 2 },
-      { name: 'Refrigeration and air conditioning mechanics', noc: '72402', teer: 2 },
-      { name: 'Roofers and shinglers', noc: '73113', teer: 3 },
       { name: 'Sheet metal workers', noc: '72102', teer: 2 },
-      { name: 'Steamfitters, pipefitters and sprinkler system installers', noc: '72301', teer: 2 },
-      { name: 'Tile setters', noc: '73114', teer: 3 },
-      { name: 'Tool and die makers', noc: '72101', teer: 2 },
       { name: 'Welders and related machine operators', noc: '72106', teer: 2 },
+      { name: 'Electricians (except industrial and power system)', noc: '72200', teer: 2 },
+      { name: 'Industrial electricians', noc: '72201', teer: 2 },
+      { name: 'Plumbers', noc: '72300', teer: 2 },
+      { name: 'Gas fitters', noc: '72302', teer: 2 },
+      { name: 'Carpenters', noc: '72310', teer: 2 },
+      { name: 'Cabinetmakers', noc: '72311', teer: 2 },
+      { name: 'Bricklayers', noc: '72320', teer: 2 },
+      { name: 'Construction millwrights and industrial mechanics', noc: '72400', teer: 2 },
+      { name: 'Heavy-duty equipment mechanics', noc: '72401', teer: 2 },
+      { name: 'Heating, refrigeration and air conditioning mechanics', noc: '72402', teer: 2 },
+      { name: 'Electrical mechanics', noc: '72422', teer: 2 },
+      { name: 'Water well drillers', noc: '72501', teer: 2 },
+      { name: 'Other technical trades and related occupations', noc: '72999', teer: 2 },
+      { name: 'Concrete finishers', noc: '73100', teer: 3 },
+      { name: 'Roofers and shinglers', noc: '73110', teer: 3 },
+      { name: 'Painters and decorators (except interior decorators)', noc: '73112', teer: 3 },
+      { name: 'Floor covering installers', noc: '73113', teer: 3 },
+      { name: 'Contractors and supervisors, oil and gas drilling and services', noc: '82021', teer: 2 },
     ]
   },
   agriculture: {
@@ -135,23 +119,7 @@ const OCCUPATION_CATEGORIES = {
     icon: Wheat,
     color: 'text-green-600 bg-green-50 border-green-200',
     occupations: [
-      { name: 'Agricultural and fish products inspectors', noc: '22112', teer: 2 },
-      { name: 'Agricultural representatives, consultants and specialists', noc: '22114', teer: 2 },
-      { name: 'Agricultural service contractors and farm supervisors', noc: '82030', teer: 2 },
       { name: 'Butchers - retail and wholesale', noc: '63201', teer: 3 },
-      { name: 'Contractors and supervisors, landscaping, grounds maintenance and horticulture services', noc: '82031', teer: 2 },
-      { name: 'Farm workers', noc: '85100', teer: 5 },
-      { name: 'Food and beverage processing workers', noc: '94140', teer: 4 },
-      { name: 'Food processing labourers', noc: '95106', teer: 5 },
-      { name: 'General farm workers', noc: '85100', teer: 5 },
-      { name: 'Harvesting labourers', noc: '85101', teer: 5 },
-      { name: 'Industrial butchers and meat cutters, poultry preparers', noc: '94141', teer: 4 },
-      { name: 'Landscape and horticulture technicians and specialists', noc: '22114', teer: 2 },
-      { name: 'Livestock labourers', noc: '85102', teer: 5 },
-      { name: 'Managers in agriculture', noc: '80020', teer: 0 },
-      { name: 'Nursery and greenhouse workers', noc: '85103', teer: 5 },
-      { name: 'Process control and machine operators, food and beverage processing', noc: '94140', teer: 4 },
-      { name: 'Testers and graders, food and beverage processing', noc: '94142', teer: 4 },
     ]
   },
   education: {
@@ -160,15 +128,11 @@ const OCCUPATION_CATEGORIES = {
     icon: GraduationCap,
     color: 'text-purple-600 bg-purple-50 border-purple-200',
     occupations: [
-      { name: 'Elementary and secondary school teacher assistants', noc: '43100', teer: 3 },
-      { name: 'Instructors of persons with disabilities', noc: '42203', teer: 2 },
-      { name: 'Early childhood educators and assistants', noc: '42202', teer: 2 },
-      { name: 'Elementary school and kindergarten teachers', noc: '41221', teer: 1 },
       { name: 'Secondary school teachers', noc: '41220', teer: 1 },
-      { name: 'College and other vocational instructors', noc: '41210', teer: 1 },
-      { name: 'University professors and lecturers', noc: '41200', teer: 1 },
-      { name: 'Educational counsellors', noc: '41320', teer: 1 },
-      { name: 'Other instructors', noc: '42201', teer: 2 },
+      { name: 'Elementary school and kindergarten teachers', noc: '41221', teer: 1 },
+      { name: 'Early childhood educators and assistants', noc: '42202', teer: 2 },
+      { name: 'Instructors of persons with disabilities', noc: '42203', teer: 2 },
+      { name: 'Elementary and secondary school teacher assistants', noc: '43100', teer: 3 },
     ]
   },
   physicians: {
@@ -176,18 +140,11 @@ const OCCUPATION_CATEGORIES = {
     label: 'Physicians with Canadian Work Experience',
     icon: UserCheck,
     color: 'text-teal-600 bg-teal-50 border-teal-200',
+    description: 'Requires valid job offer or Canadian work experience in one of these occupations',
     occupations: [
+      { name: 'Specialists in clinical and laboratory medicine', noc: '31100', teer: 1 },
+      { name: 'Specialists in surgery', noc: '31101', teer: 1 },
       { name: 'General practitioners and family physicians', noc: '31102', teer: 1 },
-      { name: 'Specialist physicians', noc: '31100', teer: 1 },
-      { name: 'Psychiatrists', noc: '31100', teer: 1 },
-      { name: 'Surgeons', noc: '31100', teer: 1 },
-      { name: 'Anesthesiologists', noc: '31100', teer: 1 },
-      { name: 'Radiologists', noc: '31100', teer: 1 },
-      { name: 'Pathologists', noc: '31100', teer: 1 },
-      { name: 'Cardiologists', noc: '31100', teer: 1 },
-      { name: 'Neurologists', noc: '31100', teer: 1 },
-      { name: 'Pediatricians', noc: '31100', teer: 1 },
-      { name: 'Obstetricians and gynecologists', noc: '31100', teer: 1 },
     ]
   }
 };
@@ -1013,8 +970,14 @@ const ScoreAssessmentQuestionnaire: React.FC<ScoreAssessmentQuestionnaireProps> 
                                 <div>
                                   <CardTitle className="text-base font-semibold">{category.label}</CardTitle>
                                   <p className="text-xs text-muted-foreground mt-1">
-                                    {category.occupations.length} eligible occupations
+                                    {category.occupations.length} eligible occupation{category.occupations.length !== 1 ? 's' : ''}
                                   </p>
+                                  {(category as any).description && (
+                                    <p className="text-xs text-amber-600 mt-1 flex items-center gap-1">
+                                      <Info className="h-3 w-3" />
+                                      {(category as any).description}
+                                    </p>
+                                  )}
                                 </div>
                               </div>
                               <div className="flex items-center gap-2">
@@ -1127,6 +1090,42 @@ const ScoreAssessmentQuestionnaire: React.FC<ScoreAssessmentQuestionnaireProps> 
                 })}
               </div>
 
+              {/* None of the Above Option */}
+              <Card 
+                className={`border-2 transition-all cursor-pointer ${
+                  formData.occupationCategory === 'none' 
+                    ? 'border-slate-400 bg-slate-50' 
+                    : 'border-border hover:border-primary/30'
+                }`}
+                onClick={() => {
+                  setFormData(prev => ({
+                    ...prev,
+                    occupationCategory: prev.occupationCategory === 'none' ? '' : 'none',
+                    selectedOccupation: ''
+                  }));
+                  setExpandedCategory(null);
+                }}
+              >
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className={`p-2 rounded-lg ${formData.occupationCategory === 'none' ? 'bg-slate-200' : 'bg-muted'}`}>
+                        <CircleSlash className={`h-5 w-5 ${formData.occupationCategory === 'none' ? 'text-slate-600' : 'text-muted-foreground'}`} />
+                      </div>
+                      <div>
+                        <CardTitle className="text-base font-semibold">None of the above</CardTitle>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          My occupation doesn't fit these categories
+                        </p>
+                      </div>
+                    </div>
+                    {formData.occupationCategory === 'none' && (
+                      <CheckCircle2 className="h-5 w-5 text-slate-600" />
+                    )}
+                  </div>
+                </CardHeader>
+              </Card>
+
               {/* Category Assessment Note */}
               {formData.selectedOccupation && (
                 <div className="p-4 rounded-lg bg-emerald-50 border border-emerald-200">
@@ -1138,6 +1137,23 @@ const ScoreAssessmentQuestionnaire: React.FC<ScoreAssessmentQuestionnaireProps> 
                       <h4 className="font-semibold text-emerald-800">Category-Based Draw Eligible</h4>
                       <p className="text-sm text-emerald-700 mt-1">
                         Your selected occupation may qualify you for category-based Express Entry draws, which often have lower CRS cutoff scores than general draws.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Reassuring note for "None of the above" */}
+              {formData.occupationCategory === 'none' && (
+                <div className="p-4 rounded-lg bg-blue-50 border border-blue-200">
+                  <div className="flex items-start gap-3">
+                    <div className="p-2 bg-blue-100 rounded-lg">
+                      <Info className="h-5 w-5 text-blue-600" />
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-blue-800">You can still be invited!</h4>
+                      <p className="text-sm text-blue-700 mt-1">
+                        Don't worry — even if your occupation isn't in one of these targeted categories, you can still receive an Invitation to Apply (ITA) through general Express Entry draws based on your CRS score. Many candidates are invited every round regardless of their occupation category.
                       </p>
                     </div>
                   </div>
