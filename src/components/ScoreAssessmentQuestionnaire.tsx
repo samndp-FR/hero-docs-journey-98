@@ -1153,7 +1153,7 @@ const ScoreAssessmentQuestionnaire: React.FC<ScoreAssessmentQuestionnaireProps> 
                     <div>
                       <h4 className="font-semibold text-blue-800">You can still be invited!</h4>
                       <p className="text-sm text-blue-700 mt-1">
-                        Don't worry — even if your occupation isn't in one of these targeted categories, you can still receive an Invitation to Apply (ITA) through general Express Entry draws based on your CRS score. Many candidates are invited every round regardless of their occupation category.
+                        Don't worry — even if your occupation isn't in one of these targeted categories, you can still receive an Invitation to Apply (ITA) through general Express Entry draws based on your CRS score.
                       </p>
                     </div>
                   </div>
