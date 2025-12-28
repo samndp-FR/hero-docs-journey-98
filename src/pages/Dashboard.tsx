@@ -372,7 +372,7 @@ const Dashboard = () => {
         )}
 
         {/* Pre-Application Card - only show in apply-pr stage */}
-        {currentStage === 'apply-pr' && (
+        {displayedStage === 'apply-pr' && (
           <Card className="border-2 border-primary-blue/20 bg-gradient-to-br from-primary-blue/5 to-transparent">
             <CardContent className="p-6">
               <div className="flex items-start justify-between gap-6">
