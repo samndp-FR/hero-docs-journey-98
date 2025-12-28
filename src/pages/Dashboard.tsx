@@ -15,7 +15,10 @@ import {
   Wallet,
   Info,
   Flag,
-  ClipboardCheck
+  ClipboardCheck,
+  RotateCcw,
+  Trash2,
+  Archive
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { DashboardLayout } from '@/components/DashboardLayout';
@@ -152,16 +155,56 @@ const Dashboard = () => {
         { id: 'biometrics-completed', label: 'Biometrics Completed', type: 'declared', completed: checklistState['biometrics-completed'] || false },
         { id: 'final-decision', label: 'Final decision received', type: 'declared', completed: checklistState['final-decision'] || false },
       ],
+      exitAction: { label: 'I received my final decision', nextStage: 'final-decision' },
+    },
+    'final-decision': {
+      label: 'Final Decision Received',
+      goal: 'Your Express Entry application process is complete.',
+      checklist: [],
     },
   };
 
-  const stageOrder = ['get-ready', 'build-profile', 'wait-invitation', 'apply-pr', 'after-submission'];
+  const stageOrder = ['get-ready', 'build-profile', 'wait-invitation', 'apply-pr', 'after-submission', 'final-decision'];
   const currentStageIndex = stageOrder.indexOf(currentStage);
+  const isFinalDecision = currentStage === 'final-decision';
   
   // Use viewingStage if set, otherwise currentStage
   const displayedStage = viewingStage || currentStage;
   const displayedConfig = stageConfigs[displayedStage];
   const isViewingPast = viewingStage !== null && viewingStage !== currentStage;
+
+  // Get final decision date from checklist
+  const finalDecisionDate = checklistDates['final-decision'] 
+    ? format(new Date(checklistDates['final-decision']), 'MMMM d, yyyy')
+    : null;
+
+  // Handler for reapply
+  const handleReapply = () => {
+    // Clear overview progress but keep profile data
+    localStorage.removeItem(STORAGE_KEY);
+    localStorage.removeItem(CHECKLIST_KEY);
+    localStorage.removeItem(CHECKLIST_DATES_KEY);
+    localStorage.removeItem(STAGE_HISTORY_KEY);
+    setCurrentStage('get-ready');
+    setChecklistState({});
+    setChecklistDates({});
+    setStageHistory([]);
+    setViewingStage(null);
+    toast.success('Application reset. Starting fresh from Step 1.');
+  };
+
+  // Handler for delete account
+  const handleDeleteAccount = () => {
+    // Clear everything
+    localStorage.clear();
+    toast.success('All data deleted. Redirecting...');
+    navigate('/');
+  };
+
+  // Handler for archive
+  const handleArchive = () => {
+    toast.success('Your information has been archived for future applications.');
+  };
 
   const toggleChecklistItem = (itemId: string) => {
     const wasCompleted = checklistState[itemId];
@@ -220,27 +263,48 @@ const Dashboard = () => {
         
         {/* Stage-based Journey Header with Integrated Timeline */}
         <div className="bg-card rounded-xl p-6 border border-border">
-          <div className="flex items-center gap-2 mb-3">
-            <Badge variant="secondary" className={isViewingPast ? "bg-green-100 text-green-700" : "bg-primary-blue/10 text-primary-blue"}>
-              {isViewingPast ? 'Viewing Past Stage' : 'Current Stage'}
-            </Badge>
-            {isViewingPast && (
-              <Button variant="ghost" size="sm" onClick={handleBackToCurrentStage} className="text-primary-blue">
-                ← Back to current
-              </Button>
-            )}
-          </div>
-          <h1 className="text-2xl font-semibold text-foreground mb-2">
-            {displayedConfig.label}
-          </h1>
-          <p className="text-muted-foreground">
-            {displayedConfig.goal}
-          </p>
-          {isViewingPast && getStageCompletionDate(displayedStage) && (
-            <p className="text-sm text-green-600 mt-2 flex items-center gap-1">
-              <CheckCircle className="h-4 w-4" />
-              Completed on {format(getStageCompletionDate(displayedStage)!, 'MMMM d, yyyy')}
-            </p>
+          {/* Final Decision Status Banner */}
+          {isFinalDecision && !isViewingPast ? (
+            <>
+              <div className="flex items-center gap-2 mb-3">
+                <Badge variant="secondary" className="bg-muted text-muted-foreground">
+                  Application Status
+                </Badge>
+              </div>
+              <h1 className="text-2xl font-semibold text-foreground mb-2">
+                Final decision received from IRCC.
+              </h1>
+              {finalDecisionDate && (
+                <p className="text-muted-foreground">
+                  Final decision received on {finalDecisionDate}.
+                </p>
+              )}
+            </>
+          ) : (
+            <>
+              <div className="flex items-center gap-2 mb-3">
+                <Badge variant="secondary" className={isViewingPast ? "bg-green-100 text-green-700" : "bg-primary-blue/10 text-primary-blue"}>
+                  {isViewingPast ? 'Viewing Past Stage' : 'Current Stage'}
+                </Badge>
+                {isViewingPast && (
+                  <Button variant="ghost" size="sm" onClick={handleBackToCurrentStage} className="text-primary-blue">
+                    ← Back to current
+                  </Button>
+                )}
+              </div>
+              <h1 className="text-2xl font-semibold text-foreground mb-2">
+                {displayedConfig.label}
+              </h1>
+              <p className="text-muted-foreground">
+                {displayedConfig.goal}
+              </p>
+              {isViewingPast && getStageCompletionDate(displayedStage) && (
+                <p className="text-sm text-green-600 mt-2 flex items-center gap-1">
+                  <CheckCircle className="h-4 w-4" />
+                  Completed on {format(getStageCompletionDate(displayedStage)!, 'MMMM d, yyyy')}
+                </p>
+              )}
+            </>
           )}
           
           {/* Visual Progress Bar with Dots */}
@@ -249,19 +313,20 @@ const Dashboard = () => {
             <div className="relative mb-4">
               {/* Background line */}
               <div className="absolute top-3 left-0 right-0 h-0.5 bg-muted" />
-              {/* Progress line */}
+              {/* Progress line - full when final decision */}
               <div 
                 className="absolute top-3 left-0 h-0.5 bg-green-500 transition-all"
-                style={{ width: `${(currentStageIndex / (stageOrder.length - 1)) * 100}%` }}
+                style={{ width: isFinalDecision ? '100%' : `${(currentStageIndex / (stageOrder.length - 1)) * 100}%` }}
               />
               
               {/* Dots */}
               <div className="relative flex justify-between">
               {stageOrder.map((stage, index) => {
                   const historyEntry = stageHistory.find(h => h.stageId === stage);
-                  const isCompleted = index < currentStageIndex;
-                  const isCurrent = index === currentStageIndex;
-                  const isFuture = index > currentStageIndex;
+                  // All stages are completed when final decision
+                  const isCompleted = isFinalDecision || index < currentStageIndex;
+                  const isCurrent = !isFinalDecision && index === currentStageIndex;
+                  const isFuture = !isFinalDecision && index > currentStageIndex;
                   
                   // Find the latest checklist item completion date for this stage
                   const stageChecklist = stageConfigs[stage]?.checklist || [];
@@ -272,12 +337,21 @@ const Dashboard = () => {
                     .sort((a, b) => b.getTime() - a.getTime());
                   const lastChecklistDate = stageChecklistDates[0];
                   
+                  // For final decision stage, use the final-decision checklist date
+                  const displayDate = stage === 'final-decision' && finalDecisionDate 
+                    ? finalDecisionDate 
+                    : lastChecklistDate 
+                      ? format(lastChecklistDate, 'MMM yyyy')
+                      : null;
+                  
                   return (
                     <button
                       key={stage}
                       onClick={() => {
-                        if (isCompleted) setViewingStage(stage);
+                        if (isFinalDecision && stage !== 'final-decision') setViewingStage(stage);
+                        else if (isCompleted && !isFinalDecision) setViewingStage(stage);
                         else if (isCurrent) setViewingStage(null);
+                        else if (isFinalDecision && stage === 'final-decision') setViewingStage(null);
                       }}
                       disabled={isFuture}
                       className={`flex flex-col items-center ${!isFuture ? 'cursor-pointer' : 'cursor-default'} ${
@@ -298,7 +372,7 @@ const Dashboard = () => {
                         {isCompleted && <CheckCircle className="h-4 w-4 text-white" />}
                         {isCurrent && <div className="w-2 h-2 bg-white rounded-full" />}
                       </div>
-                      <span className={`text-xs mt-2 font-medium text-center max-w-[80px] ${
+                      <span className={`text-xs mt-2 font-medium text-center max-w-[60px] ${
                         isFuture ? 'text-muted-foreground/30' : 'text-foreground'
                       }`}>
                         {stageConfigs[stage].label}
@@ -306,8 +380,8 @@ const Dashboard = () => {
                       <span className={`text-xs font-medium ${
                         isCompleted ? 'text-green-600' : isCurrent ? 'text-primary-blue' : 'text-muted-foreground/30'
                       }`}>
-                        {lastChecklistDate 
-                          ? format(lastChecklistDate, 'MMM yyyy')
+                        {displayDate 
+                          ? displayDate
                           : isCurrent 
                             ? 'In Progress' 
                             : ''
@@ -319,8 +393,8 @@ const Dashboard = () => {
               </div>
             </div>
             
-            {/* Estimated time remaining - hide for final stage */}
-            {currentStageIndex < 4 && (
+            {/* Estimated time remaining - hide for final stages */}
+            {currentStageIndex < 4 && !isFinalDecision && (
               <div className="flex items-center justify-between text-sm mt-4 p-3 bg-muted/30 rounded-lg">
                 <div className="flex items-center gap-2">
                   <Clock className="h-4 w-4 text-muted-foreground" />
@@ -336,6 +410,65 @@ const Dashboard = () => {
             )}
           </div>
         </div>
+
+        {/* Application Record Card - only show in final-decision stage */}
+        {isFinalDecision && !isViewingPast && (
+          <Card className="border border-border bg-card">
+            <CardContent className="p-6 space-y-6">
+              <div>
+                <h2 className="text-lg font-semibold text-foreground mb-2">Application record</h2>
+                <p className="text-muted-foreground">
+                  Your Express Entry application process is complete.<br />
+                  Eldo will continue to keep your information available for your records.
+                </p>
+                <p className="text-sm text-muted-foreground mt-3">
+                  Eldo does not interpret IRCC decisions or provide post-decision guidance.
+                </p>
+              </div>
+              
+              <div className="border-t border-border pt-6">
+                <h3 className="text-sm font-medium text-foreground mb-4">What would you like to do next?</h3>
+                <div className="grid gap-3">
+                  <Button 
+                    variant="outline" 
+                    className="justify-start h-auto py-4 px-4"
+                    onClick={handleReapply}
+                  >
+                    <RotateCcw className="h-5 w-5 mr-3 text-primary-blue" />
+                    <div className="text-left">
+                      <p className="font-medium">I need to reapply</p>
+                      <p className="text-xs text-muted-foreground">Free — clears overview, keeps your profile data</p>
+                    </div>
+                  </Button>
+                  
+                  <Button 
+                    variant="outline" 
+                    className="justify-start h-auto py-4 px-4 border-destructive/30 hover:bg-destructive/5"
+                    onClick={handleDeleteAccount}
+                  >
+                    <Trash2 className="h-5 w-5 mr-3 text-destructive" />
+                    <div className="text-left">
+                      <p className="font-medium">Close my account and delete my information</p>
+                      <p className="text-xs text-muted-foreground">Free — permanently deletes all data</p>
+                    </div>
+                  </Button>
+                  
+                  <Button 
+                    variant="outline" 
+                    className="justify-start h-auto py-4 px-4"
+                    onClick={handleArchive}
+                  >
+                    <Archive className="h-5 w-5 mr-3 text-muted-foreground" />
+                    <div className="text-left">
+                      <p className="font-medium">Keep my information for a later application</p>
+                      <p className="text-xs text-muted-foreground">Archive for future PR or Citizenship (coming soon)</p>
+                    </div>
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Primary Focus Card - only show in build-profile stage */}
         {currentStage === 'build-profile' && (
@@ -437,8 +570,8 @@ const Dashboard = () => {
           );
         })()}
 
-        {/* CRS Score reminder - small inline badge for apply-pr and after - outside grid */}
-        {['apply-pr', 'after-submission'].includes(displayedStage) && (
+        {/* CRS Score reminder - small inline badge for apply-pr and after (not final) - outside grid */}
+        {['apply-pr', 'after-submission'].includes(displayedStage) && !isFinalDecision && (
           <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-primary-blue/10 rounded-md border border-primary-blue/20 text-sm">
             <TrendingUp className="h-3.5 w-3.5 text-muted-foreground" />
             <span className="text-muted-foreground">CRS:</span>
@@ -446,9 +579,9 @@ const Dashboard = () => {
           </div>
         )}
 
-        <div className={`grid gap-6 ${['get-ready', 'build-profile', 'wait-invitation'].includes(displayedStage) ? 'grid-cols-1 lg:grid-cols-3' : 'grid-cols-1'}`}>
+        <div className={`grid gap-6 ${['get-ready', 'build-profile', 'wait-invitation'].includes(displayedStage) && !isFinalDecision ? 'grid-cols-1 lg:grid-cols-3' : 'grid-cols-1'}`}>
           {/* CRS Outlook - full card until wait-invitation */}
-          {['get-ready', 'build-profile', 'wait-invitation'].includes(displayedStage) && (
+          {['get-ready', 'build-profile', 'wait-invitation'].includes(displayedStage) && !isFinalDecision && (
             <Card className="lg:col-span-2">
               <CardHeader className="pb-3">
                 <CardTitle className="flex items-center gap-2 text-lg">
@@ -539,8 +672,8 @@ const Dashboard = () => {
           </Card>
         </div>
 
-        {/* Document Reminder for current stage - hide for after-submission */}
-        {displayedStage !== 'after-submission' && (
+        {/* Document Reminder for current stage - hide for after-submission and final-decision */}
+        {displayedStage !== 'after-submission' && displayedStage !== 'final-decision' && !isFinalDecision && (
           <DocumentReminder
             currentStage={displayedStage}
             documents={documents}
@@ -548,81 +681,83 @@ const Dashboard = () => {
           />
         )}
 
-        {/* Dynamic Stage Checklist */}
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-lg">{displayedConfig.label} Checklist</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            {displayedConfig.checklist.map((item) => (
-              <div 
-                key={item.id}
-                className={`flex items-center justify-between p-3 rounded-lg border ${
-                  item.completed 
-                    ? 'bg-green-50 border-green-200' 
-                    : 'bg-muted/30 border-border'
-                }`}
-              >
-                <div className="flex items-center gap-3">
-                  {item.type === 'auto' ? (
-                    <div className="flex items-center justify-center w-5 h-5">
-                      {item.completed ? (
-                        <CheckCircle className="h-5 w-5 text-green-600" />
-                      ) : (
-                        <Info className="h-5 w-5 text-muted-foreground" />
+        {/* Dynamic Stage Checklist - hide for final-decision when viewing current */}
+        {!(isFinalDecision && !isViewingPast) && displayedConfig.checklist.length > 0 && (
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-lg">{displayedConfig.label} Checklist</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              {displayedConfig.checklist.map((item) => (
+                <div 
+                  key={item.id}
+                  className={`flex items-center justify-between p-3 rounded-lg border ${
+                    item.completed 
+                      ? 'bg-green-50 border-green-200' 
+                      : 'bg-muted/30 border-border'
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    {item.type === 'auto' ? (
+                      <div className="flex items-center justify-center w-5 h-5">
+                        {item.completed ? (
+                          <CheckCircle className="h-5 w-5 text-green-600" />
+                        ) : (
+                          <Info className="h-5 w-5 text-muted-foreground" />
+                        )}
+                      </div>
+                    ) : (
+                      <Checkbox
+                        checked={item.completed}
+                        onCheckedChange={() => toggleChecklistItem(item.id)}
+                        className="h-5 w-5"
+                      />
+                    )}
+                    <div>
+                      <span className={`font-medium ${item.completed ? 'text-foreground' : 'text-foreground'}`}>
+                        {item.label}
+                      </span>
+                      {item.info && (
+                        <p className="text-xs text-muted-foreground">{item.info}</p>
+                      )}
+                      {item.completed && checklistDates[item.id] && (
+                        <p className="text-xs text-green-600">
+                          Completed {format(new Date(checklistDates[item.id]), 'MMM d, yyyy')}
+                        </p>
                       )}
                     </div>
-                  ) : (
-                    <Checkbox
-                      checked={item.completed}
-                      onCheckedChange={() => toggleChecklistItem(item.id)}
-                      className="h-5 w-5"
-                    />
+                  </div>
+                  {item.completed && (
+                    <Badge variant="secondary" className="bg-green-100 text-green-700">Done</Badge>
                   )}
-                  <div>
-                    <span className={`font-medium ${item.completed ? 'text-foreground' : 'text-foreground'}`}>
-                      {item.label}
-                    </span>
-                    {item.info && (
-                      <p className="text-xs text-muted-foreground">{item.info}</p>
-                    )}
-                    {item.completed && checklistDates[item.id] && (
-                      <p className="text-xs text-green-600">
-                        Completed {format(new Date(checklistDates[item.id]), 'MMM d, yyyy')}
-                      </p>
-                    )}
-                  </div>
                 </div>
-                {item.completed && (
-                  <Badge variant="secondary" className="bg-green-100 text-green-700">Done</Badge>
-                )}
-              </div>
-            ))}
+              ))}
 
-            {/* Exit action / milestone button - only show on current stage */}
-            {!isViewingPast && displayedConfig.exitAction && (
-              <div className="mt-4 pt-4 border-t border-border">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <Flag className="h-4 w-4" />
-                    <span>Ready to move on?</span>
+              {/* Exit action / milestone button - only show on current stage */}
+              {!isViewingPast && displayedConfig.exitAction && (
+                <div className="mt-4 pt-4 border-t border-border">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <Flag className="h-4 w-4" />
+                      <span>Ready to move on?</span>
+                    </div>
+                    <Button 
+                      variant={canAdvance() ? 'default' : 'outline'}
+                      size="sm"
+                      onClick={() => advanceToStage(displayedConfig.exitAction!.nextStage)}
+                      className={canAdvance() ? 'bg-primary-blue hover:bg-primary-blue/90' : ''}
+                    >
+                      {displayedConfig.exitAction.label}
+                    </Button>
                   </div>
-                  <Button 
-                    variant={canAdvance() ? 'default' : 'outline'}
-                    size="sm"
-                    onClick={() => advanceToStage(displayedConfig.exitAction!.nextStage)}
-                    className={canAdvance() ? 'bg-primary-blue hover:bg-primary-blue/90' : ''}
-                  >
-                    {displayedConfig.exitAction.label}
-                  </Button>
                 </div>
-              </div>
-            )}
-          </CardContent>
-        </Card>
+              )}
+            </CardContent>
+          </Card>
+        )}
 
         {/* Prepare Ahead - only show in earlier stages */}
-        {['get-ready', 'build-profile', 'wait-invitation'].includes(currentStage) && (
+        {['get-ready', 'build-profile', 'wait-invitation'].includes(currentStage) && !isFinalDecision && (
           <Card>
             <CardHeader className="pb-3">
               <CardTitle className="text-lg">Prepare Ahead</CardTitle>
