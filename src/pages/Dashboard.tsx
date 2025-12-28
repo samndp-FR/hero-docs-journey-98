@@ -372,38 +372,70 @@ const Dashboard = () => {
         )}
 
         {/* Pre-Application Card - only show in apply-pr stage */}
-        {displayedStage === 'apply-pr' && (
-          <Card className="border-2 border-primary-blue/20 bg-gradient-to-br from-primary-blue/5 to-transparent">
-            <CardContent className="p-6">
-              <div className="flex items-start justify-between gap-6">
-                <div className="space-y-3 flex-1">
-                  <div className="flex items-center gap-2">
+        {displayedStage === 'apply-pr' && (() => {
+          const formProgress = JSON.parse(localStorage.getItem('formProgress') || '0');
+          const isProfileComplete = formProgress >= 100;
+          
+          return (
+            <Card className="border border-border bg-card shadow-sm">
+              <CardContent className="p-6">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 rounded-lg bg-primary-blue/10 flex items-center justify-center">
                     <ClipboardCheck className="h-5 w-5 text-primary-blue" />
-                    <h2 className="text-xl font-semibold text-foreground">Complete & Verify Pre-Application</h2>
                   </div>
-                  <p className="text-muted-foreground">
-                    Review and verify all your profile information before submitting your PR application.
-                  </p>
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-muted-foreground">Profile completion</span>
-                      <span className="font-medium text-foreground">65%</span>
-                    </div>
-                    <Progress value={65} className="h-2" />
+                  <div>
+                    <h2 className="text-lg font-semibold text-foreground">Complete & Verify Pre-Application</h2>
+                    <p className="text-sm text-muted-foreground">
+                      Review and verify your profile before submitting
+                    </p>
                   </div>
                 </div>
-                <Button 
-                  size="lg" 
-                  className="bg-primary-blue hover:bg-primary-blue/90 shrink-0"
-                  onClick={() => navigate('/dashboard/form')}
-                >
-                  Review Profile
-                  <ArrowRight className="h-4 w-4 ml-2" />
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        )}
+                
+                <div className="space-y-3 mb-5">
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-muted-foreground">Profile completion</span>
+                    <span className={`font-semibold ${isProfileComplete ? 'text-green-600' : 'text-foreground'}`}>
+                      {Math.round(formProgress)}%
+                    </span>
+                  </div>
+                  <div className="h-2 bg-muted rounded-full overflow-hidden">
+                    <div 
+                      className={`h-full transition-all duration-500 rounded-full ${
+                        isProfileComplete ? 'bg-green-500' : 'bg-primary-blue'
+                      }`}
+                      style={{ width: `${formProgress}%` }}
+                    />
+                  </div>
+                </div>
+                
+                <div className="flex items-center gap-3">
+                  {!isProfileComplete && (
+                    <Button 
+                      variant="outline"
+                      className="flex-1"
+                      onClick={() => navigate('/dashboard/form')}
+                    >
+                      Continue Building Profile
+                      <ArrowRight className="h-4 w-4 ml-2" />
+                    </Button>
+                  )}
+                  <Button 
+                    className={`flex-1 ${
+                      isProfileComplete 
+                        ? 'bg-primary-blue hover:bg-primary-blue/90' 
+                        : 'bg-muted text-muted-foreground hover:bg-muted cursor-not-allowed'
+                    }`}
+                    disabled={!isProfileComplete}
+                    onClick={() => isProfileComplete && navigate('/dashboard/complete')}
+                  >
+                    Complete Application
+                    <ArrowRight className="h-4 w-4 ml-2" />
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          );
+        })()}
 
         {/* CRS Score reminder - small inline badge for apply-pr and after - outside grid */}
         {['apply-pr', 'after-submission'].includes(displayedStage) && (
