@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Progress } from '@/components/ui/progress';
 import { 
   ArrowRight,
   Clock,
@@ -13,7 +14,8 @@ import {
   Briefcase,
   Wallet,
   Info,
-  Flag
+  Flag,
+  ClipboardCheck
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { DashboardLayout } from '@/components/DashboardLayout';
@@ -362,6 +364,40 @@ const Dashboard = () => {
                   onClick={() => navigate('/dashboard/form')}
                 >
                   Continue Application
+                  <ArrowRight className="h-4 w-4 ml-2" />
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Pre-Application Card - only show in apply-pr stage */}
+        {currentStage === 'apply-pr' && (
+          <Card className="border-2 border-primary-blue/20 bg-gradient-to-br from-primary-blue/5 to-transparent">
+            <CardContent className="p-6">
+              <div className="flex items-start justify-between gap-6">
+                <div className="space-y-3 flex-1">
+                  <div className="flex items-center gap-2">
+                    <ClipboardCheck className="h-5 w-5 text-primary-blue" />
+                    <h2 className="text-xl font-semibold text-foreground">Complete & Verify Pre-Application</h2>
+                  </div>
+                  <p className="text-muted-foreground">
+                    Review and verify all your profile information before submitting your PR application.
+                  </p>
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-muted-foreground">Profile completion</span>
+                      <span className="font-medium text-foreground">65%</span>
+                    </div>
+                    <Progress value={65} className="h-2" />
+                  </div>
+                </div>
+                <Button 
+                  size="lg" 
+                  className="bg-primary-blue hover:bg-primary-blue/90 shrink-0"
+                  onClick={() => navigate('/dashboard/form')}
+                >
+                  Review Profile
                   <ArrowRight className="h-4 w-4 ml-2" />
                 </Button>
               </div>
