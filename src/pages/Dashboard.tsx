@@ -24,6 +24,8 @@ import { useNavigate } from 'react-router-dom';
 import { DashboardLayout } from '@/components/DashboardLayout';
 import { toast } from 'sonner';
 import DocumentReminder, { TrackedDocument } from '@/components/DocumentReminder';
+import { RecentActivityCard } from '@/components/RecentActivityCard';
+import { useActivityTracker } from '@/hooks/useActivityTracker';
 
 const STORAGE_KEY = 'eldo-journey-stage';
 const CHECKLIST_KEY = 'eldo-checklist-state';
@@ -67,7 +69,7 @@ const defaultDocuments: TrackedDocument[] = [
 
 const Dashboard = () => {
   const navigate = useNavigate();
-  
+  const { activities, logActivity, clearActivities } = useActivityTracker();
   const [currentStage, setCurrentStage] = useState(() => {
     return localStorage.getItem(STORAGE_KEY) || 'get-ready';
   });
@@ -206,7 +208,7 @@ const Dashboard = () => {
     toast.success('Your information has been archived for future applications.');
   };
 
-  const toggleChecklistItem = (itemId: string) => {
+  const toggleChecklistItem = (itemId: string, itemLabel: string) => {
     const wasCompleted = checklistState[itemId];
     const newState = { ...checklistState, [itemId]: !wasCompleted };
     setChecklistState(newState);
@@ -218,6 +220,12 @@ const Dashboard = () => {
       setChecklistDates(newDates);
       localStorage.setItem(CHECKLIST_DATES_KEY, JSON.stringify(newDates));
     }
+    
+    // Log activity
+    logActivity('checklist_toggled', { 
+      label: `${!wasCompleted ? 'Completed' : 'Unchecked'}: ${itemLabel}`,
+      stageId: displayedStage 
+    });
   };
 
   const advanceToStage = (newStage: string) => {
@@ -232,12 +240,18 @@ const Dashboard = () => {
   };
 
   const handleMarkDocumentAsHaveIt = (docId: string) => {
+    const doc = documents.find(d => d.id === docId);
     const updatedDocs = documents.map(doc => 
       doc.id === docId ? { ...doc, status: 'have-it' as const } : doc
     );
     setDocuments(updatedDocs);
     localStorage.setItem(DOCUMENTS_KEY, JSON.stringify(updatedDocs));
     toast.success('Document marked as available');
+    
+    // Log activity
+    logActivity('document_have_it', { 
+      documentName: doc?.name || docId 
+    });
   };
 
   const handleBackToCurrentStage = () => {
@@ -637,39 +651,10 @@ const Dashboard = () => {
           )}
 
           {/* Recent Activity */}
-          <Card>
-            <CardHeader className="pb-3">
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-base text-muted-foreground">Recent Activity</CardTitle>
-                <Button variant="link" className="text-xs text-muted-foreground p-0 h-auto">
-                  View all
-                </Button>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <div className="flex items-start gap-2 text-sm">
-                <div className="w-1.5 h-1.5 bg-primary-blue rounded-full mt-2" />
-                <div>
-                  <p className="font-medium text-foreground">Profile Updated</p>
-                  <p className="text-xs text-muted-foreground">2 hours ago</p>
-                </div>
-              </div>
-              <div className="flex items-start gap-2 text-sm">
-                <div className="w-1.5 h-1.5 bg-green-500 rounded-full mt-2" />
-                <div>
-                  <p className="font-medium text-foreground">Document Uploaded</p>
-                  <p className="text-xs text-muted-foreground">1 day ago</p>
-                </div>
-              </div>
-              <div className="flex items-start gap-2 text-sm">
-                <div className="w-1.5 h-1.5 bg-purple-500 rounded-full mt-2" />
-                <div>
-                  <p className="font-medium text-foreground">Language Test Added</p>
-                  <p className="text-xs text-muted-foreground">3 days ago</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          <RecentActivityCard 
+            activities={activities} 
+            maxItems={5}
+          />
         </div>
 
         {/* Document Reminder for current stage - hide for after-submission and final-decision */}
@@ -709,7 +694,7 @@ const Dashboard = () => {
                     ) : (
                       <Checkbox
                         checked={item.completed}
-                        onCheckedChange={() => toggleChecklistItem(item.id)}
+                        onCheckedChange={() => toggleChecklistItem(item.id, item.label)}
                         className="h-5 w-5"
                       />
                     )}
