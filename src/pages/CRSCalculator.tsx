@@ -267,12 +267,11 @@ const CRSCalculator = () => {
             </Button>
 
             {/* Results Header */}
-            <div className="text-center space-y-2">
+            <div className="text-center">
               <div className="flex items-center justify-center gap-3">
                 <Trophy className="h-8 w-8 text-yellow-500" />
                 <h1 className="text-3xl font-bold text-gray-900">Your CRS Score</h1>
               </div>
-              <div className="text-6xl font-bold text-primary-blue">{results.totalScore}</div>
             </div>
 
             {/* Conversion Card - Right after score */}
