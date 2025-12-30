@@ -267,21 +267,23 @@ const CRSCalculator = () => {
             </Button>
 
             {/* Results Header */}
-            <div className="text-center space-y-4">
+            <div className="text-center space-y-2">
               <div className="flex items-center justify-center gap-3">
                 <Trophy className="h-8 w-8 text-yellow-500" />
                 <h1 className="text-3xl font-bold text-gray-900">Your CRS Score</h1>
               </div>
-              <div className="flex items-center justify-center">
-                <div className="text-6xl font-bold text-primary-blue">{results.totalScore}</div>
-                <div className="ml-4 text-left">
-                  <div className="text-sm text-gray-600">out of 1,200</div>
-                  <Badge variant={results.totalScore >= 470 ? "default" : "secondary"} className="mt-1">
-                    {results.totalScore >= 470 ? "Competitive Score" : "Needs Improvement"}
-                  </Badge>
-                </div>
-              </div>
+              <div className="text-6xl font-bold text-primary-blue">{results.totalScore}</div>
             </div>
+
+            {/* Conversion Card - Right after score */}
+            {bestCategory && (
+              <ConversionCard
+                score={results.totalScore}
+                cutoff={bestCategory.recentCutoff}
+                categoryName={bestCategory.name}
+                daysUntilDraw={daysUntilNextDraw}
+              />
+            )}
 
             {/* Best Category Match */}
             {bestCategory && (
@@ -355,15 +357,6 @@ const CRSCalculator = () => {
               </Card>
             )}
 
-            {/* Conversion Card - The key difference for lead gen */}
-            {bestCategory && (
-              <ConversionCard
-                score={results.totalScore}
-                cutoff={bestCategory.recentCutoff}
-                categoryName={bestCategory.name}
-                daysUntilDraw={daysUntilNextDraw}
-              />
-            )}
 
             {/* Score Breakdown - Expandable */}
             <Card>
