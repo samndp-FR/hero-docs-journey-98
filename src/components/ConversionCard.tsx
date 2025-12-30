@@ -1,7 +1,7 @@
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, ExternalLink } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { useNavigate, Link } from 'react-router-dom';
 
 interface ConversionCardProps {
@@ -21,84 +21,81 @@ const ConversionCard: React.FC<ConversionCardProps> = ({
   const isAboveCutoff = score >= cutoff;
   const pointsFromCutoff = Math.abs(score - cutoff);
 
-  // Calculate percentage for the subtle arc visualization
-  const percentage = Math.min(100, (score / cutoff) * 100);
-
   return (
-    <Card className="relative overflow-hidden border border-border/60 bg-card shadow-sm">
-      <CardContent className="pt-8 pb-6 px-6">
-        <div className="space-y-6">
+    <Card>
+      <CardContent className="pt-6">
+        <div className="space-y-5">
           
-          {/* Minimal Score Visualization */}
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-xs uppercase tracking-wider text-muted-foreground mb-1">
-                Your Score
-              </p>
-              <p className="text-4xl font-light text-foreground tracking-tight">
-                {score}
-              </p>
+          {/* Score comparison - simple horizontal bar */}
+          <div className="space-y-3">
+            <div className="flex items-baseline justify-between">
+              <span className="text-sm text-muted-foreground">Your score vs. cutoff</span>
+              <span className={`text-sm font-medium ${isAboveCutoff ? 'text-green-600' : 'text-amber-600'}`}>
+                {isAboveCutoff ? `+${pointsFromCutoff}` : `-${pointsFromCutoff}`} points
+              </span>
             </div>
             
-            {/* Subtle arc indicator */}
-            <div className="relative w-20 h-20">
-              <svg className="w-full h-full -rotate-90" viewBox="0 0 36 36">
-                <path
-                  d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                  fill="none"
-                  stroke="hsl(var(--border))"
-                  strokeWidth="2"
-                />
-                <path
-                  d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                  fill="none"
-                  stroke="hsl(var(--primary-blue))"
-                  strokeWidth="2"
-                  strokeDasharray={`${percentage}, 100`}
-                  strokeLinecap="round"
-                  className="transition-all duration-700 ease-out"
-                />
-              </svg>
-              <div className="absolute inset-0 flex items-center justify-center">
-                <span className="text-xs text-muted-foreground">{cutoff}</span>
+            {/* Two-bar comparison */}
+            <div className="space-y-2">
+              <div className="flex items-center gap-3">
+                <span className="text-xs text-muted-foreground w-12">You</span>
+                <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
+                  <div 
+                    className="h-full bg-primary-blue rounded-full transition-all duration-500"
+                    style={{ width: `${Math.min(100, (score / Math.max(score, cutoff)) * 100)}%` }}
+                  />
+                </div>
+                <span className="text-sm font-medium w-12 text-right">{score}</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <span className="text-xs text-muted-foreground w-12">Cutoff</span>
+                <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
+                  <div 
+                    className="h-full bg-muted-foreground/30 rounded-full"
+                    style={{ width: `${Math.min(100, (cutoff / Math.max(score, cutoff)) * 100)}%` }}
+                  />
+                </div>
+                <span className="text-sm text-muted-foreground w-12 text-right">{cutoff}</span>
               </div>
             </div>
           </div>
 
-          {/* Status line - understated */}
-          <div className="border-t border-border/40 pt-4">
-            {isAboveCutoff ? (
-              <p className="text-sm text-foreground/80">
-                You're <span className="font-medium text-foreground">{pointsFromCutoff} points above</span> the latest {categoryName} cutoff.
-                {daysUntilDraw !== null && daysUntilDraw <= 21 && (
-                  <span className="text-muted-foreground"> Next draw in ~{daysUntilDraw} days.</span>
-                )}
-              </p>
-            ) : (
-              <p className="text-sm text-foreground/80">
-                You're <span className="font-medium text-foreground">{pointsFromCutoff} points from</span> the latest {categoryName} cutoff.
-                <span className="text-muted-foreground"> There's room to improve.</span>
-              </p>
-            )}
-          </div>
+          {/* Divider */}
+          <div className="border-t border-border" />
 
-          {/* Primary CTA - understated but clear */}
+          {/* Status message */}
+          <p className="text-sm text-foreground/80 leading-relaxed">
+            {isAboveCutoff ? (
+              <>
+                Your profile meets the latest <span className="font-medium">{categoryName}</span> requirements.
+                {daysUntilDraw !== null && daysUntilDraw <= 21 && (
+                  <> Next draw expected in approximately {daysUntilDraw} days.</>
+                )}
+              </>
+            ) : (
+              <>
+                You're close to the <span className="font-medium">{categoryName}</span> threshold. 
+                Small improvements could make the difference.
+              </>
+            )}
+          </p>
+
+          {/* Primary CTA */}
           <Button 
             onClick={() => navigate('/onboarding')}
-            className="w-full h-11 bg-foreground text-background hover:bg-foreground/90 font-medium"
+            className="w-full"
           >
             Begin Your Application
             <ArrowRight className="w-4 h-4 ml-2" />
           </Button>
 
-          {/* Secondary CTA - very subtle */}
-          <div className="text-center">
+          {/* Secondary link */}
+          <div className="text-center pt-1">
             <Link 
               to="/#features" 
-              className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
+              className="text-xs text-muted-foreground hover:text-foreground transition-colors underline underline-offset-2"
             >
               See how we'd handle your application
-              <ExternalLink className="w-3 h-3" />
             </Link>
           </div>
 
