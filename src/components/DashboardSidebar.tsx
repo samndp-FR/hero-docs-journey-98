@@ -50,11 +50,11 @@ export function DashboardSidebar() {
     return currentPath.startsWith(path);
   };
 
-  const getAccessIndicator = (accessLevel: AccessLevel) => {
+  const getAccessIndicator = (accessLevel: AccessLevel, isItemActive: boolean) => {
     if (isPremium) return null;
     
     if (accessLevel === 'locked') {
-      return <Lock className="h-3.5 w-3.5 text-muted-foreground/60" />;
+      return <Lock className={cn("h-3.5 w-3.5", isItemActive ? "text-white" : "text-muted-foreground/60")} />;
     }
     return null;
   };
@@ -71,7 +71,8 @@ export function DashboardSidebar() {
           <SidebarGroupContent>
             <SidebarMenu className="space-y-1">
               {menuItems.map((item) => {
-                const indicator = getAccessIndicator(item.accessLevel);
+                const active = isActive(item.url);
+                const indicator = getAccessIndicator(item.accessLevel, active);
                 
                 return (
                   <SidebarMenuItem key={item.title}>
@@ -79,7 +80,7 @@ export function DashboardSidebar() {
                       onClick={() => navigate(item.url)}
                       className={cn(
                         "w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all",
-                        isActive(item.url) 
+                        active 
                           ? "bg-primary-blue text-white font-medium" 
                           : "text-sidebar-foreground hover:bg-sidebar-accent"
                       )}
