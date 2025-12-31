@@ -28,10 +28,10 @@ export function PremiumGate({ children, feature }: PremiumGateProps) {
       
       {/* Floating upgrade CTA */}
       <div className="absolute inset-0 z-20 flex items-center justify-center">
-        <Card className="border border-amber-200/50 shadow-2xl shadow-amber-900/5 bg-card/98 backdrop-blur-sm max-w-sm mx-4">
+        <Card className="border border-primary-blue/20 shadow-2xl shadow-primary-blue/5 bg-card/98 backdrop-blur-sm max-w-sm mx-4">
           <CardContent className="p-6 text-center">
-            <div className="w-11 h-11 rounded-full bg-gradient-to-br from-amber-100 to-amber-50 flex items-center justify-center mx-auto mb-4 ring-1 ring-amber-200/50">
-              <Crown className="h-5 w-5 text-amber-600" />
+            <div className="w-11 h-11 rounded-full bg-gradient-to-br from-primary-blue/10 to-primary-blue/5 flex items-center justify-center mx-auto mb-4 ring-1 ring-primary-blue/20">
+              <Crown className="h-5 w-5 text-primary-blue" />
             </div>
             <h3 className="text-lg font-semibold text-foreground mb-1.5">
               Unlock {feature}
@@ -41,7 +41,7 @@ export function PremiumGate({ children, feature }: PremiumGateProps) {
             </p>
             <Button 
               onClick={() => navigate('/upgrade')}
-              className="w-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white border-0 shadow-lg shadow-amber-500/20"
+              className="w-full bg-primary-blue hover:bg-primary-blue/90 text-white border-0 shadow-lg shadow-primary-blue/20"
             >
               Upgrade to Premium
               <ArrowRight className="h-4 w-4 ml-2" />

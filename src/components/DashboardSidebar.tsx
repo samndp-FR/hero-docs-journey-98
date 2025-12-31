@@ -5,8 +5,7 @@ import {
   FileText, 
   FolderOpen, 
   CheckCircle2,
-  Lock,
-  Sparkle
+  Lock
 } from 'lucide-react';
 import {
   Sidebar,
@@ -31,7 +30,7 @@ type MenuItem = {
 };
 
 const menuItems: MenuItem[] = [
-  { title: 'Overview', url: '/dashboard', icon: LayoutDashboard, accessLevel: 'full' },
+  { title: 'Overview', url: '/dashboard', icon: LayoutDashboard, accessLevel: 'partial' },
   { title: 'Improve Score', url: '/dashboard/score', icon: Calculator, accessLevel: 'full' },
   { title: 'Build Profile', url: '/dashboard/form', icon: FileText, accessLevel: 'partial' },
   { title: 'Document Center', url: '/dashboard/documents', icon: FolderOpen, accessLevel: 'locked' },
@@ -54,14 +53,10 @@ export function DashboardSidebar() {
   const getAccessIndicator = (accessLevel: AccessLevel) => {
     if (isPremium) return null;
     
-    switch (accessLevel) {
-      case 'locked':
-        return <Lock className="h-3.5 w-3.5 text-muted-foreground/60" />;
-      case 'partial':
-        return <Sparkle className="h-3.5 w-3.5 text-amber-500/70" />;
-      default:
-        return null;
+    if (accessLevel === 'locked') {
+      return <Lock className="h-3.5 w-3.5 text-muted-foreground/60" />;
     }
+    return null;
   };
 
   return (

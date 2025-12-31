@@ -25,10 +25,10 @@ export function UpgradeModal({ open, onOpenChange, feature = "this feature" }: U
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-sm border-amber-200/30">
+      <DialogContent className="sm:max-w-sm border-primary-blue/20">
         <DialogHeader className="text-center pt-2">
-          <div className="w-14 h-14 rounded-full bg-gradient-to-br from-amber-100 to-amber-50 flex items-center justify-center mx-auto mb-4 ring-1 ring-amber-200/50">
-            <Crown className="h-6 w-6 text-amber-600" />
+          <div className="w-14 h-14 rounded-full bg-gradient-to-br from-primary-blue/10 to-primary-blue/5 flex items-center justify-center mx-auto mb-4 ring-1 ring-primary-blue/20">
+            <Crown className="h-6 w-6 text-primary-blue" />
           </div>
           <DialogTitle className="text-xl">Upgrade to Continue</DialogTitle>
           <DialogDescription className="text-center pt-2 text-muted-foreground">
@@ -38,7 +38,7 @@ export function UpgradeModal({ open, onOpenChange, feature = "this feature" }: U
         <div className="flex flex-col gap-2.5 pt-4">
           <Button 
             onClick={handleUpgrade} 
-            className="w-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white border-0 shadow-lg shadow-amber-500/20"
+            className="w-full bg-primary-blue hover:bg-primary-blue/90 text-white border-0 shadow-lg shadow-primary-blue/20"
           >
             Upgrade to Premium
             <ArrowRight className="h-4 w-4 ml-2" />
