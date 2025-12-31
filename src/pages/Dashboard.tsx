@@ -18,7 +18,9 @@ import {
   ClipboardCheck,
   RotateCcw,
   Trash2,
-  Archive
+  Archive,
+  Lock,
+  Sparkles
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { DashboardLayout } from '@/components/DashboardLayout';
@@ -26,6 +28,7 @@ import { toast } from 'sonner';
 import DocumentReminder, { TrackedDocument } from '@/components/DocumentReminder';
 import { RecentActivityCard } from '@/components/RecentActivityCard';
 import { useActivityTracker } from '@/hooks/useActivityTracker';
+import { usePremium } from '@/contexts/PremiumContext';
 
 const STORAGE_KEY = 'eldo-journey-stage';
 const CHECKLIST_KEY = 'eldo-checklist-state';
@@ -69,9 +72,15 @@ const defaultDocuments: TrackedDocument[] = [
 
 const Dashboard = () => {
   const navigate = useNavigate();
+  const { isPremium } = usePremium();
   const { activities, logActivity, clearActivities } = useActivityTracker();
   const [currentStage, setCurrentStage] = useState(() => {
-    return localStorage.getItem(STORAGE_KEY) || 'get-ready';
+    const saved = localStorage.getItem(STORAGE_KEY) || 'get-ready';
+    // For free users, always show get-ready stage
+    if (!localStorage.getItem('eldo-premium') || localStorage.getItem('eldo-premium') !== 'true') {
+      return 'get-ready';
+    }
+    return saved;
   });
 
   const [checklistState, setChecklistState] = useState<Record<string, boolean>>(() => {
@@ -229,6 +238,12 @@ const Dashboard = () => {
   };
 
   const advanceToStage = (newStage: string) => {
+    // Block advancement for free users
+    if (!isPremium) {
+      navigate('/upgrade');
+      return;
+    }
+    
     // Save current stage to history with completion date
     const newHistory = [...stageHistory, { stageId: currentStage, completedAt: new Date().toISOString() }];
     setStageHistory(newHistory);
@@ -721,20 +736,37 @@ const Dashboard = () => {
               {/* Exit action / milestone button - only show on current stage */}
               {!isViewingPast && displayedConfig.exitAction && (
                 <div className="mt-4 pt-4 border-t border-border">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <Flag className="h-4 w-4" />
-                      <span>Ready to move on?</span>
+                  {!isPremium && currentStage === 'get-ready' ? (
+                    <div className="flex items-center justify-between p-3 bg-gradient-to-r from-primary/5 to-transparent rounded-lg border border-primary/20">
+                      <div className="flex items-center gap-2">
+                        <Sparkles className="h-4 w-4 text-primary" />
+                        <span className="text-sm text-muted-foreground">Upgrade to continue your journey</span>
+                      </div>
+                      <Button 
+                        size="sm"
+                        onClick={() => navigate('/upgrade')}
+                        className="gap-1"
+                      >
+                        <Lock className="h-3 w-3" />
+                        Upgrade
+                      </Button>
                     </div>
-                    <Button 
-                      variant={canAdvance() ? 'default' : 'outline'}
-                      size="sm"
-                      onClick={() => advanceToStage(displayedConfig.exitAction!.nextStage)}
-                      className={canAdvance() ? 'bg-primary-blue hover:bg-primary-blue/90' : ''}
-                    >
-                      {displayedConfig.exitAction.label}
-                    </Button>
-                  </div>
+                  ) : (
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                        <Flag className="h-4 w-4" />
+                        <span>Ready to move on?</span>
+                      </div>
+                      <Button 
+                        variant={canAdvance() ? 'default' : 'outline'}
+                        size="sm"
+                        onClick={() => advanceToStage(displayedConfig.exitAction!.nextStage)}
+                        className={canAdvance() ? 'bg-primary-blue hover:bg-primary-blue/90' : ''}
+                      >
+                        {displayedConfig.exitAction.label}
+                      </Button>
+                    </div>
+                  )}
                 </div>
               )}
             </CardContent>

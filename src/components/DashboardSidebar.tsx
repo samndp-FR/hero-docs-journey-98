@@ -4,7 +4,8 @@ import {
   Calculator, 
   FileText, 
   FolderOpen, 
-  CheckCircle2 
+  CheckCircle2,
+  Lock
 } from 'lucide-react';
 import {
   Sidebar,
@@ -17,18 +18,27 @@ import {
   SidebarHeader,
 } from '@/components/ui/sidebar';
 import { cn } from '@/lib/utils';
+import { usePremium } from '@/contexts/PremiumContext';
 
-const menuItems = [
+type MenuItem = {
+  title: string;
+  url: string;
+  icon: React.ComponentType<{ className?: string }>;
+  premiumOnly?: boolean;
+};
+
+const menuItems: MenuItem[] = [
   { title: 'Overview', url: '/dashboard', icon: LayoutDashboard },
   { title: 'Improve Score', url: '/dashboard/score', icon: Calculator },
   { title: 'Build Profile', url: '/dashboard/form', icon: FileText },
-  { title: 'Document Center', url: '/dashboard/documents', icon: FolderOpen },
-  { title: 'Apply for PR', url: '/dashboard/complete', icon: CheckCircle2 },
+  { title: 'Document Center', url: '/dashboard/documents', icon: FolderOpen, premiumOnly: true },
+  { title: 'Apply for PR', url: '/dashboard/complete', icon: CheckCircle2, premiumOnly: true },
 ];
 
 export function DashboardSidebar() {
   const location = useLocation();
   const navigate = useNavigate();
+  const { isPremium } = usePremium();
   const currentPath = location.pathname;
 
   const isActive = (path: string) => {
@@ -49,22 +59,30 @@ export function DashboardSidebar() {
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu className="space-y-1">
-              {menuItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton 
-                    onClick={() => navigate(item.url)}
-                    className={cn(
-                      "w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all",
-                      isActive(item.url) 
-                        ? "bg-primary-blue text-white font-medium" 
-                        : "text-sidebar-foreground hover:bg-sidebar-accent"
-                    )}
-                  >
-                    <item.icon className="h-5 w-5" />
-                    <span>{item.title}</span>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
+              {menuItems.map((item) => {
+                const isLocked = item.premiumOnly && !isPremium;
+                
+                return (
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton 
+                      onClick={() => navigate(item.url)}
+                      className={cn(
+                        "w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all",
+                        isActive(item.url) 
+                          ? "bg-primary-blue text-white font-medium" 
+                          : "text-sidebar-foreground hover:bg-sidebar-accent",
+                        isLocked && !isActive(item.url) && "opacity-70"
+                      )}
+                    >
+                      <item.icon className="h-5 w-5" />
+                      <span className="flex-1">{item.title}</span>
+                      {isLocked && (
+                        <Lock className="h-4 w-4 text-muted-foreground" />
+                      )}
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                );
+              })}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
