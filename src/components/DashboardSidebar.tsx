@@ -5,7 +5,8 @@ import {
   FileText, 
   FolderOpen, 
   CheckCircle2,
-  Lock
+  Lock,
+  Sparkle
 } from 'lucide-react';
 import {
   Sidebar,
@@ -20,19 +21,21 @@ import {
 import { cn } from '@/lib/utils';
 import { usePremium } from '@/contexts/PremiumContext';
 
+type AccessLevel = 'full' | 'partial' | 'locked';
+
 type MenuItem = {
   title: string;
   url: string;
   icon: React.ComponentType<{ className?: string }>;
-  premiumOnly?: boolean;
+  accessLevel: AccessLevel;
 };
 
 const menuItems: MenuItem[] = [
-  { title: 'Overview', url: '/dashboard', icon: LayoutDashboard },
-  { title: 'Improve Score', url: '/dashboard/score', icon: Calculator },
-  { title: 'Build Profile', url: '/dashboard/form', icon: FileText },
-  { title: 'Document Center', url: '/dashboard/documents', icon: FolderOpen, premiumOnly: true },
-  { title: 'Apply for PR', url: '/dashboard/complete', icon: CheckCircle2, premiumOnly: true },
+  { title: 'Overview', url: '/dashboard', icon: LayoutDashboard, accessLevel: 'full' },
+  { title: 'Improve Score', url: '/dashboard/score', icon: Calculator, accessLevel: 'full' },
+  { title: 'Build Profile', url: '/dashboard/form', icon: FileText, accessLevel: 'partial' },
+  { title: 'Document Center', url: '/dashboard/documents', icon: FolderOpen, accessLevel: 'locked' },
+  { title: 'Apply for PR', url: '/dashboard/complete', icon: CheckCircle2, accessLevel: 'locked' },
 ];
 
 export function DashboardSidebar() {
@@ -48,6 +51,19 @@ export function DashboardSidebar() {
     return currentPath.startsWith(path);
   };
 
+  const getAccessIndicator = (accessLevel: AccessLevel) => {
+    if (isPremium) return null;
+    
+    switch (accessLevel) {
+      case 'locked':
+        return <Lock className="h-3.5 w-3.5 text-muted-foreground/60" />;
+      case 'partial':
+        return <Sparkle className="h-3.5 w-3.5 text-amber-500/70" />;
+      default:
+        return null;
+    }
+  };
+
   return (
     <Sidebar className="border-r border-sidebar-border">
       <SidebarHeader className="p-6 border-b border-sidebar-border">
@@ -60,7 +76,7 @@ export function DashboardSidebar() {
           <SidebarGroupContent>
             <SidebarMenu className="space-y-1">
               {menuItems.map((item) => {
-                const isLocked = item.premiumOnly && !isPremium;
+                const indicator = getAccessIndicator(item.accessLevel);
                 
                 return (
                   <SidebarMenuItem key={item.title}>
@@ -70,15 +86,12 @@ export function DashboardSidebar() {
                         "w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all",
                         isActive(item.url) 
                           ? "bg-primary-blue text-white font-medium" 
-                          : "text-sidebar-foreground hover:bg-sidebar-accent",
-                        isLocked && !isActive(item.url) && "opacity-70"
+                          : "text-sidebar-foreground hover:bg-sidebar-accent"
                       )}
                     >
                       <item.icon className="h-5 w-5" />
                       <span className="flex-1">{item.title}</span>
-                      {isLocked && (
-                        <Lock className="h-4 w-4 text-muted-foreground" />
-                      )}
+                      {indicator}
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 );
