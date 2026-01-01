@@ -2,6 +2,7 @@ import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import { DashboardSidebar } from '@/components/DashboardSidebar';
 import { Button } from '@/components/ui/button';
 import { Bell, Settings } from 'lucide-react';
+import { SupportFormDialog } from '@/components/SupportFormDialog';
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -19,6 +20,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
             <SidebarTrigger className="md:hidden" />
             <div className="flex-1" />
             <div className="flex items-center gap-3">
+              <SupportFormDialog />
               <Button variant="ghost" size="icon" className="rounded-full text-muted-foreground">
                 <Bell className="h-5 w-5" />
               </Button>
