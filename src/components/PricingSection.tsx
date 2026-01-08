@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 
 const PricingSection = () => {
   const navigate = useNavigate();
-  const [daysCount, setDaysCount] = useState(15);
+  const [daysCount, setDaysCount] = useState(8);
   const [isFlipping, setIsFlipping] = useState(false);
   const [hasAnimated, setHasAnimated] = useState(false);
   const countdownRef = useRef<HTMLDivElement>(null);
@@ -21,11 +21,11 @@ const PricingSection = () => {
       (entries) => {
         if (entries[0].isIntersecting && !hasAnimated) {
           setHasAnimated(true);
-          // Animate countdown from 15 to 14
+          // Animate countdown from 8 to 7
           setTimeout(() => {
             setIsFlipping(true);
             setTimeout(() => {
-              setDaysCount(14);
+              setDaysCount(7);
               setIsFlipping(false);
             }, 300);
           }, 500);
