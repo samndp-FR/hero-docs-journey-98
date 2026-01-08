@@ -325,9 +325,9 @@ const Onboarding = () => {
                     
                     {/* Visual Preview - Mocked UI */}
                     <div className="px-5 pb-4">
-                      <div className="bg-muted/30 rounded-xl p-4 space-y-3">
+                      <div className="bg-muted/30 rounded-xl p-4 space-y-3 transition-colors group-hover:bg-muted/40">
                         {/* Score preview */}
-                        <div className="flex items-center justify-between">
+                        <div className="flex items-center justify-between p-2 -m-2 rounded-lg hover:bg-white/60 transition-colors cursor-default">
                           <span className="text-xs text-muted-foreground">Your estimated score</span>
                           <div className="flex items-baseline gap-1">
                             <span className="text-2xl font-bold text-primary-blue">—</span>
@@ -338,17 +338,17 @@ const Onboarding = () => {
                         {/* Category bars preview */}
                         <div className="space-y-2">
                           {[
-                            { label: 'Core factors', width: '75%', color: 'bg-primary-blue' },
-                            { label: 'Skill transferability', width: '40%', color: 'bg-violet-500' },
-                            { label: 'Additional points', width: '20%', color: 'bg-amber-500' },
+                            { label: 'Core factors', width: '75%', color: 'bg-primary-blue', hoverColor: 'group-hover/bar:bg-primary-blue' },
+                            { label: 'Skill transferability', width: '40%', color: 'bg-violet-500', hoverColor: 'group-hover/bar:bg-violet-500' },
+                            { label: 'Additional points', width: '20%', color: 'bg-amber-500', hoverColor: 'group-hover/bar:bg-amber-500' },
                           ].map((bar, idx) => (
-                            <div key={idx} className="space-y-1">
-                              <div className="flex justify-between text-[10px] text-muted-foreground">
+                            <div key={idx} className="group/bar space-y-1 p-1.5 -mx-1.5 rounded-lg hover:bg-white/60 transition-all cursor-default">
+                              <div className="flex justify-between text-[10px] text-muted-foreground group-hover/bar:text-foreground transition-colors">
                                 <span>{bar.label}</span>
                               </div>
-                              <div className="h-1.5 bg-muted rounded-full overflow-hidden">
+                              <div className="h-1.5 bg-muted rounded-full overflow-hidden group-hover/bar:h-2 transition-all">
                                 <div 
-                                  className={`h-full ${bar.color} rounded-full opacity-40`}
+                                  className={`h-full ${bar.color} rounded-full opacity-40 group-hover/bar:opacity-70 transition-all`}
                                   style={{ width: bar.width }}
                                 />
                               </div>
@@ -365,8 +365,8 @@ const Onboarding = () => {
                         { icon: Target, label: 'Draw matching' },
                         { icon: Zap, label: 'Point potential' },
                       ].map((feature, idx) => (
-                        <div key={idx} className="flex flex-col items-center gap-1.5 p-2 rounded-lg bg-muted/30">
-                          <feature.icon className="w-4 h-4 text-primary-blue/70" />
+                        <div key={idx} className="flex flex-col items-center gap-1.5 p-2 rounded-lg bg-muted/30 hover:bg-primary-blue/10 hover:scale-105 transition-all cursor-default">
+                          <feature.icon className="w-4 h-4 text-primary-blue/70 group-hover:text-primary-blue transition-colors" />
                           <span className="text-[10px] text-muted-foreground text-center leading-tight">{feature.label}</span>
                         </div>
                       ))}
