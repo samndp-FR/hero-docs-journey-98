@@ -1,5 +1,5 @@
 import React from 'react';
-import { Timer, FileEdit, Clock, Lock, CreditCard, Sparkles } from 'lucide-react';
+import { Timer, FileEdit, Clock, Lock, CreditCard, Sparkles, Calendar } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 
@@ -84,9 +84,11 @@ const PricingSection = () => {
                 </div>
 
                 <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
-                  <Clock className="w-3.5 h-3.5 text-orange-500" />
                   <span>Launching in</span>
-                  <span className="font-bold text-orange-500">14 days</span>
+                  <div className="inline-flex items-center gap-1.5 bg-orange-500/10 border border-orange-500/30 rounded-md px-2 py-0.5">
+                    <Calendar className="w-3.5 h-3.5 text-orange-500" />
+                    <span className="font-bold text-orange-500">14 days</span>
+                  </div>
                 </div>
               </div>
             </div>
