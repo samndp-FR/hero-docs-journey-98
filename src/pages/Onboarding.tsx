@@ -325,16 +325,18 @@ const Onboarding = () => {
                     
                     {/* Preview of questions */}
                     <div className="p-5 space-y-3">
-                      <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">What we'll cover</p>
+                      <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">What we'll assess</p>
                       <div className="grid grid-cols-2 gap-2">
                         {[
-                          { icon: User, label: 'Age & status' },
-                          { icon: FileEdit, label: 'Education' },
-                          { icon: FolderOpen, label: 'Work experience' },
-                          { icon: ShieldCheck, label: 'Language skills' },
+                          { label: 'Age' },
+                          { label: 'Education level' },
+                          { label: 'Canadian experience' },
+                          { label: 'Foreign experience' },
+                          { label: 'Spouse factors' },
+                          { label: 'Provincial nomination' },
                         ].map((item, idx) => (
                           <div key={idx} className="flex items-center gap-2 text-sm text-muted-foreground">
-                            <item.icon className="w-3.5 h-3.5 text-primary-blue/60" />
+                            <div className="w-1.5 h-1.5 rounded-full bg-primary-blue/50" />
                             <span>{item.label}</span>
                           </div>
                         ))}
