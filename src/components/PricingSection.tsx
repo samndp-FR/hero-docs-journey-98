@@ -82,6 +82,21 @@ const PricingSection = () => {
                     🎉 Waitlist members get <span className="font-bold">25% off</span> at launch!
                   </p>
                 </div>
+
+                <div className="bg-gradient-to-r from-orange-500/10 to-amber-500/10 border border-orange-500/30 rounded-xl px-4 py-3">
+                  <div className="flex items-center justify-center gap-4">
+                    <div className="flex items-center gap-2">
+                      <Clock className="w-4 h-4 text-orange-500" />
+                      <span className="text-sm font-medium text-orange-600 dark:text-orange-400">Launching in:</span>
+                    </div>
+                    <div className="flex gap-2">
+                      <div className="bg-orange-500/20 rounded-lg px-3 py-1.5 min-w-[48px] text-center">
+                        <span className="text-lg font-bold text-orange-600 dark:text-orange-400">14</span>
+                        <p className="text-[10px] text-orange-500 uppercase">Days</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
