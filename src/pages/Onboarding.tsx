@@ -291,71 +291,102 @@ const Onboarding = () => {
 
             {/* Step 3: CRS Check */}
             {currentStep === 2 && (
-              <div className="space-y-8">
+              <div className="space-y-6">
                 <div className="text-center">
                   <h1 className="text-3xl md:text-4xl font-bold mb-4 text-foreground">
                     Check where you stand
                   </h1>
-                  <p className="text-muted-foreground text-lg">
-                    Express Entry is competitive. Understanding your CRS score helps you decide your next steps.
+                  <p className="text-muted-foreground">
+                    Express Entry is competitive. Know your score before you begin.
                   </p>
                 </div>
+
+                {/* CRS Assessment Preview Card */}
+                <button
+                  onClick={handleTakeCRSAssessment}
+                  className="w-full group text-left"
+                >
+                  <div className="relative bg-white rounded-2xl border-2 border-primary-blue/20 hover:border-primary-blue/50 transition-all overflow-hidden">
+                    {/* Header */}
+                    <div className="p-5 pb-4 border-b border-border/50">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 bg-primary-blue/10 rounded-xl flex items-center justify-center">
+                            <Calculator className="w-5 h-5 text-primary-blue" />
+                          </div>
+                          <div>
+                            <h3 className="font-semibold text-foreground">CRS Score Calculator</h3>
+                            <p className="text-xs text-muted-foreground">~3 minutes to complete</p>
+                          </div>
+                        </div>
+                        <ArrowRight className="w-5 h-5 text-muted-foreground group-hover:text-primary-blue group-hover:translate-x-1 transition-all" />
+                      </div>
+                    </div>
+                    
+                    {/* Preview of questions */}
+                    <div className="p-5 space-y-3">
+                      <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">What we'll cover</p>
+                      <div className="grid grid-cols-2 gap-2">
+                        {[
+                          { icon: User, label: 'Age & status' },
+                          { icon: FileEdit, label: 'Education' },
+                          { icon: FolderOpen, label: 'Work experience' },
+                          { icon: ShieldCheck, label: 'Language skills' },
+                        ].map((item, idx) => (
+                          <div key={idx} className="flex items-center gap-2 text-sm text-muted-foreground">
+                            <item.icon className="w-3.5 h-3.5 text-primary-blue/60" />
+                            <span>{item.label}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Bottom accent */}
+                    <div className="h-1 bg-gradient-to-r from-primary-blue/20 via-primary-blue/40 to-primary-blue/20 group-hover:from-primary-blue/40 group-hover:via-primary-blue/60 group-hover:to-primary-blue/40 transition-all" />
+                  </div>
+                </button>
                 
-                <div className="bg-amber-50 border border-amber-200 rounded-xl p-5">
-                  <div className="flex items-start gap-3">
-                    <AlertTriangle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
+                <div className="relative">
+                  <div className="absolute inset-0 flex items-center">
+                    <div className="w-full border-t border-border"></div>
+                  </div>
+                  <div className="relative flex justify-center text-sm">
+                    <span className="px-4 bg-white text-muted-foreground">or</span>
+                  </div>
+                </div>
+                
+                <label 
+                  className={`block bg-white rounded-xl p-5 border-2 cursor-pointer transition-all ${
+                    hasConfirmedCRS 
+                      ? 'border-primary-blue bg-primary-blue/5' 
+                      : 'border-border hover:border-primary-blue/30'
+                  }`}
+                >
+                  <div className="flex items-start gap-4">
+                    <input
+                      type="checkbox"
+                      checked={hasConfirmedCRS}
+                      onChange={(e) => setHasConfirmedCRS(e.target.checked)}
+                      className="mt-1 w-5 h-5 rounded border-border text-primary-blue focus:ring-primary-blue"
+                    />
                     <div>
-                      <p className="text-sm text-amber-700">
-                        <strong className="text-amber-800">Eldo helps you prepare a complete application.</strong><br />
-                        It does not change your CRS score or guarantee eligibility.
+                      <h4 className="font-semibold text-foreground mb-1">
+                        I already know my CRS score
+                      </h4>
+                      <p className="text-sm text-muted-foreground">
+                        I understand that Eldo helps me prepare my application, not increase my CRS score.
                       </p>
                     </div>
                   </div>
-                </div>
+                </label>
 
-                <div className="space-y-4">
-                  <Button
-                    onClick={handleTakeCRSAssessment}
-                    variant="outline"
-                    className="w-full py-6 rounded-xl border-2 border-primary-blue/30 hover:border-primary-blue hover:bg-primary-blue/5"
-                  >
-                    <Calculator className="w-5 h-5 mr-3 text-primary-blue" />
-                    <span className="text-foreground">Check my CRS score</span>
-                  </Button>
-                  
-                  <div className="relative">
-                    <div className="absolute inset-0 flex items-center">
-                      <div className="w-full border-t border-border"></div>
-                    </div>
-                    <div className="relative flex justify-center text-sm">
-                      <span className="px-4 bg-white text-muted-foreground">or</span>
-                    </div>
+                <div className="bg-amber-50/50 border border-amber-200/50 rounded-xl p-4">
+                  <div className="flex items-start gap-3">
+                    <AlertTriangle className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
+                    <p className="text-xs text-amber-700">
+                      Eldo helps you prepare a complete application — it does not change your CRS score or guarantee eligibility.
+                    </p>
                   </div>
-                  
-                  <label 
-                    className={`block bg-white rounded-xl p-5 border-2 cursor-pointer transition-all ${
-                      hasConfirmedCRS 
-                        ? 'border-primary-blue bg-primary-blue/5' 
-                        : 'border-border hover:border-primary-blue/30'
-                    }`}
-                  >
-                    <div className="flex items-start gap-4">
-                      <input
-                        type="checkbox"
-                        checked={hasConfirmedCRS}
-                        onChange={(e) => setHasConfirmedCRS(e.target.checked)}
-                        className="mt-1 w-5 h-5 rounded border-border text-primary-blue focus:ring-primary-blue"
-                      />
-                      <div>
-                        <h4 className="font-semibold text-foreground mb-1">
-                          I already know my CRS score
-                        </h4>
-                        <p className="text-sm text-muted-foreground">
-                          I understand that Eldo helps me prepare my application, not increase my CRS score.
-                        </p>
-                      </div>
-                    </div>
-                  </label>
                 </div>
               </div>
             )}
