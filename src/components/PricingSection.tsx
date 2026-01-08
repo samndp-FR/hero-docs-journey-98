@@ -57,16 +57,24 @@ const PricingSection = () => {
           <div className="w-full max-w-md">
             {/* Single Pricing Plan */}
             <div className="bg-card rounded-2xl p-8 border border-border shadow-lg relative overflow-hidden">
+              {/* Waitlist Ribbon */}
+              <div className="absolute -right-8 top-6 rotate-45 bg-primary-blue text-white text-xs font-semibold px-10 py-1 shadow-md">
+                Waitlist Deal
+              </div>
+
               <div className="mb-6">
                 <h3 className="text-2xl font-bold text-foreground">Express Entry</h3>
                 <p className="text-muted-foreground mt-1">Complete application toolkit</p>
               </div>
 
               <div className="mb-6">
-                <div className="flex items-baseline gap-2">
+                <div className="flex items-baseline gap-2 flex-wrap">
                   <span className="text-2xl font-medium text-muted-foreground/60 line-through">$279</span>
                   <span className="text-5xl font-bold text-foreground">$209</span>
                   <span className="text-muted-foreground text-lg">CAD</span>
+                  <span className="bg-primary-blue/10 text-primary-blue text-xs font-bold px-2 py-1 rounded-full ml-1">
+                    SAVE $70
+                  </span>
                 </div>
                 <p className="text-muted-foreground text-sm mt-1">One-time payment</p>
               </div>
