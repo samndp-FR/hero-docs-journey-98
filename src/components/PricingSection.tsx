@@ -63,11 +63,15 @@ const PricingSection = () => {
               </div>
 
               <div className="mb-6">
-                <div className="flex items-baseline gap-1">
-                  <span className="text-5xl font-bold text-foreground">$279</span>
+                <div className="flex items-baseline gap-2">
+                  <span className="text-2xl font-bold text-muted-foreground line-through">$279</span>
+                  <span className="text-5xl font-bold text-green-600">$209</span>
                   <span className="text-muted-foreground text-lg">CAD</span>
                 </div>
-                <p className="text-muted-foreground text-sm mt-1">One-time payment</p>
+                <p className="text-sm mt-1">
+                  <span className="text-muted-foreground">One-time payment</span>
+                  <span className="text-green-600 font-medium ml-2">• Waitlist price</span>
+                </p>
               </div>
 
               {/* Installment Option */}
@@ -78,9 +82,9 @@ const PricingSection = () => {
                   </div>
                   <div>
                     <p className="text-sm font-medium text-foreground">
-                      Or 4 payments of <span className="text-primary-blue font-bold">$70 CAD</span>
+                      Or 4 payments of <span className="text-muted-foreground line-through">$70</span> <span className="text-green-600 font-bold">$52 CAD</span>
                     </p>
-                    <p className="text-xs text-muted-foreground">Interest-free installments available</p>
+                    <p className="text-xs text-muted-foreground">Interest-free • Waitlist members only</p>
                   </div>
                 </div>
               </div>
