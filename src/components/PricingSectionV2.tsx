@@ -79,12 +79,12 @@ const PricingSectionV2 = () => {
                 >
                   <Compass className="w-5 h-5 text-muted-foreground group-hover:text-primary-blue transition-colors" />
                   <span className="text-muted-foreground group-hover:text-foreground font-medium transition-colors">
-                    Explore the platform first
+                    Take a tour first
                   </span>
                 </button>
 
                 <p className="text-center text-xs text-muted-foreground">
-                  No account needed. See exactly what you're getting before you commit.
+                  See exactly what you're getting before you commit.
                 </p>
               </div>
             </div>
