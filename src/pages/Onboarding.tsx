@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { ArrowRight, ArrowLeft, CheckCircle2, FolderOpen, FileEdit, ShieldCheck, Calculator, AlertTriangle, Mail, Lock, User } from 'lucide-react';
+import { ArrowRight, ArrowLeft, CheckCircle2, FolderOpen, FileEdit, ShieldCheck, Calculator, AlertTriangle, Mail, Lock, User, TrendingUp, Target, Zap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useNavigate } from 'react-router-dom';
@@ -306,9 +306,9 @@ const Onboarding = () => {
                   onClick={handleTakeCRSAssessment}
                   className="w-full group text-left"
                 >
-                  <div className="relative bg-white rounded-2xl border-2 border-primary-blue/20 hover:border-primary-blue/50 transition-all overflow-hidden">
+                  <div className="relative bg-white rounded-2xl border-2 border-primary-blue/20 hover:border-primary-blue/40 transition-all overflow-hidden shadow-sm hover:shadow-md">
                     {/* Header */}
-                    <div className="p-5 pb-4 border-b border-border/50">
+                    <div className="p-5 pb-4">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
                           <div className="w-10 h-10 bg-primary-blue/10 rounded-xl flex items-center justify-center">
@@ -316,35 +316,64 @@ const Onboarding = () => {
                           </div>
                           <div>
                             <h3 className="font-semibold text-foreground">CRS Score Calculator</h3>
-                            <p className="text-xs text-muted-foreground">~3 minutes to complete</p>
+                            <p className="text-xs text-muted-foreground">~3 minutes • No signup required</p>
                           </div>
                         </div>
                         <ArrowRight className="w-5 h-5 text-muted-foreground group-hover:text-primary-blue group-hover:translate-x-1 transition-all" />
                       </div>
                     </div>
                     
-                    {/* Preview of questions */}
-                    <div className="p-5 space-y-3">
-                      <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">What we'll assess</p>
-                      <div className="grid grid-cols-2 gap-2">
-                        {[
-                          { label: 'Age' },
-                          { label: 'Education level' },
-                          { label: 'Canadian experience' },
-                          { label: 'Foreign experience' },
-                          { label: 'Spouse factors' },
-                          { label: 'Provincial nomination' },
-                        ].map((item, idx) => (
-                          <div key={idx} className="flex items-center gap-2 text-sm text-muted-foreground">
-                            <div className="w-1.5 h-1.5 rounded-full bg-primary-blue/50" />
-                            <span>{item.label}</span>
+                    {/* Visual Preview - Mocked UI */}
+                    <div className="px-5 pb-4">
+                      <div className="bg-muted/30 rounded-xl p-4 space-y-3">
+                        {/* Score preview */}
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs text-muted-foreground">Your estimated score</span>
+                          <div className="flex items-baseline gap-1">
+                            <span className="text-2xl font-bold text-primary-blue">—</span>
+                            <span className="text-xs text-muted-foreground">/ 1,200</span>
                           </div>
-                        ))}
+                        </div>
+                        
+                        {/* Category bars preview */}
+                        <div className="space-y-2">
+                          {[
+                            { label: 'Core factors', width: '75%', color: 'bg-primary-blue' },
+                            { label: 'Skill transferability', width: '40%', color: 'bg-violet-500' },
+                            { label: 'Additional points', width: '20%', color: 'bg-amber-500' },
+                          ].map((bar, idx) => (
+                            <div key={idx} className="space-y-1">
+                              <div className="flex justify-between text-[10px] text-muted-foreground">
+                                <span>{bar.label}</span>
+                              </div>
+                              <div className="h-1.5 bg-muted rounded-full overflow-hidden">
+                                <div 
+                                  className={`h-full ${bar.color} rounded-full opacity-40`}
+                                  style={{ width: bar.width }}
+                                />
+                              </div>
+                            </div>
+                          ))}
+                        </div>
                       </div>
                     </div>
 
+                    {/* Feature highlights */}
+                    <div className="px-5 pb-5 grid grid-cols-3 gap-2">
+                      {[
+                        { icon: TrendingUp, label: 'Live scoring' },
+                        { icon: Target, label: 'Draw matching' },
+                        { icon: Zap, label: 'Point potential' },
+                      ].map((feature, idx) => (
+                        <div key={idx} className="flex flex-col items-center gap-1.5 p-2 rounded-lg bg-muted/30">
+                          <feature.icon className="w-4 h-4 text-primary-blue/70" />
+                          <span className="text-[10px] text-muted-foreground text-center leading-tight">{feature.label}</span>
+                        </div>
+                      ))}
+                    </div>
+
                     {/* Bottom accent */}
-                    <div className="h-1 bg-gradient-to-r from-primary-blue/20 via-primary-blue/40 to-primary-blue/20 group-hover:from-primary-blue/40 group-hover:via-primary-blue/60 group-hover:to-primary-blue/40 transition-all" />
+                    <div className="h-1 bg-gradient-to-r from-primary-blue/30 via-violet-500/30 to-amber-500/30 group-hover:from-primary-blue/50 group-hover:via-violet-500/50 group-hover:to-amber-500/50 transition-all" />
                   </div>
                 </button>
                 
