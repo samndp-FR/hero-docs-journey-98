@@ -115,12 +115,6 @@ const PricingSection = () => {
                     Join the Waitlist!
                   </span>
                 </Button>
-                
-                <div className="bg-gradient-to-r from-green-500/10 to-emerald-500/10 border border-green-500/30 rounded-xl px-4 py-3 text-center">
-                  <p className="text-sm font-medium text-green-600 dark:text-green-400 flex items-center justify-center gap-2">
-                    🎉 Waitlist members get <span className="font-bold">25% off</span> at launch!
-                  </p>
-                </div>
 
                 <div ref={countdownRef} className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
                   <span>Launching in</span>
