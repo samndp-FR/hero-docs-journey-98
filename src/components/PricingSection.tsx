@@ -1,5 +1,5 @@
 import React from 'react';
-import { Timer, FileEdit, Clock, Lock, CreditCard } from 'lucide-react';
+import { Timer, FileEdit, Clock, Lock, CreditCard, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 
@@ -66,20 +66,21 @@ const PricingSection = () => {
                 ))}
               </div>
 
-              <Button
-                className="w-full bg-gradient-to-r from-primary-blue to-primary-blue/80 hover:from-primary-blue/90 hover:to-primary-blue/70 text-white py-6 text-lg font-semibold rounded-xl shadow-lg shadow-primary-blue/20"
-                onClick={() => navigate('/waitlist')}
-              >
-                <span className="flex items-center gap-2">
-                  <Lock className="w-4 h-4" />
-                  Get Started - $279 CAD
-                </span>
-              </Button>
-
-              <div className="mt-4 text-center">
-                <div className="flex items-center justify-center gap-2 text-muted-foreground text-sm">
-                  <Lock className="w-3.5 h-3.5" />
-                  Secure Payment
+              <div className="space-y-3">
+                <Button
+                  className="w-full bg-gradient-to-r from-primary-blue to-primary-blue/80 hover:from-primary-blue/90 hover:to-primary-blue/70 text-white py-6 text-lg font-semibold rounded-xl shadow-lg shadow-primary-blue/20 hover:scale-[1.02] transition-transform"
+                  onClick={() => navigate('/waitlist')}
+                >
+                  <span className="flex items-center gap-2">
+                    <Sparkles className="w-5 h-5" />
+                    Join the Waitlist!
+                  </span>
+                </Button>
+                
+                <div className="bg-gradient-to-r from-green-500/10 to-emerald-500/10 border border-green-500/30 rounded-xl px-4 py-3 text-center">
+                  <p className="text-sm font-medium text-green-600 dark:text-green-400 flex items-center justify-center gap-2">
+                    🎉 Waitlist members get <span className="font-bold">25% off</span> at launch!
+                  </p>
                 </div>
               </div>
             </div>
