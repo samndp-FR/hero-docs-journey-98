@@ -1,15 +1,45 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Timer, FileEdit, Clock, Lock, CreditCard, Sparkles, Calendar } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 
 const PricingSection = () => {
   const navigate = useNavigate();
+  const [daysCount, setDaysCount] = useState(15);
+  const [isFlipping, setIsFlipping] = useState(false);
+  const [hasAnimated, setHasAnimated] = useState(false);
+  const countdownRef = useRef<HTMLDivElement>(null);
+
   const features = [
     { icon: Timer, title: '16h+ hours saved' },
     { icon: FileEdit, title: 'Automated form filling' },
     { icon: Clock, title: 'Timeline tracking' },
   ];
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && !hasAnimated) {
+          setHasAnimated(true);
+          // Animate countdown from 15 to 14
+          setTimeout(() => {
+            setIsFlipping(true);
+            setTimeout(() => {
+              setDaysCount(14);
+              setIsFlipping(false);
+            }, 300);
+          }, 500);
+        }
+      },
+      { threshold: 0.5 }
+    );
+
+    if (countdownRef.current) {
+      observer.observe(countdownRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, [hasAnimated]);
 
   return (
     <section id="pricing" className="py-24 px-4 bg-gradient-to-b from-background to-muted/30">
@@ -83,11 +113,15 @@ const PricingSection = () => {
                   </p>
                 </div>
 
-                <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
+                <div ref={countdownRef} className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
                   <span>Launching in</span>
-                  <div className="inline-flex items-center gap-1.5 bg-orange-500/10 border border-orange-500/30 rounded-md px-2 py-0.5">
+                  <div className="inline-flex items-center gap-1.5 bg-orange-500/10 border border-orange-500/30 rounded-md px-2 py-0.5 overflow-hidden">
                     <Calendar className="w-3.5 h-3.5 text-orange-500" />
-                    <span className="font-bold text-orange-500">14 days</span>
+                    <span 
+                      className={`font-bold text-orange-500 transition-all duration-300 ${isFlipping ? 'opacity-0 -translate-y-2' : 'opacity-100 translate-y-0'}`}
+                    >
+                      {daysCount} days
+                    </span>
                   </div>
                 </div>
               </div>
