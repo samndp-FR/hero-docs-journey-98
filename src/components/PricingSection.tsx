@@ -48,7 +48,7 @@ const PricingSection = () => {
                   </div>
                   <div>
                     <p className="text-sm font-medium text-foreground">
-                      Or 3 payments of <span className="text-primary-blue font-bold">$93 CAD</span>
+                      Or 4 payments of <span className="text-primary-blue font-bold">$70 CAD</span>
                     </p>
                     <p className="text-xs text-muted-foreground">Interest-free installments available</p>
                   </div>
