@@ -15,6 +15,7 @@ import CRSAssessment from "./pages/CRSAssessment";
 import CRSCalculator from "./pages/CRSCalculator";
 import Onboarding from "./pages/Onboarding";
 import Upgrade from "./pages/Upgrade";
+import PricingV2 from "./pages/PricingV2";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -38,6 +39,7 @@ const App = () => (
             <Route path="/crs-calculator" element={<CRSCalculator />} />
             <Route path="/onboarding" element={<Onboarding />} />
             <Route path="/upgrade" element={<Upgrade />} />
+            <Route path="/pricing-v2" element={<PricingV2 />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
