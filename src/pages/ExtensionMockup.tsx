@@ -1,17 +1,52 @@
 import { useState } from 'react';
-import { Check, Power, Loader2, Shield, ExternalLink, User, Sparkles } from 'lucide-react';
+import { Check, Loader2, Shield, ExternalLink, User, Sparkles, Pause, X, ShieldCheck, Eye } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
-type ExtensionState = 'logged-out' | 'inactive' | 'ready' | 'filling' | 'success';
+type ExtensionState = 'logged-out' | 'inactive' | 'ready' | 'filling' | 'paused' | 'success';
 
 const ExtensionMockup = () => {
   const [state, setState] = useState<ExtensionState>('ready');
+  const [filledCount, setFilledCount] = useState(0);
 
   const handleFill = () => {
     setState('filling');
-    setTimeout(() => setState('success'), 2000);
-    setTimeout(() => setState('ready'), 4000);
+    setFilledCount(0);
+    const interval = setInterval(() => {
+      setFilledCount(prev => {
+        if (prev >= 42) {
+          clearInterval(interval);
+          setState('success');
+          setTimeout(() => setState('ready'), 3000);
+          return 42;
+        }
+        return prev + 3;
+      });
+    }, 150);
+  };
+
+  const handlePause = () => {
+    setState('paused');
+  };
+
+  const handleResume = () => {
+    setState('filling');
+    const interval = setInterval(() => {
+      setFilledCount(prev => {
+        if (prev >= 42) {
+          clearInterval(interval);
+          setState('success');
+          setTimeout(() => setState('ready'), 3000);
+          return 42;
+        }
+        return prev + 3;
+      });
+    }, 150);
+  };
+
+  const handleCancel = () => {
+    setState('ready');
+    setFilledCount(0);
   };
 
   const toggleLogin = () => {
@@ -68,6 +103,7 @@ const ExtensionMockup = () => {
                     state === 'inactive' && "bg-amber-500/20 text-amber-200",
                     state === 'ready' && "bg-emerald-500/20 text-emerald-200",
                     state === 'filling' && "bg-primary-blue/30 text-white",
+                    state === 'paused' && "bg-amber-500/20 text-amber-200",
                     state === 'success' && "bg-emerald-500/30 text-emerald-200",
                   )}>
                     <div className={cn(
@@ -76,12 +112,14 @@ const ExtensionMockup = () => {
                       state === 'inactive' && "bg-amber-400",
                       state === 'ready' && "bg-emerald-400 animate-pulse",
                       state === 'filling' && "bg-white animate-pulse",
+                      state === 'paused' && "bg-amber-400",
                       state === 'success' && "bg-emerald-400",
                     )} />
                     {state === 'logged-out' && 'Signed out'}
                     {state === 'inactive' && 'Wrong page'}
                     {state === 'ready' && 'Ready'}
                     {state === 'filling' && 'Filling...'}
+                    {state === 'paused' && 'Paused'}
                     {state === 'success' && 'Done!'}
                   </div>
                 </div>
@@ -133,8 +171,8 @@ const ExtensionMockup = () => {
                   </div>
                 )}
 
-                {/* Ready / Filling / Success states */}
-                {(state === 'ready' || state === 'filling' || state === 'success') && (
+                {/* Ready / Filling / Paused / Success states */}
+                {(state === 'ready' || state === 'filling' || state === 'paused' || state === 'success') && (
                   <>
                     {/* Target URL indicator */}
                     <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/50 border border-border">
@@ -172,39 +210,108 @@ const ExtensionMockup = () => {
                       </div>
                     </div>
 
-                    {/* Fill Button */}
-                    <Button 
-                      onClick={handleFill}
-                      disabled={state === 'filling'}
-                      className={cn(
-                        "w-full h-12 text-base font-medium transition-all relative overflow-hidden",
-                        state === 'success' 
-                          ? "bg-emerald-500 hover:bg-emerald-600" 
-                          : "bg-primary-blue hover:bg-primary-blue/90"
-                      )}
-                    >
-                      {state === 'filling' && (
-                        <>
-                          <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                          Filling form...
-                        </>
-                      )}
-                      {state === 'success' && (
-                        <>
+                    {/* Filling/Paused state with controls */}
+                    {(state === 'filling' || state === 'paused') && (
+                      <div className="space-y-3">
+                        {/* Progress indicator */}
+                        <div className="p-4 rounded-xl bg-muted/50 border border-border space-y-3">
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm font-medium text-foreground">
+                              {state === 'paused' ? 'Paused' : 'Filling fields...'}
+                            </span>
+                            <span className="text-sm text-muted-foreground">
+                              {Math.min(filledCount, 42)}/42
+                            </span>
+                          </div>
+                          <div className="h-2 bg-muted rounded-full overflow-hidden">
+                            <div 
+                              className={cn(
+                                "h-full rounded-full transition-all duration-150",
+                                state === 'paused' ? "bg-amber-500" : "bg-primary-blue"
+                              )}
+                              style={{ width: `${(Math.min(filledCount, 42) / 42) * 100}%` }}
+                            />
+                          </div>
+                          <p className="text-xs text-muted-foreground">
+                            Currently filling: Personal Information → Date of Birth
+                          </p>
+                        </div>
+
+                        {/* Control buttons */}
+                        <div className="flex gap-2">
+                          {state === 'filling' ? (
+                            <Button 
+                              onClick={handlePause}
+                              variant="outline"
+                              className="flex-1 gap-2"
+                            >
+                              <Pause className="w-4 h-4" />
+                              Pause
+                            </Button>
+                          ) : (
+                            <Button 
+                              onClick={handleResume}
+                              className="flex-1 gap-2 bg-primary-blue hover:bg-primary-blue/90"
+                            >
+                              <Sparkles className="w-4 h-4" />
+                              Resume
+                            </Button>
+                          )}
+                          <Button 
+                            onClick={handleCancel}
+                            variant="outline"
+                            className="gap-2 text-destructive hover:text-destructive hover:bg-destructive/10"
+                          >
+                            <X className="w-4 h-4" />
+                            Cancel
+                          </Button>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Ready state - Fill Button */}
+                    {state === 'ready' && (
+                      <Button 
+                        onClick={handleFill}
+                        className="w-full h-12 text-base font-medium transition-all relative overflow-hidden bg-primary-blue hover:bg-primary-blue/90"
+                      >
+                        <Sparkles className="w-5 h-5 mr-2" />
+                        Fill Form
+                        <div className="absolute inset-0 btn-shine" />
+                      </Button>
+                    )}
+
+                    {/* Success state */}
+                    {state === 'success' && (
+                      <div className="space-y-3">
+                        <Button 
+                          disabled
+                          className="w-full h-12 text-base font-medium bg-emerald-500"
+                        >
                           <Check className="w-5 h-5 mr-2" />
                           Form filled successfully!
-                        </>
-                      )}
-                      {state === 'ready' && (
-                        <>
-                          <Sparkles className="w-5 h-5 mr-2" />
-                          Fill Form
-                        </>
-                      )}
-                      
-                      {/* Shine effect on button */}
-                      <div className="absolute inset-0 btn-shine" />
-                    </Button>
+                        </Button>
+                        <div className="flex items-center gap-2 p-3 rounded-lg bg-amber-50 border border-amber-200">
+                          <Eye className="w-4 h-4 text-amber-600 flex-shrink-0" />
+                          <p className="text-xs text-amber-800">
+                            Please review all fields before submitting
+                          </p>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Safety reassurance - shown in ready state */}
+                    {state === 'ready' && (
+                      <div className="flex items-start gap-2.5 p-3 rounded-lg bg-emerald-50 border border-emerald-200">
+                        <ShieldCheck className="w-4 h-4 text-emerald-600 flex-shrink-0 mt-0.5" />
+                        <div className="space-y-0.5">
+                          <p className="text-xs font-medium text-emerald-800">You stay in control</p>
+                          <p className="text-[11px] text-emerald-700 leading-relaxed">
+                            We only fill fields — we'll never click submit or make changes without your review.
+                          </p>
+                        </div>
+                      </div>
+                    )}
 
                     {/* User info footer */}
                     <div className="flex items-center justify-between pt-2 border-t border-border">
@@ -236,6 +343,7 @@ const ExtensionMockup = () => {
                 { value: 'inactive', label: 'Inactive', desc: 'Wrong URL / page' },
                 { value: 'ready', label: 'Ready', desc: 'Form detected, ready to fill' },
                 { value: 'filling', label: 'Filling', desc: 'Currently filling form' },
+                { value: 'paused', label: 'Paused', desc: 'User paused the fill' },
                 { value: 'success', label: 'Success', desc: 'Form filled successfully' },
               ].map((item) => (
                 <button
