@@ -16,6 +16,7 @@ import CRSCalculator from "./pages/CRSCalculator";
 import Onboarding from "./pages/Onboarding";
 import Upgrade from "./pages/Upgrade";
 import PricingV2 from "./pages/PricingV2";
+import ExtensionMockup from "./pages/ExtensionMockup";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -40,6 +41,7 @@ const App = () => (
             <Route path="/onboarding" element={<Onboarding />} />
             <Route path="/upgrade" element={<Upgrade />} />
             <Route path="/pricing-v2" element={<PricingV2 />} />
+            <Route path="/extension-mockup" element={<ExtensionMockup />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
