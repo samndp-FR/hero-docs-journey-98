@@ -10,7 +10,7 @@ const PremiumContext = createContext<PremiumContextType | undefined>(undefined);
 export function PremiumProvider({ children }: { children: ReactNode }) {
   const [isPremium, setIsPremium] = useState(() => {
     const saved = localStorage.getItem('eldo-premium');
-    return saved === 'true';
+    return saved !== null ? saved === 'true' : true; // Default to premium for demo
   });
 
   const setPremium = (value: boolean) => {
