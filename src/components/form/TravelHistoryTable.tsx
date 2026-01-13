@@ -1,11 +1,11 @@
 
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Plus, Trash2, Edit } from 'lucide-react';
+import { Plus, Trash2, Check, X } from 'lucide-react';
 import DocumentScanner from './DocumentScanner';
 
 interface TravelEntry {
@@ -22,11 +22,74 @@ interface TravelHistoryTableProps {
   onUpdate: (data: any) => void;
 }
 
+interface EditingCell {
+  id: string;
+  field: keyof TravelEntry;
+}
+
+const EditableCell: React.FC<{
+  value: string;
+  isEditing: boolean;
+  type?: 'text' | 'date';
+  onEdit: () => void;
+  onSave: (value: string) => void;
+  onCancel: () => void;
+}> = ({ value, isEditing, type = 'text', onEdit, onSave, onCancel }) => {
+  const [editValue, setEditValue] = useState(value);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (isEditing && inputRef.current) {
+      inputRef.current.focus();
+      inputRef.current.select();
+    }
+  }, [isEditing]);
+
+  useEffect(() => {
+    setEditValue(value);
+  }, [value]);
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      onSave(editValue);
+    } else if (e.key === 'Escape') {
+      setEditValue(value);
+      onCancel();
+    }
+  };
+
+  if (isEditing) {
+    return (
+      <div className="flex items-center gap-1">
+        <Input
+          ref={inputRef}
+          type={type}
+          value={editValue}
+          onChange={(e) => setEditValue(e.target.value)}
+          onKeyDown={handleKeyDown}
+          onBlur={() => onSave(editValue)}
+          className="h-8 min-w-[100px]"
+        />
+      </div>
+    );
+  }
+
+  return (
+    <div
+      onClick={onEdit}
+      className="cursor-pointer px-2 py-1 -mx-2 -my-1 rounded hover:bg-muted/80 transition-colors min-h-[28px] flex items-center"
+      title="Click to edit"
+    >
+      {value || <span className="text-muted-foreground italic">Click to add</span>}
+    </div>
+  );
+};
+
 const TravelHistoryTable: React.FC<TravelHistoryTableProps> = ({ data, onUpdate }) => {
   const [travelEntries, setTravelEntries] = useState<TravelEntry[]>(
     data.travelHistory || []
   );
-  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editingCell, setEditingCell] = useState<EditingCell | null>(null);
   const [newEntry, setNewEntry] = useState<Partial<TravelEntry>>({});
 
   const addTravelEntry = () => {
@@ -51,6 +114,15 @@ const TravelHistoryTable: React.FC<TravelHistoryTableProps> = ({ data, onUpdate 
     onUpdate({ ...data, travelHistory: updatedEntries });
   };
 
+  const updateEntry = (id: string, field: keyof TravelEntry, value: string) => {
+    const updatedEntries = travelEntries.map(entry =>
+      entry.id === id ? { ...entry, [field]: value } : entry
+    );
+    setTravelEntries(updatedEntries);
+    onUpdate({ ...data, travelHistory: updatedEntries });
+    setEditingCell(null);
+  };
+
   const handleDocumentScanned = (scannedData: any) => {
     const entry: TravelEntry = {
       id: Date.now().toString(),
@@ -65,6 +137,9 @@ const TravelHistoryTable: React.FC<TravelHistoryTableProps> = ({ data, onUpdate 
     setTravelEntries(updatedEntries);
     onUpdate({ ...data, travelHistory: updatedEntries });
   };
+
+  const isEditingCell = (id: string, field: keyof TravelEntry) =>
+    editingCell?.id === id && editingCell?.field === field;
 
   return (
     <Card>
@@ -81,7 +156,7 @@ const TravelHistoryTable: React.FC<TravelHistoryTableProps> = ({ data, onUpdate 
       <CardContent>
         <div className="space-y-4">
           {/* Add New Entry Form */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 p-4 border rounded-lg bg-gray-50">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 p-4 border rounded-lg bg-muted/30">
             <div>
               <Label htmlFor="entry-date">Entry Date</Label>
               <Input
@@ -122,44 +197,84 @@ const TravelHistoryTable: React.FC<TravelHistoryTableProps> = ({ data, onUpdate 
 
           {/* Travel History Table */}
           {travelEntries.length > 0 && (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Entry Date</TableHead>
-                  <TableHead>Exit Date</TableHead>
-                  <TableHead>Country</TableHead>
-                  <TableHead>Purpose</TableHead>
-                  <TableHead>Document</TableHead>
-                  <TableHead>Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {travelEntries.map((entry) => (
-                  <TableRow key={entry.id}>
-                    <TableCell>{entry.entryDate}</TableCell>
-                    <TableCell>{entry.exitDate}</TableCell>
-                    <TableCell>{entry.country}</TableCell>
-                    <TableCell>{entry.purpose}</TableCell>
-                    <TableCell>
-                      {entry.documentScanned ? (
-                        <span className="text-green-600 text-sm">✓ Scanned</span>
-                      ) : (
-                        <span className="text-gray-400 text-sm">Manual entry</span>
-                      )}
-                    </TableCell>
-                    <TableCell>
-                      <Button
-                        variant="destructive"
-                        size="sm"
-                        onClick={() => removeEntry(entry.id)}
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
-                    </TableCell>
+            <>
+              <p className="text-sm text-muted-foreground">
+                💡 Click any cell to edit it directly
+              </p>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Entry Date</TableHead>
+                    <TableHead>Exit Date</TableHead>
+                    <TableHead>Country</TableHead>
+                    <TableHead>Purpose</TableHead>
+                    <TableHead>Document</TableHead>
+                    <TableHead className="w-[60px]">Actions</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {travelEntries.map((entry) => (
+                    <TableRow key={entry.id}>
+                      <TableCell>
+                        <EditableCell
+                          value={entry.entryDate}
+                          type="date"
+                          isEditing={isEditingCell(entry.id, 'entryDate')}
+                          onEdit={() => setEditingCell({ id: entry.id, field: 'entryDate' })}
+                          onSave={(value) => updateEntry(entry.id, 'entryDate', value)}
+                          onCancel={() => setEditingCell(null)}
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <EditableCell
+                          value={entry.exitDate}
+                          type="date"
+                          isEditing={isEditingCell(entry.id, 'exitDate')}
+                          onEdit={() => setEditingCell({ id: entry.id, field: 'exitDate' })}
+                          onSave={(value) => updateEntry(entry.id, 'exitDate', value)}
+                          onCancel={() => setEditingCell(null)}
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <EditableCell
+                          value={entry.country}
+                          isEditing={isEditingCell(entry.id, 'country')}
+                          onEdit={() => setEditingCell({ id: entry.id, field: 'country' })}
+                          onSave={(value) => updateEntry(entry.id, 'country', value)}
+                          onCancel={() => setEditingCell(null)}
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <EditableCell
+                          value={entry.purpose}
+                          isEditing={isEditingCell(entry.id, 'purpose')}
+                          onEdit={() => setEditingCell({ id: entry.id, field: 'purpose' })}
+                          onSave={(value) => updateEntry(entry.id, 'purpose', value)}
+                          onCancel={() => setEditingCell(null)}
+                        />
+                      </TableCell>
+                      <TableCell>
+                        {entry.documentScanned ? (
+                          <span className="text-green-600 text-sm">✓ Scanned</span>
+                        ) : (
+                          <span className="text-muted-foreground text-sm">Manual entry</span>
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => removeEntry(entry.id)}
+                          className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </>
           )}
           
           {travelEntries.length === 0 && (
