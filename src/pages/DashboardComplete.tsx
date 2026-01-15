@@ -36,7 +36,7 @@ const DashboardComplete = () => {
 
   const [formProgress, setFormProgress] = useState(() => {
     const saved = localStorage.getItem('formProgress');
-    return saved ? JSON.parse(saved) : 0;
+    return saved ? JSON.parse(saved) : 100; // Mocked to 100 for preview
   });
 
   const formReadyForReview = formProgress >= 100;
