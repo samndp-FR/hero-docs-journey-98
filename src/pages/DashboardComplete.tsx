@@ -7,6 +7,7 @@ import { cn } from '@/lib/utils';
 import { useNavigate } from 'react-router-dom';
 import { Progress } from '@/components/ui/progress';
 import { PremiumGate } from '@/components/PremiumGate';
+import { ExtensionGuideDialog } from '@/components/ExtensionGuideDialog';
 
 type StepStatus = 'locked' | 'current' | 'completed' | 'ready-for-review';
 
@@ -31,6 +32,7 @@ const DashboardComplete = () => {
     const saved = localStorage.getItem('completeAppSteps');
     return saved ? JSON.parse(saved) : [];
   });
+  const [extensionGuideOpen, setExtensionGuideOpen] = useState(false);
 
   const [formProgress, setFormProgress] = useState(() => {
     const saved = localStorage.getItem('formProgress');
@@ -114,7 +116,7 @@ const DashboardComplete = () => {
       icon: <Chrome className="h-5 w-5" />,
       action: {
         label: 'Open Extension Guide',
-        onClick: () => completeStep(3),
+        onClick: () => setExtensionGuideOpen(true),
       },
     },
   ];
@@ -306,6 +308,12 @@ const DashboardComplete = () => {
           {stepsContent}
         </PremiumGate>
       </div>
+
+      <ExtensionGuideDialog 
+        open={extensionGuideOpen} 
+        onOpenChange={setExtensionGuideOpen}
+        onComplete={() => completeStep(3)}
+      />
     </DashboardLayout>
   );
 };
