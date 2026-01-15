@@ -1,13 +1,14 @@
 import { DashboardLayout } from '@/components/DashboardLayout';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Check, Clock, FileText, Chrome, Lock, Undo2, ArrowRight, AlertCircle } from 'lucide-react';
+import { Check, Clock, FileText, Chrome, Lock, Undo2, ArrowRight, AlertCircle, ChevronDown, Download, ExternalLink, Sparkles } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 import { useNavigate } from 'react-router-dom';
 import { Progress } from '@/components/ui/progress';
 import { PremiumGate } from '@/components/PremiumGate';
 import { ExtensionGuideDialog } from '@/components/ExtensionGuideDialog';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 
 type StepStatus = 'locked' | 'current' | 'completed' | 'ready-for-review';
 
@@ -33,6 +34,7 @@ const DashboardComplete = () => {
     return saved ? JSON.parse(saved) : [];
   });
   const [extensionGuideOpen, setExtensionGuideOpen] = useState(false);
+  const [quickGuideOpen, setQuickGuideOpen] = useState(false);
 
   const [formProgress, setFormProgress] = useState(() => {
     const saved = localStorage.getItem('formProgress');
@@ -223,6 +225,49 @@ const DashboardComplete = () => {
                               </Button>
                             </div>
                           </div>
+                        )}
+
+                        {/* Quick guide for step 3 when completed */}
+                        {step.id === 3 && status === 'completed' && (
+                          <Collapsible open={quickGuideOpen} onOpenChange={setQuickGuideOpen} className="mt-3">
+                            <CollapsibleTrigger asChild>
+                              <Button variant="ghost" size="sm" className="gap-2 text-muted-foreground hover:text-foreground p-0 h-auto">
+                                <ChevronDown className={cn("h-4 w-4 transition-transform", quickGuideOpen && "rotate-180")} />
+                                Quick reference guide
+                              </Button>
+                            </CollapsibleTrigger>
+                            <CollapsibleContent className="mt-3">
+                              <div className="grid grid-cols-2 gap-2">
+                                {[
+                                  { icon: Download, label: '1. Install extension', href: '#' },
+                                  { icon: Chrome, label: '2. Sign in', href: '#' },
+                                  { icon: ExternalLink, label: '3. Open IRCC portal', href: 'https://www.canada.ca/en/immigration-refugees-citizenship.html' },
+                                  { icon: Sparkles, label: '4. Click Fill Form', href: '#' },
+                                ].map((item) => (
+                                  <button
+                                    key={item.label}
+                                    onClick={() => item.href !== '#' && window.open(item.href, '_blank')}
+                                    className={cn(
+                                      "flex items-center gap-2 p-2 rounded-lg text-left text-sm",
+                                      "bg-muted/50 hover:bg-muted transition-colors",
+                                      item.href === '#' && "cursor-default"
+                                    )}
+                                  >
+                                    <item.icon className="h-4 w-4 text-primary flex-shrink-0" />
+                                    <span className="text-muted-foreground">{item.label}</span>
+                                  </button>
+                                ))}
+                              </div>
+                              <Button 
+                                variant="link" 
+                                size="sm" 
+                                onClick={() => setExtensionGuideOpen(true)}
+                                className="mt-2 p-0 h-auto text-primary"
+                              >
+                                View full guide →
+                              </Button>
+                            </CollapsibleContent>
+                          </Collapsible>
                         )}
                       </div>
 
