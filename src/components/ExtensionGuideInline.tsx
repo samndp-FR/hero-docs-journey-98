@@ -76,12 +76,12 @@ const StepVisual = ({ stepId, isActive }: { stepId: number; isActive: boolean })
                 ))}
               </div>
             </div>
-            <Button size="sm" className={cn(
-              "h-7 text-xs bg-primary hover:bg-primary/90",
+            <div className={cn(
+              "inline-flex items-center justify-center h-7 px-3 rounded-md text-xs font-medium bg-primary text-primary-foreground pointer-events-none select-none",
               isActive && "animate-pulse"
             )}>
               Add to Chrome
-            </Button>
+            </div>
           </div>
         </div>
       </div>
@@ -108,12 +108,12 @@ const StepVisual = ({ stepId, isActive }: { stepId: number; isActive: boolean })
               <User className="w-5 h-5 text-muted-foreground" />
             </div>
             <p className="text-[10px] text-muted-foreground">Sign in to continue</p>
-            <Button size="sm" className={cn(
-              "w-full h-6 text-[10px] bg-primary hover:bg-primary/90",
+            <div className={cn(
+              "inline-flex items-center justify-center w-full h-6 px-2 rounded-md text-[10px] font-medium bg-primary text-primary-foreground pointer-events-none select-none",
               isActive && "animate-pulse"
             )}>
               Sign in to Eldo
-            </Button>
+            </div>
           </div>
         </div>
       </div>
@@ -201,13 +201,13 @@ const StepVisual = ({ stepId, isActive }: { stepId: number; isActive: boolean })
                 </div>
               </div>
             </div>
-            <Button size="sm" className={cn(
-              "w-full h-7 text-[10px] bg-primary hover:bg-primary/90 gap-1",
+            <div className={cn(
+              "inline-flex items-center justify-center gap-1 w-full h-7 px-2 rounded-md text-[10px] font-medium bg-primary text-primary-foreground pointer-events-none select-none",
               isActive && "animate-pulse"
             )}>
               <Sparkles className="w-3 h-3" />
               Fill Form
-            </Button>
+            </div>
             <div className="flex items-center gap-1 p-1.5 rounded bg-emerald-50 dark:bg-emerald-950/30">
               <ShieldCheck className="w-3 h-3 text-emerald-600" />
               <p className="text-[7px] text-emerald-700 dark:text-emerald-400">You stay in control</p>
