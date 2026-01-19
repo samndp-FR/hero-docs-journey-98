@@ -94,13 +94,14 @@ const I94ScanPrompt: React.FC<I94ScanPromptProps> = ({
         <div className="p-5">
           {/* Header with icon */}
           <div className="flex items-start gap-4">
-            <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center shadow-lg shadow-primary/20">
+            <div className="relative flex-shrink-0 w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center shadow-lg shadow-primary/20">
               <Plane className="w-6 h-6 text-primary-foreground" />
+              <span className="absolute -top-1 -right-1 text-base">🇺🇸</span>
             </div>
             
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 mb-1">
-                <h3 className="font-semibold text-foreground">Traveled to the USA?</h3>
+                <h3 className="font-semibold text-foreground">Traveled to the USA? 🇺🇸</h3>
                 <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-primary/10 text-primary text-xs font-medium">
                   <Sparkles className="w-3 h-3" />
                   Auto-fill
