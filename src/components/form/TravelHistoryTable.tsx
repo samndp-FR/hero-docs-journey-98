@@ -5,8 +5,10 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Plus, Trash2, Check, X } from 'lucide-react';
-import DocumentScanner from './DocumentScanner';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Plus, Trash2, FileCheck, Pencil, Check, X } from 'lucide-react';
+import I94ScanPrompt from './I94ScanPrompt';
+import { cn } from '@/lib/utils';
 
 interface TravelEntry {
   id: string;
@@ -85,14 +87,34 @@ const EditableCell: React.FC<{
   );
 };
 
+const countries = [
+  "United States", "Canada", "United Kingdom", "Germany", "France", "Australia",
+  "Japan", "China", "India", "Mexico", "Brazil", "Italy", "Spain", "Netherlands",
+  "Switzerland", "Sweden", "Norway", "Denmark", "Belgium", "Austria", "Other"
+];
+
+const purposes = [
+  "Tourism", "Business", "Work", "Study", "Family Visit", "Transit", "Other"
+];
+
 const TravelHistoryTable: React.FC<TravelHistoryTableProps> = ({ data, onUpdate }) => {
   const [travelEntries, setTravelEntries] = useState<TravelEntry[]>(
     data.travelHistory || []
   );
   const [editingCell, setEditingCell] = useState<EditingCell | null>(null);
   const [newEntry, setNewEntry] = useState<Partial<TravelEntry>>({});
+  const [showAddForm, setShowAddForm] = useState(false);
+
+  // Check if user has any US travel entries
+  const hasUSTravel = travelEntries.some(entry => 
+    entry.country?.toLowerCase().includes('united states') || 
+    entry.country?.toLowerCase() === 'usa' ||
+    entry.country?.toLowerCase() === 'us'
+  );
 
   const addTravelEntry = () => {
+    if (!newEntry.country || !newEntry.entryDate) return;
+    
     const entry: TravelEntry = {
       id: Date.now().toString(),
       entryDate: newEntry.entryDate || '',
@@ -106,6 +128,7 @@ const TravelHistoryTable: React.FC<TravelHistoryTableProps> = ({ data, onUpdate 
     setTravelEntries(updatedEntries);
     onUpdate({ ...data, travelHistory: updatedEntries });
     setNewEntry({});
+    setShowAddForm(false);
   };
 
   const removeEntry = (id: string) => {
@@ -123,13 +146,13 @@ const TravelHistoryTable: React.FC<TravelHistoryTableProps> = ({ data, onUpdate 
     setEditingCell(null);
   };
 
-  const handleDocumentScanned = (scannedData: any) => {
+  const handleI94Scanned = (scannedData: any) => {
     const entry: TravelEntry = {
       id: Date.now().toString(),
       entryDate: scannedData.entryDate || '',
       exitDate: scannedData.exitDate || '',
       country: 'United States',
-      purpose: 'Tourist/Business',
+      purpose: scannedData.purpose || 'Tourist/Business',
       documentScanned: true
     };
     
@@ -141,150 +164,233 @@ const TravelHistoryTable: React.FC<TravelHistoryTableProps> = ({ data, onUpdate 
   const isEditingCell = (id: string, field: keyof TravelEntry) =>
     editingCell?.id === id && editingCell?.field === field;
 
-  return (
-    <Card>
-      <CardHeader>
-        <div className="flex justify-between items-center">
-          <CardTitle>Travel History (Last 5 Years)</CardTitle>
-          <DocumentScanner 
-            documentType="I-94"
-            onDocumentScanned={handleDocumentScanned}
-          />
-        </div>
-      </CardHeader>
-      
-      <CardContent>
-        <div className="space-y-4">
-          {/* Add New Entry Form */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 p-4 border rounded-lg bg-muted/30">
-            <div>
-              <Label htmlFor="entry-date">Entry Date</Label>
-              <Input
-                id="entry-date"
-                type="date"
-                value={newEntry.entryDate || ''}
-                onChange={(e) => setNewEntry({ ...newEntry, entryDate: e.target.value })}
-              />
-            </div>
-            
-            <div>
-              <Label htmlFor="exit-date">Exit Date</Label>
-              <Input
-                id="exit-date"
-                type="date"
-                value={newEntry.exitDate || ''}
-                onChange={(e) => setNewEntry({ ...newEntry, exitDate: e.target.value })}
-              />
-            </div>
-            
-            <div>
-              <Label htmlFor="country">Country</Label>
-              <Input
-                id="country"
-                value={newEntry.country || ''}
-                onChange={(e) => setNewEntry({ ...newEntry, country: e.target.value })}
-                placeholder="Enter country"
-              />
-            </div>
-            
-            <div className="flex items-end">
-              <Button onClick={addTravelEntry} className="w-full flex items-center space-x-2">
-                <Plus className="w-4 h-4" />
-                <span>Add Entry</span>
-              </Button>
-            </div>
-          </div>
+  const formatDate = (dateString: string) => {
+    if (!dateString) return '';
+    try {
+      return new Date(dateString).toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric'
+      });
+    } catch {
+      return dateString;
+    }
+  };
 
-          {/* Travel History Table */}
-          {travelEntries.length > 0 && (
-            <>
-              <p className="text-sm text-muted-foreground">
-                💡 Click any cell to edit it directly
+  return (
+    <div className="space-y-6">
+      {/* I-94 Feature Prompt - Prominent placement */}
+      <I94ScanPrompt 
+        onDocumentScanned={handleI94Scanned}
+        hasUSTravel={hasUSTravel}
+      />
+
+      {/* Main Card */}
+      <Card>
+        <CardHeader>
+          <div className="flex justify-between items-center">
+            <div>
+              <CardTitle>Travel History (Last 10 Years)</CardTitle>
+              <p className="text-sm text-muted-foreground mt-1">
+                List all countries you've visited in the past 10 years
               </p>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Entry Date</TableHead>
-                    <TableHead>Exit Date</TableHead>
-                    <TableHead>Country</TableHead>
-                    <TableHead>Purpose</TableHead>
-                    <TableHead>Document</TableHead>
-                    <TableHead className="w-[60px]">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {travelEntries.map((entry) => (
-                    <TableRow key={entry.id}>
-                      <TableCell>
-                        <EditableCell
-                          value={entry.entryDate}
-                          type="date"
-                          isEditing={isEditingCell(entry.id, 'entryDate')}
-                          onEdit={() => setEditingCell({ id: entry.id, field: 'entryDate' })}
-                          onSave={(value) => updateEntry(entry.id, 'entryDate', value)}
-                          onCancel={() => setEditingCell(null)}
-                        />
-                      </TableCell>
-                      <TableCell>
-                        <EditableCell
-                          value={entry.exitDate}
-                          type="date"
-                          isEditing={isEditingCell(entry.id, 'exitDate')}
-                          onEdit={() => setEditingCell({ id: entry.id, field: 'exitDate' })}
-                          onSave={(value) => updateEntry(entry.id, 'exitDate', value)}
-                          onCancel={() => setEditingCell(null)}
-                        />
-                      </TableCell>
-                      <TableCell>
-                        <EditableCell
-                          value={entry.country}
-                          isEditing={isEditingCell(entry.id, 'country')}
-                          onEdit={() => setEditingCell({ id: entry.id, field: 'country' })}
-                          onSave={(value) => updateEntry(entry.id, 'country', value)}
-                          onCancel={() => setEditingCell(null)}
-                        />
-                      </TableCell>
-                      <TableCell>
-                        <EditableCell
-                          value={entry.purpose}
-                          isEditing={isEditingCell(entry.id, 'purpose')}
-                          onEdit={() => setEditingCell({ id: entry.id, field: 'purpose' })}
-                          onSave={(value) => updateEntry(entry.id, 'purpose', value)}
-                          onCancel={() => setEditingCell(null)}
-                        />
-                      </TableCell>
-                      <TableCell>
-                        {entry.documentScanned ? (
-                          <span className="text-green-600 text-sm">✓ Scanned</span>
-                        ) : (
-                          <span className="text-muted-foreground text-sm">Manual entry</span>
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => removeEntry(entry.id)}
-                          className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </>
-          )}
-          
-          {travelEntries.length === 0 && (
-            <div className="text-center py-8 text-muted-foreground">
-              <p>No travel history entries yet. Add one manually or scan an I-94 document.</p>
             </div>
-          )}
-        </div>
-      </CardContent>
-    </Card>
+            <Button 
+              onClick={() => setShowAddForm(!showAddForm)}
+              variant={showAddForm ? "secondary" : "default"}
+              className="gap-2"
+            >
+              {showAddForm ? (
+                <>
+                  <X className="w-4 h-4" />
+                  Cancel
+                </>
+              ) : (
+                <>
+                  <Plus className="w-4 h-4" />
+                  Add Trip
+                </>
+              )}
+            </Button>
+          </div>
+        </CardHeader>
+        
+        <CardContent>
+          <div className="space-y-4">
+            {/* Add New Entry Form */}
+            {showAddForm && (
+              <div className="p-4 border-2 border-dashed border-primary/30 rounded-lg bg-primary/5 space-y-4">
+                <h4 className="font-medium text-sm">Add New Travel Entry</h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                  <div>
+                    <Label htmlFor="country">Country *</Label>
+                    <Select
+                      value={newEntry.country || ''}
+                      onValueChange={(value) => setNewEntry({ ...newEntry, country: value })}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select country" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {countries.map(country => (
+                          <SelectItem key={country} value={country}>{country}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div>
+                    <Label htmlFor="entry-date">Arrival Date *</Label>
+                    <Input
+                      id="entry-date"
+                      type="date"
+                      value={newEntry.entryDate || ''}
+                      onChange={(e) => setNewEntry({ ...newEntry, entryDate: e.target.value })}
+                    />
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="exit-date">Departure Date</Label>
+                    <Input
+                      id="exit-date"
+                      type="date"
+                      value={newEntry.exitDate || ''}
+                      onChange={(e) => setNewEntry({ ...newEntry, exitDate: e.target.value })}
+                    />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="purpose">Purpose</Label>
+                    <Select
+                      value={newEntry.purpose || ''}
+                      onValueChange={(value) => setNewEntry({ ...newEntry, purpose: value })}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select purpose" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {purposes.map(purpose => (
+                          <SelectItem key={purpose} value={purpose}>{purpose}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+                
+                <div className="flex justify-end">
+                  <Button onClick={addTravelEntry} className="gap-2" disabled={!newEntry.country || !newEntry.entryDate}>
+                    <Plus className="w-4 h-4" />
+                    Add Travel Entry
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {/* Travel History Table */}
+            {travelEntries.length > 0 && (
+              <>
+                <p className="text-sm text-muted-foreground">
+                  💡 Click any cell to edit it directly
+                </p>
+                <div className="border rounded-lg overflow-hidden">
+                  <Table>
+                    <TableHeader>
+                      <TableRow className="bg-muted/50">
+                        <TableHead>Country</TableHead>
+                        <TableHead>Arrival</TableHead>
+                        <TableHead>Departure</TableHead>
+                        <TableHead>Purpose</TableHead>
+                        <TableHead>Source</TableHead>
+                        <TableHead className="w-[60px]"></TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {travelEntries.map((entry) => (
+                        <TableRow key={entry.id}>
+                          <TableCell className="font-medium">
+                            <EditableCell
+                              value={entry.country}
+                              isEditing={isEditingCell(entry.id, 'country')}
+                              onEdit={() => setEditingCell({ id: entry.id, field: 'country' })}
+                              onSave={(value) => updateEntry(entry.id, 'country', value)}
+                              onCancel={() => setEditingCell(null)}
+                            />
+                          </TableCell>
+                          <TableCell>
+                            <EditableCell
+                              value={entry.entryDate}
+                              type="date"
+                              isEditing={isEditingCell(entry.id, 'entryDate')}
+                              onEdit={() => setEditingCell({ id: entry.id, field: 'entryDate' })}
+                              onSave={(value) => updateEntry(entry.id, 'entryDate', value)}
+                              onCancel={() => setEditingCell(null)}
+                            />
+                          </TableCell>
+                          <TableCell>
+                            <EditableCell
+                              value={entry.exitDate}
+                              type="date"
+                              isEditing={isEditingCell(entry.id, 'exitDate')}
+                              onEdit={() => setEditingCell({ id: entry.id, field: 'exitDate' })}
+                              onSave={(value) => updateEntry(entry.id, 'exitDate', value)}
+                              onCancel={() => setEditingCell(null)}
+                            />
+                          </TableCell>
+                          <TableCell>
+                            <EditableCell
+                              value={entry.purpose}
+                              isEditing={isEditingCell(entry.id, 'purpose')}
+                              onEdit={() => setEditingCell({ id: entry.id, field: 'purpose' })}
+                              onSave={(value) => updateEntry(entry.id, 'purpose', value)}
+                              onCancel={() => setEditingCell(null)}
+                            />
+                          </TableCell>
+                          <TableCell>
+                            {entry.documentScanned ? (
+                              <span className="inline-flex items-center gap-1 text-xs font-medium text-emerald-600 bg-emerald-50 dark:bg-emerald-950/30 px-2 py-1 rounded-full">
+                                <FileCheck className="w-3 h-3" />
+                                I-94 Scanned
+                              </span>
+                            ) : (
+                              <span className="inline-flex items-center gap-1 text-xs text-muted-foreground bg-muted px-2 py-1 rounded-full">
+                                <Pencil className="w-3 h-3" />
+                                Manual
+                              </span>
+                            )}
+                          </TableCell>
+                          <TableCell>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => removeEntry(entry.id)}
+                              className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              </>
+            )}
+            
+            {travelEntries.length === 0 && !showAddForm && (
+              <div className="text-center py-12 border-2 border-dashed rounded-lg">
+                <p className="text-muted-foreground mb-4">
+                  No travel history entries yet
+                </p>
+                <Button onClick={() => setShowAddForm(true)} variant="outline" className="gap-2">
+                  <Plus className="w-4 h-4" />
+                  Add your first trip
+                </Button>
+              </div>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+    </div>
   );
 };
 
