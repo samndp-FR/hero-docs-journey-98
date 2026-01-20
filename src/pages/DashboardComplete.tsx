@@ -1,7 +1,7 @@
 import { DashboardLayout } from '@/components/DashboardLayout';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Check, Clock, FileText, Chrome, Lock, Undo2, ArrowRight, AlertCircle } from 'lucide-react';
+import { Check, Clock, FileText, Chrome, Lock, Undo2, ArrowRight } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 import { useNavigate } from 'react-router-dom';
@@ -35,26 +35,9 @@ const DashboardComplete = () => {
   });
   const [extensionGuideOpen, setExtensionGuideOpen] = useState(false);
 
-  const [formProgress, setFormProgress] = useState(() => {
-    const saved = localStorage.getItem('formProgress');
-    return saved ? JSON.parse(saved) : 100; // Mocked to 100 for preview
-  });
-
-  const formReadyForReview = formProgress >= 100;
-
   useEffect(() => {
     localStorage.setItem('completeAppSteps', JSON.stringify(completedSteps));
   }, [completedSteps]);
-
-  useEffect(() => {
-    const checkFormProgress = () => {
-      const saved = localStorage.getItem('formProgress');
-      setFormProgress(saved ? JSON.parse(saved) : 0);
-    };
-    
-    window.addEventListener('storage', checkFormProgress);
-    return () => window.removeEventListener('storage', checkFormProgress);
-  }, []);
 
   const completeStep = (stepId: number) => {
     if (!completedSteps.includes(stepId)) {
@@ -71,13 +54,35 @@ const DashboardComplete = () => {
     const previousStepsCompleted = Array.from({ length: stepId - 1 }, (_, i) => i + 1)
       .every(id => completedSteps.includes(id));
     
-    if (stepId === 2 && previousStepsCompleted && formReadyForReview) {
+    if (stepId === 2 && previousStepsCompleted && validationComplete) {
       return 'ready-for-review';
     }
     
     if (stepId === 1 || previousStepsCompleted) return 'current';
     return 'locked';
   };
+
+  // Check validation progress
+  const [validatedSections, setValidatedSections] = useState<string[]>(() => {
+    const saved = localStorage.getItem('validatedSections');
+    return saved ? JSON.parse(saved) : [];
+  });
+
+  useEffect(() => {
+    const checkValidation = () => {
+      const saved = localStorage.getItem('validatedSections');
+      setValidatedSections(saved ? JSON.parse(saved) : []);
+    };
+    
+    window.addEventListener('storage', checkValidation);
+    checkValidation();
+    return () => window.removeEventListener('storage', checkValidation);
+  }, []);
+
+  const totalSections = 7;
+  const validationComplete = validatedSections.length >= totalSections;
+  const validationStarted = validatedSections.length > 0;
+  const validationProgress = (validatedSections.length / totalSections) * 100;
 
   const steps: Step[] = [
     {
@@ -93,22 +98,21 @@ const DashboardComplete = () => {
     {
       id: 2,
       title: 'Validate Your Form',
-      description: formReadyForReview 
-        ? 'Your form is complete and ready for review. Validate your entries before submitting.'
-        : 'Complete your profile form first, then validate your entries before submitting to IRCC.',
+      description: validationComplete 
+        ? 'All sections validated! Your form is ready for submission.'
+        : validationStarted
+        ? `Validation in progress. ${validatedSections.length} of ${totalSections} sections reviewed.`
+        : 'Enter validation mode to review each section of your profile before submitting.',
       icon: <FileText className="h-5 w-5" />,
-      action: formReadyForReview 
+      action: validationComplete 
         ? {
-            label: 'Mark as Validated',
+            label: 'Mark as Complete',
             onClick: () => completeStep(2),
           }
-        : undefined,
-      secondaryAction: formReadyForReview 
-        ? {
-            label: 'Go to Form',
-            onClick: () => {},
-          }
-        : undefined,
+        : {
+            label: validationStarted ? 'Continue Validation' : 'Enter Validation Mode',
+            onClick: () => navigate('/dashboard/form?validate=true'),
+          },
     },
     {
       id: 3,
@@ -198,30 +202,14 @@ const DashboardComplete = () => {
                           {step.description}
                         </p>
                         
-                        {step.id === 2 && status === 'current' && !formReadyForReview && (
-                          <div className="mt-3 p-3 bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800 rounded-lg">
-                            <div className="flex items-center gap-2 mb-2">
-                              <AlertCircle className="h-4 w-4 text-amber-600" />
-                              <span className="text-sm font-medium text-amber-700 dark:text-amber-400">
-                                Complete Build Profile first
-                              </span>
-                            </div>
+                        {/* Validation progress for step 2 */}
+                        {step.id === 2 && status === 'current' && validationStarted && !validationComplete && (
+                          <div className="mt-3 p-3 bg-primary-blue/5 border border-primary-blue/20 rounded-lg">
                             <div className="flex items-center gap-3">
-                              <Progress value={formProgress} className="flex-1 h-2" />
-                              <span className="text-xs font-medium text-amber-600 dark:text-amber-400 whitespace-nowrap">
-                                {Math.round(formProgress)}% complete
+                              <Progress value={validationProgress} className="flex-1 h-2" />
+                              <span className="text-xs font-medium text-primary-blue whitespace-nowrap">
+                                {validatedSections.length}/{totalSections} sections
                               </span>
-                            </div>
-                            <div className="flex gap-2 mt-2">
-                              <Button 
-                                variant="outline"
-                                size="sm"
-                                onClick={() => navigate('/dashboard/form')}
-                                className="flex-1 border-amber-300 text-amber-700 hover:bg-amber-100 dark:border-amber-700 dark:text-amber-400 dark:hover:bg-amber-900/30"
-                              >
-                                Continue Build Profile
-                                <ArrowRight className="h-3 w-3 ml-1" />
-                              </Button>
                             </div>
                           </div>
                         )}
