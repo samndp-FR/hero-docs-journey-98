@@ -1,26 +1,18 @@
 import { DashboardLayout } from '@/components/DashboardLayout';
 import { Button } from '@/components/ui/button';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import ValidationModeView from '@/components/ValidationModeView';
 
 const DashboardForm = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const isValidationMode = searchParams.get('validate') === 'true';
 
-  const exitValidationMode = () => {
-    navigate('/dashboard/complete');
-  };
-
+  // If validation mode, redirect to the application form with validate param
   if (isValidationMode) {
-    return (
-      <DashboardLayout>
-        <ValidationModeView onExit={exitValidationMode} />
-      </DashboardLayout>
-    );
+    navigate('/application-form?validate=true', { replace: true });
+    return null;
   }
 
-  // Normal Build Profile view
   return (
     <DashboardLayout>
       <div className="max-w-4xl mx-auto">
