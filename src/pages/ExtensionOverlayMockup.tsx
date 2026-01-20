@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { 
   Check, Loader2, Sparkles, Pause, Play, X, ChevronDown, ChevronUp,
   AlertCircle, ArrowRight, Minimize2, Maximize2, Eye, ShieldCheck,
-  FileText, CheckCircle2, Clock, AlertTriangle, Edit3, SkipForward
+  FileText, CheckCircle2, Clock, AlertTriangle, Edit3, SkipForward, User
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -525,7 +525,7 @@ const FormIndicatorBadge = ({ form }: { form: FormItem }) => {
   );
 };
 
-// Floating Control Panel Component
+// Floating Control Panel Component - Dashboard style
 const FloatingControlPanel = ({
   isMinimized,
   setIsMinimized,
@@ -551,17 +551,39 @@ const FloatingControlPanel = ({
   onStop: () => void;
   onSkip: () => void;
 }) => {
-  const progressPercent = (fieldProgress.current / fieldProgress.total) * 100;
+  // Mock applicant data
+  const applicants = [
+    { 
+      name: 'David Balan', 
+      role: 'Primary', 
+      formsComplete: 5, 
+      formsTotal: 7,
+      incompleteForms: [
+        { name: 'Personal details', filled: 8, total: 12 },
+        { name: 'Study and languages', filled: 11, total: 15 },
+      ]
+    },
+    { 
+      name: 'Sarah Balan', 
+      role: 'Spouse', 
+      formsComplete: 3, 
+      formsTotal: 5,
+      incompleteForms: [
+        { name: 'Personal details', filled: 4, total: 10 },
+        { name: 'Work history', filled: 0, total: 12 },
+      ]
+    },
+  ];
 
   if (isMinimized) {
     return (
       <button
         onClick={() => setIsMinimized(false)}
-        className="fixed bottom-6 right-6 w-14 h-14 rounded-full bg-primary shadow-lg shadow-primary/30 flex items-center justify-center text-white hover:scale-105 transition-transform"
+        className="fixed top-4 right-4 w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-primary/80 shadow-lg shadow-primary/30 flex items-center justify-center text-white hover:scale-105 transition-transform border-2 border-accent/30"
       >
-        <Sparkles className="w-6 h-6" />
+        <Sparkles className="w-5 h-5" />
         {state === 'filling' && (
-          <span className="absolute -top-1 -right-1 w-4 h-4 bg-white rounded-full flex items-center justify-center">
+          <span className="absolute -bottom-1 -right-1 w-4 h-4 bg-accent rounded-full flex items-center justify-center">
             <Loader2 className="w-3 h-3 text-primary animate-spin" />
           </span>
         )}
@@ -570,119 +592,171 @@ const FloatingControlPanel = ({
   }
 
   return (
-    <div className="fixed bottom-6 right-6 w-80 bg-white rounded-2xl shadow-2xl border overflow-hidden animate-in slide-in-from-bottom-4 duration-300">
-      {/* Header */}
-      <div className="bg-gradient-to-r from-primary to-primary/80 px-4 py-3 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center">
-            <Sparkles className="w-4 h-4 text-white" />
+    <div className="fixed top-4 right-4 w-80 bg-white rounded-2xl shadow-2xl border-2 border-primary/20 overflow-hidden animate-in slide-in-from-right-4 duration-300">
+      {/* Header - Eldo branding with blue/yellow */}
+      <div className="bg-gradient-to-r from-primary via-primary to-primary/90 px-4 py-3">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-lg bg-accent flex items-center justify-center">
+              <Sparkles className="w-4 h-4 text-primary" />
+            </div>
+            <div>
+              <span className="font-smokum text-lg text-white">Eldo</span>
+              <p className="text-[10px] text-white/70 -mt-1">Form Assistant</p>
+            </div>
           </div>
-          <span className="font-smokum text-lg text-white">Eldo</span>
-        </div>
-        <div className="flex items-center gap-1">
-          <button 
-            onClick={() => setIsMinimized(true)}
-            className="w-7 h-7 rounded-md hover:bg-white/20 flex items-center justify-center text-white/70 hover:text-white transition-colors"
-          >
-            <Minimize2 className="w-4 h-4" />
-          </button>
-          <button 
-            onClick={onStop}
-            className="w-7 h-7 rounded-md hover:bg-white/20 flex items-center justify-center text-white/70 hover:text-white transition-colors"
-          >
-            <X className="w-4 h-4" />
-          </button>
+          <div className="flex items-center gap-1">
+            <button 
+              onClick={() => setIsMinimized(true)}
+              className="w-7 h-7 rounded-md hover:bg-white/20 flex items-center justify-center text-white/70 hover:text-white transition-colors"
+            >
+              <Minimize2 className="w-4 h-4" />
+            </button>
+            <button 
+              onClick={onStop}
+              className="w-7 h-7 rounded-md hover:bg-white/20 flex items-center justify-center text-white/70 hover:text-white transition-colors"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
         </div>
       </div>
 
-      {/* Content */}
-      <div className="p-4 space-y-4">
-        {/* Form Progress */}
-        <div className="flex items-center justify-between text-sm">
-          <span className="text-muted-foreground">Form {formProgress.current} of {formProgress.total}</span>
-          <span className="font-medium text-foreground">{currentForm}</span>
+      {/* Status bar */}
+      <div className="bg-accent/20 px-4 py-2 border-b border-accent/30 flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          {state === 'filling' && (
+            <>
+              <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+              <span className="text-xs font-medium text-primary">Filling in progress...</span>
+            </>
+          )}
+          {state === 'paused' && (
+            <>
+              <div className="w-2 h-2 rounded-full bg-amber-500" />
+              <span className="text-xs font-medium text-amber-700">Paused</span>
+            </>
+          )}
+          {state === 'attention' && (
+            <>
+              <div className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
+              <span className="text-xs font-medium text-amber-700">Needs your input</span>
+            </>
+          )}
+          {state === 'idle' && (
+            <>
+              <div className="w-2 h-2 rounded-full bg-emerald-500" />
+              <span className="text-xs font-medium text-emerald-700">Ready</span>
+            </>
+          )}
         </div>
+        {state === 'filling' && (
+          <span className="text-xs text-muted-foreground">
+            "{currentField}"
+          </span>
+        )}
+      </div>
 
-        {/* Field Progress Bar */}
-        <div className="space-y-2">
-          <div className="h-2 bg-muted rounded-full overflow-hidden">
-            <div 
-              className={cn(
-                "h-full rounded-full transition-all duration-300",
-                state === 'paused' ? "bg-amber-500" : state === 'attention' ? "bg-amber-500" : "bg-primary"
-              )}
-              style={{ width: `${progressPercent}%` }}
-            />
-          </div>
-          <div className="flex items-center justify-between text-xs">
-            <div className="flex items-center gap-1.5">
-              {state === 'filling' && <Loader2 className="w-3 h-3 animate-spin text-primary" />}
-              {state === 'paused' && <Pause className="w-3 h-3 text-amber-500" />}
-              {state === 'attention' && <AlertCircle className="w-3 h-3 text-amber-500" />}
-              <span className={cn(
-                state === 'filling' && "text-primary",
-                state === 'paused' && "text-amber-600",
-                state === 'attention' && "text-amber-600",
-              )}>
-                {state === 'filling' && `Filling "${currentField}"...`}
-                {state === 'paused' && 'Paused'}
-                {state === 'attention' && 'Needs your input'}
-              </span>
+      {/* Applicants Section */}
+      <div className="p-4 space-y-4 max-h-[400px] overflow-y-auto">
+        {applicants.map((applicant, idx) => (
+          <div key={idx} className="space-y-2">
+            {/* Applicant Header */}
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <div className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center">
+                  <User className="w-4 h-4 text-primary" />
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-foreground">{applicant.name}</p>
+                  <p className="text-[10px] text-muted-foreground">{applicant.role}</p>
+                </div>
+              </div>
+              <div className="text-right">
+                <p className="text-sm font-semibold text-foreground">
+                  {applicant.formsComplete}/{applicant.formsTotal}
+                </p>
+                <p className="text-[10px] text-muted-foreground">forms</p>
+              </div>
             </div>
-            <span className="text-muted-foreground">{fieldProgress.current}/{fieldProgress.total}</span>
-          </div>
-        </div>
 
-        {/* Controls */}
+            {/* Progress bar */}
+            <div className="h-1.5 bg-muted rounded-full overflow-hidden">
+              <div 
+                className="h-full bg-gradient-to-r from-primary to-accent rounded-full transition-all"
+                style={{ width: `${(applicant.formsComplete / applicant.formsTotal) * 100}%` }}
+              />
+            </div>
+
+            {/* Incomplete forms list */}
+            {applicant.incompleteForms.length > 0 && (
+              <div className="pl-2 space-y-1.5">
+                <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wide">
+                  Needs attention
+                </p>
+                {applicant.incompleteForms.map((form, formIdx) => (
+                  <div 
+                    key={formIdx}
+                    className="flex items-center justify-between p-2 rounded-lg bg-amber-50 border border-amber-200/50 hover:border-amber-300 transition-colors cursor-pointer"
+                  >
+                    <div className="flex items-center gap-2">
+                      <FileText className="w-3.5 h-3.5 text-amber-600" />
+                      <span className="text-xs font-medium text-amber-800">{form.name}</span>
+                    </div>
+                    <span className="text-xs text-amber-600 font-medium">
+                      {form.filled}/{form.total}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {idx < applicants.length - 1 && (
+              <div className="border-b border-border/50 pt-2" />
+            )}
+          </div>
+        ))}
+      </div>
+
+      {/* Controls Footer */}
+      <div className="border-t bg-muted/30 p-3 space-y-3">
         <div className="flex gap-2">
           {state === 'filling' ? (
             <Button 
               onClick={onPause}
               variant="outline"
-              className="flex-1 gap-2"
+              size="sm"
+              className="flex-1 gap-1.5 h-8"
             >
-              <Pause className="w-4 h-4" />
+              <Pause className="w-3.5 h-3.5" />
               Pause
-            </Button>
-          ) : state === 'paused' ? (
-            <Button 
-              onClick={onResume}
-              className="flex-1 gap-2 bg-primary hover:bg-primary/90"
-            >
-              <Play className="w-4 h-4" />
-              Resume
             </Button>
           ) : (
             <Button 
               onClick={onResume}
-              className="flex-1 gap-2 bg-primary hover:bg-primary/90"
+              size="sm"
+              className="flex-1 gap-1.5 h-8 bg-primary hover:bg-primary/90"
             >
-              <Play className="w-4 h-4" />
-              Continue
+              <Play className="w-3.5 h-3.5" />
+              {state === 'paused' ? 'Resume' : 'Continue'}
             </Button>
           )}
           <Button 
-            onClick={onSkip}
-            variant="outline"
-            className="gap-2"
-          >
-            <SkipForward className="w-4 h-4" />
-            Skip
-          </Button>
-          <Button 
             onClick={onStop}
             variant="outline"
-            className="text-destructive hover:text-destructive hover:bg-destructive/10"
+            size="sm"
+            className="gap-1.5 h-8 text-destructive hover:text-destructive hover:bg-destructive/10"
           >
-            <X className="w-4 h-4" />
+            <X className="w-3.5 h-3.5" />
+            Stop
           </Button>
         </div>
 
         {/* Trust Footer */}
-        <div className="flex items-center gap-2 pt-2 border-t">
-          <ShieldCheck className="w-4 h-4 text-emerald-600 flex-shrink-0" />
-          <p className="text-[11px] text-muted-foreground">
-            You can pause anytime. We never click submit.
+        <div className="flex items-center gap-2">
+          <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 flex-shrink-0" />
+          <p className="text-[10px] text-muted-foreground">
+            You're in control. We never click submit.
           </p>
         </div>
       </div>
