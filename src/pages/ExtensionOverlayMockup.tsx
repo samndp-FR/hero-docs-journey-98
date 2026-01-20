@@ -70,6 +70,7 @@ const ExtensionOverlayMockup = () => {
 
   const handleTriggerAttention = () => {
     setOverlayState('attention');
+    setShowFormList(false); // Switch to form view to show the attention dialog
   };
 
   const handleSkipField = () => {
@@ -469,39 +470,57 @@ const ExtensionOverlayMockup = () => {
   );
 };
 
-// Form Indicator Badge Component
+// Form Indicator Badge Component - Realistic states
 const FormIndicatorBadge = ({ form }: { form: FormItem }) => {
+  // Complete: show filled count
   if (form.status === 'complete') {
     return (
-      <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-50 border border-emerald-200">
+      <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 border border-emerald-200">
         <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-        <span className="text-xs font-medium text-emerald-700">Filled by Eldo</span>
+        <span className="text-xs font-medium text-emerald-700">
+          {form.fields}/{form.fields} filled by Eldo
+        </span>
       </div>
     );
   }
   
+  // Currently filling
   if (form.status === 'filling') {
     return (
-      <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary/10 border border-primary/20 animate-pulse">
+      <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-primary/10 border border-primary/20 animate-pulse">
         <Loader2 className="w-3.5 h-3.5 text-primary animate-spin" />
-        <span className="text-xs font-medium text-primary">Filling now...</span>
+        <span className="text-xs font-medium text-primary">Filling...</span>
       </div>
     );
   }
   
+  // Partially filled (has some progress)
+  if (form.filled > 0 && form.filled < form.fields) {
+    return (
+      <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-50 border border-amber-200">
+        <Clock className="w-3.5 h-3.5 text-amber-600" />
+        <span className="text-xs font-medium text-amber-700">
+          {form.filled}/{form.fields} filled
+        </span>
+      </div>
+    );
+  }
+  
+  // Needs attention
   if (form.status === 'attention') {
     return (
-      <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-amber-50 border border-amber-200">
+      <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-50 border border-amber-200">
         <AlertTriangle className="w-3.5 h-3.5 text-amber-600" />
         <span className="text-xs font-medium text-amber-700">Needs attention</span>
       </div>
     );
   }
   
+  // Default: Ready (not yet visited/filled)
   return (
-    <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary/5 border border-primary/10">
+    <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-primary/5 border border-primary/10">
       <Sparkles className="w-3.5 h-3.5 text-primary" />
-      <span className="text-xs font-medium text-primary">{form.fields} fields ready</span>
+      <span className="text-xs font-medium text-primary">Ready</span>
     </div>
   );
 };
