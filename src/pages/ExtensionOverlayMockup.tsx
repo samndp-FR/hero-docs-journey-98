@@ -470,12 +470,18 @@ const ExtensionOverlayMockup = () => {
   );
 };
 
+// Extension-safe font stack constant
+const EXTENSION_FONT = "'Outfit', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
+
 // Form Indicator Badge Component - Realistic states
 const FormIndicatorBadge = ({ form }: { form: FormItem }) => {
   // Complete: show filled count
   if (form.status === 'complete') {
     return (
-      <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 border border-emerald-200">
+      <div 
+        className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 border border-emerald-200"
+        style={{ fontFamily: EXTENSION_FONT }}
+      >
         <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
         <span className="text-xs font-medium text-emerald-700">
           {form.fields}/{form.fields} filled by Eldo
@@ -487,7 +493,10 @@ const FormIndicatorBadge = ({ form }: { form: FormItem }) => {
   // Currently filling
   if (form.status === 'filling') {
     return (
-      <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-primary/10 border border-primary/20 animate-pulse">
+      <div 
+        className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-primary/10 border border-primary/20 animate-pulse"
+        style={{ fontFamily: EXTENSION_FONT }}
+      >
         <Loader2 className="w-3.5 h-3.5 text-primary animate-spin" />
         <span className="text-xs font-medium text-primary">Filling...</span>
       </div>
@@ -497,7 +506,10 @@ const FormIndicatorBadge = ({ form }: { form: FormItem }) => {
   // Partially filled (has some progress)
   if (form.filled > 0 && form.filled < form.fields) {
     return (
-      <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-50 border border-amber-200">
+      <div 
+        className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-50 border border-amber-200"
+        style={{ fontFamily: EXTENSION_FONT }}
+      >
         <Clock className="w-3.5 h-3.5 text-amber-600" />
         <span className="text-xs font-medium text-amber-700">
           {form.filled}/{form.fields} filled
@@ -509,7 +521,10 @@ const FormIndicatorBadge = ({ form }: { form: FormItem }) => {
   // Needs attention
   if (form.status === 'attention') {
     return (
-      <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-50 border border-amber-200">
+      <div 
+        className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-50 border border-amber-200"
+        style={{ fontFamily: EXTENSION_FONT }}
+      >
         <AlertTriangle className="w-3.5 h-3.5 text-amber-600" />
         <span className="text-xs font-medium text-amber-700">Needs attention</span>
       </div>
@@ -518,7 +533,10 @@ const FormIndicatorBadge = ({ form }: { form: FormItem }) => {
   
   // Default: Ready (not yet visited/filled)
   return (
-    <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-primary/5 border border-primary/10">
+    <div 
+      className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-primary/5 border border-primary/10"
+      style={{ fontFamily: EXTENSION_FONT }}
+    >
       <Sparkles className="w-3.5 h-3.5 text-primary" />
       <span className="text-xs font-medium text-primary">Ready</span>
     </div>
@@ -591,8 +609,17 @@ const FloatingControlPanel = ({
     );
   }
 
+  // Extension-safe font stacks (bundled fonts would use these in real extension)
+  const fontStack = {
+    brand: "'Smokum', 'Georgia', serif",
+    body: "'Outfit', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+  };
+
   return (
-    <div className="fixed top-4 right-4 w-80 bg-white rounded-2xl shadow-2xl border-2 border-primary-blue/20 overflow-hidden animate-in slide-in-from-right-4 duration-300">
+    <div 
+      className="fixed top-4 right-4 w-80 bg-white rounded-2xl shadow-2xl border-2 border-primary-blue/20 overflow-hidden animate-in slide-in-from-right-4 duration-300"
+      style={{ fontFamily: fontStack.body }}
+    >
       {/* Header - Eldo branding with blue/yellow */}
       <div className="bg-gradient-to-r from-primary-blue via-primary-blue to-primary-blue/90 px-4 py-3">
         <div className="flex items-center justify-between">
@@ -601,8 +628,13 @@ const FloatingControlPanel = ({
               <Sparkles className="w-4 h-4 text-primary-blue" />
             </div>
             <div>
-              <span className="font-smokum text-lg text-white">Eldo</span>
-              <p className="text-[10px] text-white/70 -mt-1">Form Assistant</p>
+              <span 
+                className="text-lg text-white font-semibold"
+                style={{ fontFamily: fontStack.brand }}
+              >
+                Eldo
+              </span>
+              <p className="text-[10px] text-white/70 -mt-1" style={{ fontFamily: fontStack.body }}>Form Assistant</p>
             </div>
           </div>
           <div className="flex items-center gap-1">
@@ -777,7 +809,10 @@ const AttentionDialog = ({
   onResume: () => void;
 }) => {
   return (
-    <div className="absolute left-0 right-0 top-full mt-2 z-50 animate-in fade-in slide-in-from-top-2 duration-200">
+    <div 
+      className="absolute left-0 right-0 top-full mt-2 z-50 animate-in fade-in slide-in-from-top-2 duration-200"
+      style={{ fontFamily: EXTENSION_FONT }}
+    >
       {/* Arrow pointing to the field */}
       <div className="absolute -top-2 left-8 w-0 h-0 border-l-8 border-r-8 border-b-8 border-l-transparent border-r-transparent border-b-white drop-shadow-sm" />
       
