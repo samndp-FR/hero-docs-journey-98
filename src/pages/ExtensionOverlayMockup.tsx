@@ -579,12 +579,12 @@ const FloatingControlPanel = ({
     return (
       <button
         onClick={() => setIsMinimized(false)}
-        className="fixed top-4 right-4 w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-primary/80 shadow-lg shadow-primary/30 flex items-center justify-center text-white hover:scale-105 transition-transform border-2 border-accent/30"
+        className="fixed top-4 right-4 w-12 h-12 rounded-xl bg-gradient-to-br from-primary-blue to-primary-blue/80 shadow-lg shadow-primary-blue/30 flex items-center justify-center text-white hover:scale-105 transition-transform border-2 border-[#F4D03F]/30"
       >
         <Sparkles className="w-5 h-5" />
         {state === 'filling' && (
-          <span className="absolute -bottom-1 -right-1 w-4 h-4 bg-accent rounded-full flex items-center justify-center">
-            <Loader2 className="w-3 h-3 text-primary animate-spin" />
+          <span className="absolute -bottom-1 -right-1 w-4 h-4 bg-[#F4D03F] rounded-full flex items-center justify-center">
+            <Loader2 className="w-3 h-3 text-primary-blue animate-spin" />
           </span>
         )}
       </button>
@@ -592,13 +592,13 @@ const FloatingControlPanel = ({
   }
 
   return (
-    <div className="fixed top-4 right-4 w-80 bg-white rounded-2xl shadow-2xl border-2 border-primary/20 overflow-hidden animate-in slide-in-from-right-4 duration-300">
+    <div className="fixed top-4 right-4 w-80 bg-white rounded-2xl shadow-2xl border-2 border-primary-blue/20 overflow-hidden animate-in slide-in-from-right-4 duration-300">
       {/* Header - Eldo branding with blue/yellow */}
-      <div className="bg-gradient-to-r from-primary via-primary to-primary/90 px-4 py-3">
+      <div className="bg-gradient-to-r from-primary-blue via-primary-blue to-primary-blue/90 px-4 py-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-accent flex items-center justify-center">
-              <Sparkles className="w-4 h-4 text-primary" />
+            <div className="w-8 h-8 rounded-lg bg-[#F4D03F] flex items-center justify-center">
+              <Sparkles className="w-4 h-4 text-primary-blue" />
             </div>
             <div>
               <span className="font-smokum text-lg text-white">Eldo</span>
@@ -623,12 +623,12 @@ const FloatingControlPanel = ({
       </div>
 
       {/* Status bar */}
-      <div className="bg-accent/20 px-4 py-2 border-b border-accent/30 flex items-center justify-between">
+      <div className="bg-[#F4D03F]/20 px-4 py-2 border-b border-[#F4D03F]/30 flex items-center justify-between">
         <div className="flex items-center gap-2">
           {state === 'filling' && (
             <>
-              <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-              <span className="text-xs font-medium text-primary">Filling in progress...</span>
+              <div className="w-2 h-2 rounded-full bg-primary-blue animate-pulse" />
+              <span className="text-xs font-medium text-primary-blue">Filling in progress...</span>
             </>
           )}
           {state === 'paused' && (
@@ -664,8 +664,8 @@ const FloatingControlPanel = ({
             {/* Applicant Header */}
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <div className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center">
-                  <User className="w-4 h-4 text-primary" />
+                <div className="w-7 h-7 rounded-full bg-primary-blue/10 flex items-center justify-center">
+                  <User className="w-4 h-4 text-primary-blue" />
                 </div>
                 <div>
                   <p className="text-sm font-medium text-foreground">{applicant.name}</p>
@@ -683,7 +683,7 @@ const FloatingControlPanel = ({
             {/* Progress bar */}
             <div className="h-1.5 bg-muted rounded-full overflow-hidden">
               <div 
-                className="h-full bg-gradient-to-r from-primary to-accent rounded-full transition-all"
+                className="h-full bg-gradient-to-r from-primary-blue to-[#F4D03F] rounded-full transition-all"
                 style={{ width: `${(applicant.formsComplete / applicant.formsTotal) * 100}%` }}
               />
             </div>
@@ -697,7 +697,7 @@ const FloatingControlPanel = ({
                 {applicant.incompleteForms.map((form, formIdx) => (
                   <div 
                     key={formIdx}
-                    className="flex items-center justify-between p-2 rounded-lg bg-amber-50 border border-amber-200/50 hover:border-amber-300 transition-colors cursor-pointer"
+                    className="flex items-center justify-between p-2 rounded-lg bg-primary-blue/5 border border-primary-blue/20 hover:border-primary-blue/40 transition-colors cursor-pointer"
                   >
                     <div className="flex items-center gap-2">
                       <FileText className="w-3.5 h-3.5 text-amber-600" />
