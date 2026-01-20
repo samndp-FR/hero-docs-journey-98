@@ -30,11 +30,11 @@ const ExtensionOverlayMockup = () => {
   const [forms, setForms] = useState<FormItem[]>([
     { id: '1', name: 'Personal details', status: 'ready', fields: 12, filled: 0 },
     { id: '2', name: 'Contact details', status: 'pending', fields: 8, filled: 0 },
-    { id: '3', name: 'Study and languages', status: 'pending', fields: 15, filled: 0 },
+    { id: '3', name: 'Study and languages', status: 'pending', fields: 15, filled: 11 }, // Partially filled
     { id: '4', name: 'Application details', status: 'pending', fields: 10, filled: 0 },
     { id: '5', name: 'Representative', status: 'complete', fields: 6, filled: 6 },
     { id: '6', name: 'Work history', status: 'complete', fields: 20, filled: 20 },
-    { id: '7', name: 'Personal history', status: 'pending', fields: 18, filled: 0 },
+    { id: '7', name: 'Personal history', status: 'pending', fields: 18, filled: 14 }, // Partially filled
   ]);
 
   const fieldNames = [
