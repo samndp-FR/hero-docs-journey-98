@@ -164,8 +164,8 @@ const ExtensionOverlayMockup = () => {
                 <p className="text-slate-600 mt-2">Complete your online application by choosing a section below.</p>
               </div>
 
-              {/* Form Table with Overlay Indicators */}
-              <div className="bg-white rounded-b-lg shadow-lg overflow-hidden">
+              {/* Form Table - Original IRCC layout (no column modification) */}
+              <div className="bg-white rounded-b-lg shadow-lg overflow-hidden relative">
                 <div className="bg-[#335075] text-white px-6 py-3">
                   <h3 className="font-semibold">David Balan: Candidate Permanent Residency</h3>
                 </div>
@@ -175,13 +175,12 @@ const ExtensionOverlayMockup = () => {
                     <tr>
                       <th className="text-left px-6 py-3 font-semibold text-slate-700">Form name</th>
                       <th className="text-left px-6 py-3 font-semibold text-slate-700">Status</th>
-                      <th className="text-left px-6 py-3 font-semibold text-slate-700">Eldo Status</th>
                       <th className="text-right px-6 py-3 font-semibold text-slate-700">Options</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y">
-                    {forms.map((form) => (
-                      <tr key={form.id} className="hover:bg-slate-50 transition-colors group">
+                    {forms.map((form, index) => (
+                      <tr key={form.id} className="hover:bg-slate-50 transition-colors group relative">
                         <td className="px-6 py-4 font-medium text-slate-800">{form.name}</td>
                         <td className="px-6 py-4">
                           <div className="flex items-center gap-2">
@@ -196,11 +195,9 @@ const ExtensionOverlayMockup = () => {
                                 <span className="text-amber-600 font-medium">In progress</span>
                               </>
                             )}
+                            {/* FLOATING OVERLAY BADGE - injected next to status */}
+                            <FormIndicatorBadge form={form} />
                           </div>
-                        </td>
-                        {/* ELDO OVERLAY INDICATOR */}
-                        <td className="px-6 py-4">
-                          <FormIndicatorBadge form={form} />
                         </td>
                         <td className="px-6 py-4 text-right">
                           <Button 
@@ -388,18 +385,18 @@ const ExtensionOverlayMockup = () => {
             </div>
 
             <div className="p-4 rounded-lg bg-white/5">
-              <h4 className="font-medium text-emerald-400 mb-2">2. Form List Indicators</h4>
+              <h4 className="font-medium text-emerald-400 mb-2">2. Floating Overlay Badges</h4>
               <p className="text-xs text-slate-400">
-                Badges on each form row showing Eldo status: ready to fill, field count, 
-                or "Filled by Eldo" checkmark.
+                Injected next to existing status text — no column modification needed. 
+                Positioned absolutely via DOM injection.
               </p>
             </div>
 
             <div className="p-4 rounded-lg bg-white/5">
               <h4 className="font-medium text-amber-400 mb-2">3. Attention Dialog</h4>
               <p className="text-xs text-slate-400">
-                Non-blocking floating card when a field needs input. Options to fill manually, 
-                skip, or resume. Never blocks the entire process.
+                Non-blocking floating card when a field needs input. User can add missing info 
+                to their Eldo profile for future use, or skip.
               </p>
             </div>
           </div>
@@ -686,6 +683,9 @@ const AttentionDialog = ({
   onManualInput: () => void;
   onResume: () => void;
 }) => {
+  const [inputValue, setInputValue] = useState('');
+  const [saveToProfile, setSaveToProfile] = useState(true);
+
   return (
     <div className="absolute left-0 right-0 top-full mt-2 z-50 animate-in fade-in slide-in-from-top-2 duration-200">
       {/* Arrow */}
@@ -693,50 +693,75 @@ const AttentionDialog = ({
       
       <div className="bg-white rounded-xl shadow-2xl border border-amber-200 overflow-hidden max-w-md">
         <div className="bg-amber-50 px-4 py-3 border-b border-amber-200">
-          <div className="flex items-center gap-2">
-            <AlertCircle className="w-5 h-5 text-amber-600" />
-            <span className="font-medium text-amber-800">Needs your input</span>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <AlertCircle className="w-5 h-5 text-amber-600" />
+              <span className="font-medium text-amber-800">Missing from your profile</span>
+            </div>
+            <span className="text-xs text-amber-600 bg-amber-100 px-2 py-0.5 rounded-full">
+              2 more fields
+            </span>
           </div>
         </div>
         
         <div className="p-4 space-y-4">
-          <p className="text-sm text-slate-600">
-            We couldn't find a match for:
-          </p>
-          <div className="px-3 py-2 bg-slate-100 rounded-lg font-medium text-slate-800">
-            "{fieldName}"
+          <div>
+            <p className="text-sm text-slate-600 mb-2">
+              We don't have this information yet:
+            </p>
+            <div className="px-3 py-2 bg-slate-100 rounded-lg font-medium text-slate-800 flex items-center gap-2">
+              <FileText className="w-4 h-4 text-slate-500" />
+              "{fieldName}"
+            </div>
           </div>
           
-          {/* Inline input option */}
-          <div>
-            <label className="text-xs text-slate-500 mb-1 block">Your answer:</label>
+          {/* Add to profile input */}
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-slate-700 flex items-center gap-2">
+              <Edit3 className="w-4 h-4 text-primary" />
+              Add to your profile
+            </label>
             <input 
               type="text"
-              placeholder="Type your answer here..."
-              className="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-primary focus:border-primary"
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
+              placeholder="Enter your answer..."
+              className="w-full px-3 py-2.5 border-2 rounded-lg text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
             />
+            <label className="flex items-center gap-2 text-xs text-slate-500 cursor-pointer">
+              <input 
+                type="checkbox" 
+                checked={saveToProfile}
+                onChange={(e) => setSaveToProfile(e.target.checked)}
+                className="rounded border-slate-300 text-primary focus:ring-primary"
+              />
+              Save to Eldo for future forms
+            </label>
           </div>
 
           <div className="flex gap-2">
             <Button 
               onClick={onManualInput}
-              className="flex-1 bg-primary hover:bg-primary/90"
+              className="flex-1 bg-primary hover:bg-primary/90 gap-2"
+              disabled={!inputValue.trim()}
             >
-              Continue
+              <Check className="w-4 h-4" />
+              Fill & Continue
             </Button>
             <Button 
               onClick={onSkip}
               variant="outline"
-              className="gap-1"
+              className="gap-1 text-slate-600"
             >
               <SkipForward className="w-4 h-4" />
               Skip
             </Button>
           </div>
 
-          <p className="text-[11px] text-slate-400 text-center">
-            2 more fields in this section
-          </p>
+          <div className="pt-3 border-t flex items-center gap-2 text-xs text-slate-400">
+            <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
+            You can always pause or stop at any time
+          </div>
         </div>
       </div>
     </div>
