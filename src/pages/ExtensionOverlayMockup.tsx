@@ -2,13 +2,15 @@ import { useState, useEffect } from 'react';
 import { 
   Check, Loader2, Sparkles, Pause, Play, X, ChevronDown, ChevronUp,
   AlertCircle, ArrowRight, Minimize2, Maximize2, Eye, ShieldCheck,
-  FileText, CheckCircle2, Clock, AlertTriangle, Edit3, SkipForward, User
+  FileText, CheckCircle2, Clock, AlertTriangle, Edit3, SkipForward, User,
+  ChevronRight, CircleDot
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
 type OverlayState = 'idle' | 'filling' | 'paused' | 'attention' | 'success';
 type FormStatus = 'pending' | 'ready' | 'filling' | 'complete' | 'attention';
+type SectionStatus = 'pending' | 'active' | 'complete' | 'attention';
 
 interface FormItem {
   id: string;
@@ -16,6 +18,15 @@ interface FormItem {
   status: FormStatus;
   fields: number;
   filled: number;
+}
+
+interface AccordionSection {
+  id: string;
+  name: string;
+  status: SectionStatus;
+  fields: number;
+  filled: number;
+  currentField?: string;
 }
 
 const ExtensionOverlayMockup = () => {
@@ -26,15 +37,26 @@ const ExtensionOverlayMockup = () => {
   const [fieldProgress, setFieldProgress] = useState(0);
   const [showFormList, setShowFormList] = useState(true);
   const [attentionField, setAttentionField] = useState('Other name used');
+  const [currentSectionIndex, setCurrentSectionIndex] = useState(0);
+  
+  // Accordion sections for the in-form view
+  const [accordionSections, setAccordionSections] = useState<AccordionSection[]>([
+    { id: '1', name: 'Names', status: 'active', fields: 3, filled: 1, currentField: 'First name(s)' },
+    { id: '2', name: 'Personal description', status: 'complete', fields: 5, filled: 5 },
+    { id: '3', name: 'Marital status', status: 'complete', fields: 2, filled: 2 },
+    { id: '4', name: 'ID documents - summary', status: 'pending', fields: 4, filled: 0 },
+    { id: '5', name: 'Immigration history and citizenships', status: 'pending', fields: 6, filled: 2 },
+    { id: '6', name: 'Family', status: 'complete', fields: 8, filled: 8 },
+  ]);
   
   const [forms, setForms] = useState<FormItem[]>([
     { id: '1', name: 'Personal details', status: 'ready', fields: 12, filled: 0 },
     { id: '2', name: 'Contact details', status: 'pending', fields: 8, filled: 0 },
-    { id: '3', name: 'Study and languages', status: 'pending', fields: 15, filled: 11 }, // Partially filled
+    { id: '3', name: 'Study and languages', status: 'pending', fields: 15, filled: 11 },
     { id: '4', name: 'Application details', status: 'pending', fields: 10, filled: 0 },
     { id: '5', name: 'Representative', status: 'complete', fields: 6, filled: 6 },
     { id: '6', name: 'Work history', status: 'complete', fields: 20, filled: 20 },
-    { id: '7', name: 'Personal history', status: 'pending', fields: 18, filled: 14 }, // Partially filled
+    { id: '7', name: 'Personal history', status: 'pending', fields: 18, filled: 14 },
   ]);
 
   const fieldNames = [
@@ -415,21 +437,37 @@ const ExtensionOverlayMockup = () => {
         </div>
       </div>
 
-      {/* FLOATING CONTROL PANEL */}
+      {/* FLOATING CONTROL PANEL - Context aware: Form List vs In-Form */}
       {(overlayState !== 'idle' || !showFormList) && overlayState !== 'success' && (
-        <FloatingControlPanel
-          isMinimized={isMinimized}
-          setIsMinimized={setIsMinimized}
-          state={overlayState}
-          currentForm={currentForm?.name || 'Personal details'}
-          currentField={currentField}
-          formProgress={{ current: currentFormIndex + 1, total: totalForms }}
-          fieldProgress={{ current: fieldProgress, total: currentForm?.fields || 12 }}
-          onPause={handlePause}
-          onResume={handleResume}
-          onStop={handleStop}
-          onSkip={() => {}}
-        />
+        showFormList ? (
+          <FloatingControlPanel
+            isMinimized={isMinimized}
+            setIsMinimized={setIsMinimized}
+            state={overlayState}
+            currentForm={currentForm?.name || 'Personal details'}
+            currentField={currentField}
+            formProgress={{ current: currentFormIndex + 1, total: totalForms }}
+            fieldProgress={{ current: fieldProgress, total: currentForm?.fields || 12 }}
+            onPause={handlePause}
+            onResume={handleResume}
+            onStop={handleStop}
+            onSkip={() => {}}
+          />
+        ) : (
+          <InFormFloatingPanel
+            isMinimized={isMinimized}
+            setIsMinimized={setIsMinimized}
+            state={overlayState}
+            currentFormName={currentForm?.name || 'Personal details'}
+            sections={accordionSections}
+            currentSectionIndex={currentSectionIndex}
+            currentField={currentField}
+            onPause={handlePause}
+            onResume={handleResume}
+            onStop={handleStop}
+            onBack={() => setShowFormList(true)}
+          />
+        )
       )}
 
       {/* Success Overlay */}
@@ -867,6 +905,266 @@ const AttentionDialog = ({
             <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
             You can pause or stop anytime
           </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// In-Form Floating Panel - Shows section-by-section progress
+const InFormFloatingPanel = ({
+  isMinimized,
+  setIsMinimized,
+  state,
+  currentFormName,
+  sections,
+  currentSectionIndex,
+  currentField,
+  onPause,
+  onResume,
+  onStop,
+  onBack,
+}: {
+  isMinimized: boolean;
+  setIsMinimized: (v: boolean) => void;
+  state: OverlayState;
+  currentFormName: string;
+  sections: AccordionSection[];
+  currentSectionIndex: number;
+  currentField: string;
+  onPause: () => void;
+  onResume: () => void;
+  onStop: () => void;
+  onBack: () => void;
+}) => {
+  // Extension-safe font stacks
+  const fontStack = {
+    brand: "'Smokum', 'Georgia', serif",
+    body: "'Outfit', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+  };
+
+  const completedSections = sections.filter(s => s.status === 'complete').length;
+  const totalFields = sections.reduce((acc, s) => acc + s.fields, 0);
+  const filledFields = sections.reduce((acc, s) => acc + s.filled, 0);
+
+  if (isMinimized) {
+    return (
+      <button
+        onClick={() => setIsMinimized(false)}
+        className="fixed top-4 right-4 w-12 h-12 rounded-xl bg-gradient-to-br from-primary-blue to-primary-blue/80 shadow-lg shadow-primary-blue/30 flex items-center justify-center text-white hover:scale-105 transition-transform border-2 border-[#F4D03F]/30"
+      >
+        <Sparkles className="w-5 h-5" />
+        {state === 'filling' && (
+          <span className="absolute -bottom-1 -right-1 w-4 h-4 bg-[#F4D03F] rounded-full flex items-center justify-center">
+            <Loader2 className="w-3 h-3 text-primary-blue animate-spin" />
+          </span>
+        )}
+      </button>
+    );
+  }
+
+  return (
+    <div 
+      className="fixed top-4 right-4 w-80 bg-white rounded-2xl shadow-2xl border-2 border-primary-blue/20 overflow-hidden animate-in slide-in-from-right-4 duration-300"
+      style={{ fontFamily: fontStack.body }}
+    >
+      {/* Header */}
+      <div className="bg-gradient-to-r from-primary-blue via-primary-blue to-primary-blue/90 px-4 py-3">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <button 
+              onClick={onBack}
+              className="w-7 h-7 rounded-md hover:bg-white/20 flex items-center justify-center text-white/70 hover:text-white transition-colors"
+            >
+              <ChevronDown className="w-4 h-4 rotate-90" />
+            </button>
+            <div>
+              <span 
+                className="text-sm text-white font-medium line-clamp-1"
+                style={{ fontFamily: fontStack.body }}
+              >
+                {currentFormName}
+              </span>
+              <p className="text-[10px] text-white/70 -mt-0.5">
+                {filledFields}/{totalFields} fields filled
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-1">
+            <button 
+              onClick={() => setIsMinimized(true)}
+              className="w-7 h-7 rounded-md hover:bg-white/20 flex items-center justify-center text-white/70 hover:text-white transition-colors"
+            >
+              <Minimize2 className="w-4 h-4" />
+            </button>
+            <button 
+              onClick={onStop}
+              className="w-7 h-7 rounded-md hover:bg-white/20 flex items-center justify-center text-white/70 hover:text-white transition-colors"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Current field indicator */}
+      {state === 'filling' && (
+        <div className="bg-[#F4D03F]/20 px-4 py-2 border-b border-[#F4D03F]/30 flex items-center gap-2">
+          <Loader2 className="w-3.5 h-3.5 text-primary-blue animate-spin flex-shrink-0" />
+          <span className="text-xs text-primary-blue truncate">
+            Filling: <span className="font-medium">"{currentField}"</span>
+          </span>
+        </div>
+      )}
+      
+      {state === 'attention' && (
+        <div className="bg-amber-50 px-4 py-2 border-b border-amber-200 flex items-center gap-2">
+          <AlertCircle className="w-3.5 h-3.5 text-amber-600 flex-shrink-0" />
+          <span className="text-xs font-medium text-amber-700">Waiting for your input</span>
+        </div>
+      )}
+      
+      {state === 'paused' && (
+        <div className="bg-muted px-4 py-2 border-b flex items-center gap-2">
+          <div className="w-2 h-2 rounded-full bg-amber-500" />
+          <span className="text-xs font-medium text-muted-foreground">Paused</span>
+        </div>
+      )}
+
+      {/* Sections List */}
+      <div className="p-3 space-y-1.5 max-h-[300px] overflow-y-auto">
+        <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wide px-1 mb-2">
+          Accordion Sections
+        </p>
+        
+        {sections.map((section, idx) => {
+          const isActive = section.status === 'active';
+          const isComplete = section.status === 'complete';
+          const needsAttention = section.status === 'attention';
+          const progress = section.fields > 0 ? (section.filled / section.fields) * 100 : 0;
+          
+          return (
+            <div
+              key={section.id}
+              className={cn(
+                "flex items-center gap-2 p-2.5 rounded-lg transition-all",
+                isActive && "bg-primary-blue/10 border border-primary-blue/30 ring-1 ring-primary-blue/20",
+                isComplete && "bg-emerald-50/50 border border-emerald-200/50",
+                needsAttention && "bg-amber-50 border border-amber-200",
+                !isActive && !isComplete && !needsAttention && "bg-muted/30 border border-transparent hover:border-border"
+              )}
+            >
+              {/* Status Icon */}
+              <div className="flex-shrink-0">
+                {isComplete ? (
+                  <div className="w-5 h-5 rounded-full bg-emerald-100 flex items-center justify-center">
+                    <Check className="w-3 h-3 text-emerald-600" />
+                  </div>
+                ) : isActive ? (
+                  <div className="w-5 h-5 rounded-full bg-primary-blue/20 flex items-center justify-center">
+                    <CircleDot className="w-3 h-3 text-primary-blue animate-pulse" />
+                  </div>
+                ) : needsAttention ? (
+                  <div className="w-5 h-5 rounded-full bg-amber-100 flex items-center justify-center">
+                    <AlertTriangle className="w-3 h-3 text-amber-600" />
+                  </div>
+                ) : (
+                  <div className="w-5 h-5 rounded-full bg-muted flex items-center justify-center">
+                    <Clock className="w-3 h-3 text-muted-foreground" />
+                  </div>
+                )}
+              </div>
+              
+              {/* Section Info */}
+              <div className="flex-1 min-w-0">
+                <p className={cn(
+                  "text-xs font-medium truncate",
+                  isActive && "text-primary-blue",
+                  isComplete && "text-emerald-700",
+                  needsAttention && "text-amber-700",
+                  !isActive && !isComplete && !needsAttention && "text-muted-foreground"
+                )}>
+                  {section.name}
+                </p>
+                
+                {/* Progress bar for active/partial sections */}
+                {!isComplete && section.filled > 0 && (
+                  <div className="h-1 bg-muted rounded-full overflow-hidden mt-1">
+                    <div 
+                      className={cn(
+                        "h-full rounded-full transition-all",
+                        isActive && "bg-primary-blue",
+                        needsAttention && "bg-amber-500",
+                        !isActive && !needsAttention && "bg-muted-foreground/50"
+                      )}
+                      style={{ width: `${progress}%` }}
+                    />
+                  </div>
+                )}
+              </div>
+              
+              {/* Badge */}
+              <div className="flex-shrink-0">
+                {isComplete ? (
+                  <span className="text-[10px] font-medium text-emerald-600 bg-emerald-100 px-1.5 py-0.5 rounded">
+                    ✓
+                  </span>
+                ) : (
+                  <span className={cn(
+                    "text-[10px] font-medium px-1.5 py-0.5 rounded",
+                    isActive && "text-primary-blue bg-primary-blue/10",
+                    needsAttention && "text-amber-600 bg-amber-100",
+                    !isActive && !needsAttention && "text-muted-foreground bg-muted"
+                  )}>
+                    {section.filled}/{section.fields}
+                  </span>
+                )}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Controls Footer */}
+      <div className="border-t bg-muted/30 p-3 space-y-3">
+        <div className="flex gap-2">
+          {state === 'filling' ? (
+            <Button 
+              onClick={onPause}
+              variant="outline"
+              size="sm"
+              className="flex-1 gap-1.5 h-8"
+            >
+              <Pause className="w-3.5 h-3.5" />
+              Pause
+            </Button>
+          ) : (
+            <Button 
+              onClick={onResume}
+              size="sm"
+              className="flex-1 gap-1.5 h-8 bg-primary hover:bg-primary/90"
+            >
+              <Play className="w-3.5 h-3.5" />
+              {state === 'paused' ? 'Resume' : 'Continue'}
+            </Button>
+          )}
+          <Button 
+            onClick={onStop}
+            variant="outline"
+            size="sm"
+            className="gap-1.5 h-8 text-destructive hover:text-destructive hover:bg-destructive/10"
+          >
+            <X className="w-3.5 h-3.5" />
+            Stop
+          </Button>
+        </div>
+
+        {/* Trust Footer */}
+        <div className="flex items-center gap-2">
+          <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 flex-shrink-0" />
+          <p className="text-[10px] text-muted-foreground">
+            You're in control. We never click submit.
+          </p>
         </div>
       </div>
     </div>
