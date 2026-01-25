@@ -658,8 +658,13 @@ const FloatingControlPanel = ({
       className="fixed top-4 right-4 w-80 bg-white rounded-2xl shadow-2xl border-2 border-primary-blue/20 overflow-hidden animate-in slide-in-from-right-4 duration-300"
       style={{ fontFamily: fontStack.body }}
     >
-      {/* Header - Eldo branding with blue/yellow */}
-      <div className="bg-gradient-to-r from-primary-blue via-primary-blue to-primary-blue/90 px-4 py-3">
+      {/* Header - Eldo branding with radiant blue gradient */}
+      <div 
+        className="px-4 py-3"
+        style={{ 
+          background: 'linear-gradient(135deg, #2C4669 0%, #3d5a82 50%, #4a6a94 100%)',
+        }}
+      >
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 rounded-lg bg-[#F4D03F] flex items-center justify-center">
