@@ -662,7 +662,7 @@ const FloatingControlPanel = ({
       <div 
         className="px-4 py-3"
         style={{ 
-          background: 'linear-gradient(135deg, #2C4669 0%, #3d5a82 50%, #4a6a94 100%)',
+          background: 'linear-gradient(135deg, #5378E5 0%, #6a8dec 50%, #7d9ef0 100%)',
         }}
       >
         <div className="flex items-center justify-between">
