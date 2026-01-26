@@ -35,7 +35,7 @@ const SectionHeader: React.FC<{
       {icon}
     </div>
     <div>
-      <h3 className="text-lg font-semibold text-foreground">{title}</h3>
+      <h3 className="text-lg font-semibold text-primary">{title}</h3>
       {description && (
         <p className="text-sm text-muted-foreground mt-0.5">{description}</p>
       )}
