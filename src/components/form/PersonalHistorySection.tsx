@@ -5,7 +5,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Plus, Trash2, MapPin, Plane, Scale, Flag, Shield } from 'lucide-react';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { Plus, Trash2, MapPin, Plane, Scale, Flag, Shield, ChevronDown } from 'lucide-react';
 import TravelHistoryTable from './TravelHistoryTable';
 
 interface Address {
@@ -340,48 +341,63 @@ const PersonalHistorySection: React.FC<PersonalHistorySectionProps> = ({ data, o
           />
         </div>
         <CardContent className="px-6 pb-6 pt-2">
-          <div className="space-y-5">
+          <div className="space-y-4">
             {/* Legal History */}
-            <div className="space-y-4 p-5 rounded-xl bg-white/80 border border-[hsl(var(--section-divider))]">
-              <div className="flex items-center gap-2 text-sm font-semibold text-foreground/80 uppercase tracking-wide">
-                <Scale className="w-4 h-4 text-primary/70" />
-                <span>Legal History</span>
-              </div>
-              {renderRadioQuestion(
-                'criminalHistory',
-                'Have you ever been arrested, cited, charged, or detained by any law enforcement officer?',
-                'criminalDetails',
-                'Provide complete details including dates, charges, and outcomes...'
-              )}
-            </div>
+            <Collapsible defaultOpen className="rounded-xl bg-white/80 border border-[hsl(var(--section-divider))] overflow-hidden">
+              <CollapsibleTrigger className="flex items-center justify-between w-full p-5 hover:bg-white/90 transition-colors group">
+                <div className="flex items-center gap-2 text-sm font-semibold text-primary uppercase tracking-wide">
+                  <Scale className="w-4 h-4" />
+                  <span>Legal History</span>
+                </div>
+                <ChevronDown className="w-4 h-4 text-muted-foreground transition-transform group-data-[state=open]:rotate-180" />
+              </CollapsibleTrigger>
+              <CollapsibleContent className="px-5 pb-5 animate-accordion-down data-[state=closed]:animate-accordion-up">
+                {renderRadioQuestion(
+                  'criminalHistory',
+                  'Have you ever been arrested, cited, charged, or detained by any law enforcement officer?',
+                  'criminalDetails',
+                  'Provide complete details including dates, charges, and outcomes...'
+                )}
+              </CollapsibleContent>
+            </Collapsible>
 
             {/* Immigration History */}
-            <div className="space-y-4 p-5 rounded-xl bg-white/80 border border-[hsl(var(--section-divider))]">
-              <div className="flex items-center gap-2 text-sm font-semibold text-foreground/80 uppercase tracking-wide">
-                <Flag className="w-4 h-4 text-primary/70" />
-                <span>Immigration History</span>
-              </div>
-              {renderRadioQuestion(
-                'immigrationHistory',
-                'Have you ever been denied entry, deported, or removed from any country?',
-                'immigrationDetails',
-                'Provide complete details including dates, countries, and reasons...'
-              )}
-            </div>
+            <Collapsible defaultOpen className="rounded-xl bg-white/80 border border-[hsl(var(--section-divider))] overflow-hidden">
+              <CollapsibleTrigger className="flex items-center justify-between w-full p-5 hover:bg-white/90 transition-colors group">
+                <div className="flex items-center gap-2 text-sm font-semibold text-primary uppercase tracking-wide">
+                  <Flag className="w-4 h-4" />
+                  <span>Immigration History</span>
+                </div>
+                <ChevronDown className="w-4 h-4 text-muted-foreground transition-transform group-data-[state=open]:rotate-180" />
+              </CollapsibleTrigger>
+              <CollapsibleContent className="px-5 pb-5 animate-accordion-down data-[state=closed]:animate-accordion-up">
+                {renderRadioQuestion(
+                  'immigrationHistory',
+                  'Have you ever been denied entry, deported, or removed from any country?',
+                  'immigrationDetails',
+                  'Provide complete details including dates, countries, and reasons...'
+                )}
+              </CollapsibleContent>
+            </Collapsible>
 
             {/* Military Service */}
-            <div className="space-y-4 p-5 rounded-xl bg-white/80 border border-[hsl(var(--section-divider))]">
-              <div className="flex items-center gap-2 text-sm font-semibold text-foreground/80 uppercase tracking-wide">
-                <Shield className="w-4 h-4 text-primary/70" />
-                <span>Military Service</span>
-              </div>
-              {renderRadioQuestion(
-                'militaryService',
-                "Have you ever served in any country's military, militia, or civil defense unit?",
-                'militaryDetails',
-                'Provide details including service dates, branch, rank, and duties...'
-              )}
-            </div>
+            <Collapsible defaultOpen className="rounded-xl bg-white/80 border border-[hsl(var(--section-divider))] overflow-hidden">
+              <CollapsibleTrigger className="flex items-center justify-between w-full p-5 hover:bg-white/90 transition-colors group">
+                <div className="flex items-center gap-2 text-sm font-semibold text-primary uppercase tracking-wide">
+                  <Shield className="w-4 h-4" />
+                  <span>Military Service</span>
+                </div>
+                <ChevronDown className="w-4 h-4 text-muted-foreground transition-transform group-data-[state=open]:rotate-180" />
+              </CollapsibleTrigger>
+              <CollapsibleContent className="px-5 pb-5 animate-accordion-down data-[state=closed]:animate-accordion-up">
+                {renderRadioQuestion(
+                  'militaryService',
+                  "Have you ever served in any country's military, militia, or civil defense unit?",
+                  'militaryDetails',
+                  'Provide details including service dates, branch, rank, and duties...'
+                )}
+              </CollapsibleContent>
+            </Collapsible>
           </div>
         </CardContent>
       </Card>
