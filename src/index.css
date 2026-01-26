@@ -40,6 +40,17 @@
     --pale-blue: 206 100% 97%;
     --primary-blue: 225 73% 57%;
     --shadow-color: 225 73% 57% / 0.1;
+    
+    /* Form section tokens */
+    --section-header-bg: 220 40% 97%;
+    --section-divider: 220 20% 92%;
+    --table-stripe: 220 30% 98%;
+    --question-bg: 220 30% 99%;
+    
+    /* Status tokens */
+    --success: 160 84% 39%;
+    --success-foreground: 160 100% 97%;
+    --success-muted: 160 40% 95%;
 
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
