@@ -6,7 +6,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Plus, Trash2, FileCheck, Pencil, Check, X } from 'lucide-react';
+import { Plus, Trash2, FileCheck, Pencil, Check, X, Plane } from 'lucide-react';
 import I94ScanPrompt from './I94ScanPrompt';
 import { cn } from '@/lib/utils';
 
@@ -186,36 +186,44 @@ const TravelHistoryTable: React.FC<TravelHistoryTableProps> = ({ data, onUpdate 
       />
 
       {/* Main Card */}
-      <Card>
-        <CardHeader>
-          <div className="flex justify-between items-center">
-            <div>
-              <CardTitle>Travel History (Last 10 Years)</CardTitle>
-              <p className="text-sm text-muted-foreground mt-1">
-                List all countries you've visited in the past 10 years
-              </p>
+      <Card className="overflow-hidden border-[hsl(var(--section-divider))] shadow-sm">
+        <div className="bg-[hsl(var(--section-header-bg))] px-6 py-4">
+          <div className="flex items-start gap-3 pb-4 mb-0 border-b border-[hsl(var(--section-divider))]">
+            <div className="p-2 rounded-lg bg-primary/10 text-primary shrink-0">
+              <Plane className="w-5 h-5" />
             </div>
-            <Button 
-              onClick={() => setShowAddForm(!showAddForm)}
-              variant={showAddForm ? "secondary" : "default"}
-              className="gap-2"
-            >
-              {showAddForm ? (
-                <>
-                  <X className="w-4 h-4" />
-                  Cancel
-                </>
-              ) : (
-                <>
-                  <Plus className="w-4 h-4" />
-                  Add Trip
-                </>
-              )}
-            </Button>
+            <div className="flex-1">
+              <div className="flex items-start justify-between">
+                <div>
+                  <h3 className="text-lg font-semibold text-foreground">Travel History</h3>
+                  <p className="text-sm text-muted-foreground mt-0.5">
+                    List all countries you've visited in the past 10 years
+                  </p>
+                </div>
+                <Button 
+                  onClick={() => setShowAddForm(!showAddForm)}
+                  variant={showAddForm ? "secondary" : "default"}
+                  size="sm"
+                  className="gap-2 shrink-0"
+                >
+                  {showAddForm ? (
+                    <>
+                      <X className="w-4 h-4" />
+                      Cancel
+                    </>
+                  ) : (
+                    <>
+                      <Plus className="w-4 h-4" />
+                      Add Trip
+                    </>
+                  )}
+                </Button>
+              </div>
+            </div>
           </div>
-        </CardHeader>
+        </div>
         
-        <CardContent>
+        <CardContent className="p-6 pt-0">
           <div className="space-y-4">
             {/* Add New Entry Form */}
             {showAddForm && (
@@ -289,24 +297,28 @@ const TravelHistoryTable: React.FC<TravelHistoryTableProps> = ({ data, onUpdate 
             {/* Travel History Table */}
             {travelEntries.length > 0 && (
               <>
-                <p className="text-sm text-muted-foreground">
-                  💡 Click any cell to edit it directly
+                <p className="text-xs text-muted-foreground flex items-center gap-1.5 mb-3">
+                  <Pencil className="w-3 h-3" />
+                  Click any cell to edit it directly
                 </p>
-                <div className="border rounded-lg overflow-hidden">
+                <div className="border border-[hsl(var(--section-divider))] rounded-xl overflow-hidden">
                   <Table>
                     <TableHeader>
-                      <TableRow className="bg-muted/50">
-                        <TableHead>Country</TableHead>
-                        <TableHead>Arrival</TableHead>
-                        <TableHead>Departure</TableHead>
-                        <TableHead>Purpose</TableHead>
-                        <TableHead>Source</TableHead>
+                      <TableRow className="bg-[hsl(var(--section-header-bg))]">
+                        <TableHead className="font-semibold text-xs uppercase tracking-wide">Country</TableHead>
+                        <TableHead className="font-semibold text-xs uppercase tracking-wide">Arrival</TableHead>
+                        <TableHead className="font-semibold text-xs uppercase tracking-wide">Departure</TableHead>
+                        <TableHead className="font-semibold text-xs uppercase tracking-wide">Purpose</TableHead>
+                        <TableHead className="font-semibold text-xs uppercase tracking-wide">Source</TableHead>
                         <TableHead className="w-[60px]"></TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {travelEntries.map((entry) => (
-                        <TableRow key={entry.id}>
+                      {travelEntries.map((entry, index) => (
+                        <TableRow 
+                          key={entry.id}
+                          className={index % 2 === 0 ? 'bg-white' : 'bg-[hsl(var(--table-stripe))]'}
+                        >
                           <TableCell className="font-medium">
                             <EditableCell
                               value={entry.country}
@@ -347,7 +359,7 @@ const TravelHistoryTable: React.FC<TravelHistoryTableProps> = ({ data, onUpdate 
                           </TableCell>
                           <TableCell>
                             {entry.documentScanned ? (
-                              <span className="inline-flex items-center gap-1 text-xs font-medium text-emerald-600 bg-emerald-50 dark:bg-emerald-950/30 px-2 py-1 rounded-full">
+                              <span className="inline-flex items-center gap-1 text-xs font-medium text-[hsl(var(--success))] bg-[hsl(var(--success-muted))] px-2 py-1 rounded-full">
                                 <FileCheck className="w-3 h-3" />
                                 I-94 Scanned
                               </span>

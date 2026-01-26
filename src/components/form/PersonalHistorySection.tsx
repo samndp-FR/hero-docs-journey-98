@@ -5,7 +5,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Plus, Trash2 } from 'lucide-react';
+import { Plus, Trash2, MapPin, Plane, Scale, Flag, Shield } from 'lucide-react';
 import TravelHistoryTable from './TravelHistoryTable';
 
 interface Address {
@@ -22,6 +22,35 @@ interface PersonalHistorySectionProps {
   data: any;
   onUpdate: (data: any) => void;
 }
+
+// Section header component for consistent styling
+const SectionHeader: React.FC<{ 
+  icon: React.ReactNode; 
+  title: string; 
+  description?: string;
+}> = ({ icon, title, description }) => (
+  <div className="flex items-start gap-3 pb-4 mb-6 border-b border-[hsl(var(--section-divider))]">
+    <div className="p-2 rounded-lg bg-primary/10 text-primary shrink-0">
+      {icon}
+    </div>
+    <div>
+      <h3 className="text-lg font-semibold text-foreground">{title}</h3>
+      {description && (
+        <p className="text-sm text-muted-foreground mt-0.5">{description}</p>
+      )}
+    </div>
+  </div>
+);
+
+// Question group component for better visual organization
+const QuestionGroup: React.FC<{
+  children: React.ReactNode;
+  className?: string;
+}> = ({ children, className = '' }) => (
+  <div className={`p-4 rounded-lg bg-[hsl(var(--question-bg))] border border-[hsl(var(--section-divider))] ${className}`}>
+    {children}
+  </div>
+);
 
 const PersonalHistorySection: React.FC<PersonalHistorySectionProps> = ({ data, onUpdate }) => {
   const [historyData, setHistoryData] = useState({
@@ -88,237 +117,271 @@ const PersonalHistorySection: React.FC<PersonalHistorySectionProps> = ({ data, o
     onUpdate(newData);
   };
 
+  // Compact radio question component
+  const renderRadioQuestion = (
+    field: string, 
+    question: string, 
+    detailsField?: string,
+    detailsPlaceholder?: string
+  ) => (
+    <QuestionGroup className="space-y-3">
+      <div className="flex items-start justify-between gap-4">
+        <Label className="text-sm font-medium leading-relaxed flex-1 pt-1">
+          {question}
+        </Label>
+        <RadioGroup
+          value={historyData[field]}
+          onValueChange={(value) => handleChange(field, value)}
+          className="flex items-center gap-4 shrink-0"
+        >
+          <Label 
+            htmlFor={`${field}-no`} 
+            className="flex items-center gap-2 cursor-pointer text-sm font-normal"
+          >
+            <RadioGroupItem value="no" id={`${field}-no`} />
+            <span>No</span>
+          </Label>
+          <Label 
+            htmlFor={`${field}-yes`} 
+            className="flex items-center gap-2 cursor-pointer text-sm font-normal"
+          >
+            <RadioGroupItem value="yes" id={`${field}-yes`} />
+            <span>Yes</span>
+          </Label>
+        </RadioGroup>
+      </div>
+      
+      {detailsField && historyData[field] === 'yes' && (
+        <div className="pt-2 border-t border-[hsl(var(--section-divider))]">
+          <Label htmlFor={detailsField} className="text-sm text-muted-foreground">
+            Please provide details
+          </Label>
+          <Textarea
+            id={detailsField}
+            value={historyData[detailsField] || ''}
+            onChange={(e) => handleChange(detailsField, e.target.value)}
+            placeholder={detailsPlaceholder}
+            rows={3}
+            className="mt-2"
+          />
+        </div>
+      )}
+    </QuestionGroup>
+  );
+
   return (
-    <div className="space-y-6">
-      <div className="text-center text-muted-foreground">
+    <div className="space-y-8">
+      {/* Intro Text */}
+      <div className="text-center text-muted-foreground px-4">
         <p>Provide information about your personal history including addresses, travel, legal, and immigration background.</p>
       </div>
 
-      <Card>
-        <CardContent className="p-6">
-          <h3 className="text-lg font-medium mb-4">Address History (Last 5 Years)</h3>
-          
-          {historyData.addresses.map((address, index) => (
-            <div key={index} className="mb-6 p-4 border rounded-lg">
-              <div className="flex justify-between items-center mb-4">
-                <h4 className="font-medium">Address {index + 1}</h4>
-                {historyData.addresses.length > 1 && (
-                  <Button
-                    variant="destructive"
-                    size="sm"
-                    onClick={() => removeAddress(index)}
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </Button>
-                )}
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="md:col-span-2">
-                  <Label htmlFor={`street-${index}`}>Street Address</Label>
-                  <Input
-                    id={`street-${index}`}
-                    value={address.street}
-                    onChange={(e) => updateAddress(index, 'street', e.target.value)}
-                    placeholder="123 Main Street"
-                  />
+      {/* Address History Section */}
+      <Card className="overflow-hidden border-[hsl(var(--section-divider))] shadow-sm">
+        <div className="bg-[hsl(var(--section-header-bg))] px-6 py-4">
+          <SectionHeader 
+            icon={<MapPin className="w-5 h-5" />}
+            title="Address History"
+            description="List all addresses where you've lived in the last 5 years"
+          />
+        </div>
+        <CardContent className="p-6 pt-0">
+          <div className="space-y-4">
+            {historyData.addresses.map((address, index) => (
+              <div 
+                key={index} 
+                className="p-5 rounded-xl border border-[hsl(var(--section-divider))] bg-white hover:shadow-sm transition-shadow"
+              >
+                <div className="flex justify-between items-center mb-4">
+                  <div className="flex items-center gap-2">
+                    <span className="w-6 h-6 rounded-full bg-primary/10 text-primary text-xs font-medium flex items-center justify-center">
+                      {index + 1}
+                    </span>
+                    <h4 className="font-medium text-sm">
+                      {address.current ? 'Current Address' : `Previous Address`}
+                    </h4>
+                  </div>
+                  {historyData.addresses.length > 1 && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => removeAddress(index)}
+                      className="text-destructive hover:text-destructive hover:bg-destructive/10 h-8 px-2"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  )}
                 </div>
 
-                <div>
-                  <Label htmlFor={`city-${index}`}>City</Label>
-                  <Input
-                    id={`city-${index}`}
-                    value={address.city}
-                    onChange={(e) => updateAddress(index, 'city', e.target.value)}
-                    placeholder="New York"
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor={`state-${index}`}>State/Province</Label>
-                  <Input
-                    id={`state-${index}`}
-                    value={address.state}
-                    onChange={(e) => updateAddress(index, 'state', e.target.value)}
-                    placeholder="NY"
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor={`country-${index}`}>Country</Label>
-                  <Input
-                    id={`country-${index}`}
-                    value={address.country}
-                    onChange={(e) => updateAddress(index, 'country', e.target.value)}
-                    placeholder="United States"
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor={`fromDate-${index}`}>From Date</Label>
-                  <Input
-                    id={`fromDate-${index}`}
-                    type="date"
-                    value={address.fromDate}
-                    onChange={(e) => updateAddress(index, 'fromDate', e.target.value)}
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor={`toDate-${index}`}>To Date</Label>
-                  <Input
-                    id={`toDate-${index}`}
-                    type="date"
-                    value={address.toDate}
-                    onChange={(e) => updateAddress(index, 'toDate', e.target.value)}
-                    disabled={address.current}
-                  />
-                  <div className="flex items-center space-x-2 mt-2">
-                    <input
-                      type="checkbox"
-                      id={`current-${index}`}
-                      checked={address.current}
-                      onChange={(e) => updateAddress(index, 'current', e.target.checked)}
-                      className="rounded"
-                    />
-                    <Label htmlFor={`current-${index}`} className="text-sm">
-                      Current address
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-3">
+                  <div className="md:col-span-2">
+                    <Label htmlFor={`street-${index}`} className="text-xs text-muted-foreground uppercase tracking-wide">
+                      Street Address
                     </Label>
+                    <Input
+                      id={`street-${index}`}
+                      value={address.street}
+                      onChange={(e) => updateAddress(index, 'street', e.target.value)}
+                      placeholder="123 Main Street"
+                      className="mt-1"
+                    />
+                  </div>
+
+                  <div>
+                    <Label htmlFor={`city-${index}`} className="text-xs text-muted-foreground uppercase tracking-wide">
+                      City
+                    </Label>
+                    <Input
+                      id={`city-${index}`}
+                      value={address.city}
+                      onChange={(e) => updateAddress(index, 'city', e.target.value)}
+                      placeholder="New York"
+                      className="mt-1"
+                    />
+                  </div>
+
+                  <div>
+                    <Label htmlFor={`state-${index}`} className="text-xs text-muted-foreground uppercase tracking-wide">
+                      State/Province
+                    </Label>
+                    <Input
+                      id={`state-${index}`}
+                      value={address.state}
+                      onChange={(e) => updateAddress(index, 'state', e.target.value)}
+                      placeholder="NY"
+                      className="mt-1"
+                    />
+                  </div>
+
+                  <div>
+                    <Label htmlFor={`country-${index}`} className="text-xs text-muted-foreground uppercase tracking-wide">
+                      Country
+                    </Label>
+                    <Input
+                      id={`country-${index}`}
+                      value={address.country}
+                      onChange={(e) => updateAddress(index, 'country', e.target.value)}
+                      placeholder="United States"
+                      className="mt-1"
+                    />
+                  </div>
+
+                  <div className="flex gap-3">
+                    <div className="flex-1">
+                      <Label htmlFor={`fromDate-${index}`} className="text-xs text-muted-foreground uppercase tracking-wide">
+                        From
+                      </Label>
+                      <Input
+                        id={`fromDate-${index}`}
+                        type="date"
+                        value={address.fromDate}
+                        onChange={(e) => updateAddress(index, 'fromDate', e.target.value)}
+                        className="mt-1"
+                      />
+                    </div>
+                    <div className="flex-1">
+                      <Label htmlFor={`toDate-${index}`} className="text-xs text-muted-foreground uppercase tracking-wide">
+                        To
+                      </Label>
+                      <Input
+                        id={`toDate-${index}`}
+                        type="date"
+                        value={address.toDate}
+                        onChange={(e) => updateAddress(index, 'toDate', e.target.value)}
+                        disabled={address.current}
+                        className="mt-1"
+                      />
+                    </div>
                   </div>
                 </div>
-              </div>
-            </div>
-          ))}
 
-          <Button
-            variant="outline"
-            onClick={addAddress}
-            className="flex items-center space-x-2"
-          >
-            <Plus className="w-4 h-4" />
-            <span>Add Address</span>
-          </Button>
-        </CardContent>
-      </Card>
-
-      <TravelHistoryTable 
-        data={historyData}
-        onUpdate={handleTravelHistoryUpdate}
-      />
-
-      <Card>
-        <CardContent className="p-6">
-          <h3 className="text-lg font-medium mb-4">Legal History</h3>
-          
-          <div className="space-y-4">
-            <div>
-              <Label className="text-base font-medium">Have you ever been arrested, cited, charged, or detained by any law enforcement officer?</Label>
-              <RadioGroup
-                value={historyData.criminalHistory}
-                onValueChange={(value) => handleChange('criminalHistory', value)}
-                className="flex space-x-6 mt-2"
-              >
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="no" id="no-criminal" />
-                  <Label htmlFor="no-criminal">No</Label>
+                <div className="flex items-center space-x-2 mt-4 pt-3 border-t border-[hsl(var(--section-divider))]">
+                  <input
+                    type="checkbox"
+                    id={`current-${index}`}
+                    checked={address.current}
+                    onChange={(e) => updateAddress(index, 'current', e.target.checked)}
+                    className="rounded border-muted-foreground/30"
+                  />
+                  <Label htmlFor={`current-${index}`} className="text-sm text-muted-foreground cursor-pointer">
+                    This is my current address
+                  </Label>
                 </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="yes" id="yes-criminal" />
-                  <Label htmlFor="yes-criminal">Yes</Label>
-                </div>
-              </RadioGroup>
-            </div>
-
-            {historyData.criminalHistory === 'yes' && (
-              <div>
-                <Label htmlFor="criminalDetails">Please provide details</Label>
-                <Textarea
-                  id="criminalDetails"
-                  value={historyData.criminalDetails}
-                  onChange={(e) => handleChange('criminalDetails', e.target.value)}
-                  placeholder="Provide complete details including dates, charges, and outcomes..."
-                  rows={4}
-                />
               </div>
-            )}
+            ))}
+
+            <Button
+              variant="outline"
+              onClick={addAddress}
+              className="w-full flex items-center justify-center gap-2 py-6 border-dashed border-2 hover:border-primary/50 hover:bg-primary/5"
+            >
+              <Plus className="w-4 h-4" />
+              <span>Add Another Address</span>
+            </Button>
           </div>
         </CardContent>
       </Card>
 
-      <Card>
-        <CardContent className="p-6">
-          <h3 className="text-lg font-medium mb-4">Immigration History</h3>
-          
+      {/* Travel History Section */}
+      <div className="space-y-0">
+        <TravelHistoryTable 
+          data={historyData}
+          onUpdate={handleTravelHistoryUpdate}
+        />
+      </div>
+
+      {/* Background Questions Section */}
+      <Card className="overflow-hidden border-[hsl(var(--section-divider))] shadow-sm">
+        <div className="bg-[hsl(var(--section-header-bg))] px-6 py-4">
+          <SectionHeader 
+            icon={<Shield className="w-5 h-5" />}
+            title="Background Questions"
+            description="Please answer the following questions honestly"
+          />
+        </div>
+        <CardContent className="p-6 pt-0">
           <div className="space-y-4">
-            <div>
-              <Label className="text-base font-medium">Have you ever been denied entry, deported, or removed from any country?</Label>
-              <RadioGroup
-                value={historyData.immigrationHistory}
-                onValueChange={(value) => handleChange('immigrationHistory', value)}
-                className="flex space-x-6 mt-2"
-              >
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="no" id="no-immigration" />
-                  <Label htmlFor="no-immigration">No</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="yes" id="yes-immigration" />
-                  <Label htmlFor="yes-immigration">Yes</Label>
-                </div>
-              </RadioGroup>
+            {/* Legal History */}
+            <div className="space-y-3">
+              <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground uppercase tracking-wide">
+                <Scale className="w-4 h-4" />
+                <span>Legal History</span>
+              </div>
+              {renderRadioQuestion(
+                'criminalHistory',
+                'Have you ever been arrested, cited, charged, or detained by any law enforcement officer?',
+                'criminalDetails',
+                'Provide complete details including dates, charges, and outcomes...'
+              )}
             </div>
 
-            {historyData.immigrationHistory === 'yes' && (
-              <div>
-                <Label htmlFor="immigrationDetails">Please provide details</Label>
-                <Textarea
-                  id="immigrationDetails"
-                  value={historyData.immigrationDetails}
-                  onChange={(e) => handleChange('immigrationDetails', e.target.value)}
-                  placeholder="Provide complete details including dates, countries, and reasons..."
-                  rows={4}
-                />
+            {/* Immigration History */}
+            <div className="space-y-3 pt-4 border-t border-[hsl(var(--section-divider))]">
+              <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground uppercase tracking-wide">
+                <Flag className="w-4 h-4" />
+                <span>Immigration History</span>
               </div>
-            )}
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardContent className="p-6">
-          <h3 className="text-lg font-medium mb-4">Military Service</h3>
-          
-          <div className="space-y-4">
-            <div>
-              <Label className="text-base font-medium">Have you ever served in any country's military, militia, or civil defense unit?</Label>
-              <RadioGroup
-                value={historyData.militaryService}
-                onValueChange={(value) => handleChange('militaryService', value)}
-                className="flex space-x-6 mt-2"
-              >
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="no" id="no-military" />
-                  <Label htmlFor="no-military">No</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="yes" id="yes-military" />
-                  <Label htmlFor="yes-military">Yes</Label>
-                </div>
-              </RadioGroup>
+              {renderRadioQuestion(
+                'immigrationHistory',
+                'Have you ever been denied entry, deported, or removed from any country?',
+                'immigrationDetails',
+                'Provide complete details including dates, countries, and reasons...'
+              )}
             </div>
 
-            {historyData.militaryService === 'yes' && (
-              <div>
-                <Label htmlFor="militaryDetails">Please provide details</Label>
-                <Textarea
-                  id="militaryDetails"
-                  value={historyData.militaryDetails}
-                  onChange={(e) => handleChange('militaryDetails', e.target.value)}
-                  placeholder="Provide details including service dates, branch, rank, and duties..."
-                  rows={4}
-                />
+            {/* Military Service */}
+            <div className="space-y-3 pt-4 border-t border-[hsl(var(--section-divider))]">
+              <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground uppercase tracking-wide">
+                <Shield className="w-4 h-4" />
+                <span>Military Service</span>
               </div>
-            )}
+              {renderRadioQuestion(
+                'militaryService',
+                "Have you ever served in any country's military, militia, or civil defense unit?",
+                'militaryDetails',
+                'Provide details including service dates, branch, rank, and duties...'
+              )}
+            </div>
           </div>
         </CardContent>
       </Card>
