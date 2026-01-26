@@ -186,8 +186,8 @@ const TravelHistoryTable: React.FC<TravelHistoryTableProps> = ({ data, onUpdate 
       />
 
       {/* Main Card */}
-      <Card className="overflow-hidden border-[hsl(var(--section-divider))] shadow-sm">
-        <div className="bg-[hsl(var(--section-header-bg))] px-6 py-4">
+      <Card className="overflow-hidden border-[hsl(var(--section-divider))] shadow-sm bg-[hsl(var(--section-travel-bg))]">
+        <div className="bg-gradient-to-r from-[hsl(var(--section-header-bg))] to-transparent px-6 py-5">
           <div className="flex items-start gap-3 pb-4 mb-0 border-b border-[hsl(var(--section-divider))]">
             <div className="p-2 rounded-lg bg-primary/10 text-primary shrink-0">
               <Plane className="w-5 h-5" />
@@ -223,8 +223,8 @@ const TravelHistoryTable: React.FC<TravelHistoryTableProps> = ({ data, onUpdate 
           </div>
         </div>
         
-        <CardContent className="p-6 pt-0">
-          <div className="space-y-4">
+        <CardContent className="px-6 pb-6 pt-2">
+          <div className="space-y-5">
             {/* Add New Entry Form */}
             {showAddForm && (
               <div className="p-4 border-2 border-dashed border-primary/30 rounded-lg bg-primary/5 space-y-4">
@@ -389,7 +389,7 @@ const TravelHistoryTable: React.FC<TravelHistoryTableProps> = ({ data, onUpdate 
             )}
             
             {travelEntries.length === 0 && !showAddForm && (
-              <div className="text-center py-12 border-2 border-dashed rounded-lg">
+              <div className="text-center py-14 border-2 border-dashed rounded-xl bg-white/60">
                 <p className="text-muted-foreground mb-4">
                   No travel history entries yet
                 </p>

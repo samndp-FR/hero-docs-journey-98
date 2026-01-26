@@ -43,9 +43,14 @@
     
     /* Form section tokens */
     --section-header-bg: 220 40% 97%;
-    --section-divider: 220 20% 92%;
-    --table-stripe: 220 30% 98%;
-    --question-bg: 220 30% 99%;
+    --section-divider: 220 20% 90%;
+    --table-stripe: 220 30% 97%;
+    --question-bg: 220 25% 98%;
+    
+    /* Section-specific background tints */
+    --section-address-bg: 210 60% 98%;
+    --section-travel-bg: 200 50% 97%;
+    --section-background-bg: 230 40% 98%;
     
     /* Status tokens */
     --success: 160 84% 39%;

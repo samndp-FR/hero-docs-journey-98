@@ -177,20 +177,20 @@ const PersonalHistorySection: React.FC<PersonalHistorySectionProps> = ({ data, o
       </div>
 
       {/* Address History Section */}
-      <Card className="overflow-hidden border-[hsl(var(--section-divider))] shadow-sm">
-        <div className="bg-[hsl(var(--section-header-bg))] px-6 py-4">
+      <Card className="overflow-hidden border-[hsl(var(--section-divider))] shadow-sm bg-[hsl(var(--section-address-bg))]">
+        <div className="bg-gradient-to-r from-[hsl(var(--section-header-bg))] to-transparent px-6 py-5">
           <SectionHeader 
             icon={<MapPin className="w-5 h-5" />}
             title="Address History"
             description="List all addresses where you've lived in the last 5 years"
           />
         </div>
-        <CardContent className="p-6 pt-0">
+        <CardContent className="px-6 pb-6 pt-2">
           <div className="space-y-4">
             {historyData.addresses.map((address, index) => (
               <div 
                 key={index} 
-                className="p-5 rounded-xl border border-[hsl(var(--section-divider))] bg-white hover:shadow-sm transition-shadow"
+                className="p-6 rounded-xl border border-[hsl(var(--section-divider))] bg-white shadow-sm hover:shadow-md transition-all"
               >
                 <div className="flex justify-between items-center mb-4">
                   <div className="flex items-center gap-2">
@@ -213,7 +213,7 @@ const PersonalHistorySection: React.FC<PersonalHistorySectionProps> = ({ data, o
                   )}
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-3">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-5 gap-y-4">
                   <div className="md:col-span-2">
                     <Label htmlFor={`street-${index}`} className="text-xs text-muted-foreground uppercase tracking-wide">
                       Street Address
@@ -331,20 +331,20 @@ const PersonalHistorySection: React.FC<PersonalHistorySectionProps> = ({ data, o
       </div>
 
       {/* Background Questions Section */}
-      <Card className="overflow-hidden border-[hsl(var(--section-divider))] shadow-sm">
-        <div className="bg-[hsl(var(--section-header-bg))] px-6 py-4">
+      <Card className="overflow-hidden border-[hsl(var(--section-divider))] shadow-sm bg-[hsl(var(--section-background-bg))]">
+        <div className="bg-gradient-to-r from-[hsl(var(--section-header-bg))] to-transparent px-6 py-5">
           <SectionHeader 
             icon={<Shield className="w-5 h-5" />}
             title="Background Questions"
             description="Please answer the following questions honestly"
           />
         </div>
-        <CardContent className="p-6 pt-0">
-          <div className="space-y-4">
+        <CardContent className="px-6 pb-6 pt-2">
+          <div className="space-y-5">
             {/* Legal History */}
-            <div className="space-y-3">
-              <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground uppercase tracking-wide">
-                <Scale className="w-4 h-4" />
+            <div className="space-y-4 p-5 rounded-xl bg-white/80 border border-[hsl(var(--section-divider))]">
+              <div className="flex items-center gap-2 text-sm font-semibold text-foreground/80 uppercase tracking-wide">
+                <Scale className="w-4 h-4 text-primary/70" />
                 <span>Legal History</span>
               </div>
               {renderRadioQuestion(
@@ -356,9 +356,9 @@ const PersonalHistorySection: React.FC<PersonalHistorySectionProps> = ({ data, o
             </div>
 
             {/* Immigration History */}
-            <div className="space-y-3 pt-4 border-t border-[hsl(var(--section-divider))]">
-              <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground uppercase tracking-wide">
-                <Flag className="w-4 h-4" />
+            <div className="space-y-4 p-5 rounded-xl bg-white/80 border border-[hsl(var(--section-divider))]">
+              <div className="flex items-center gap-2 text-sm font-semibold text-foreground/80 uppercase tracking-wide">
+                <Flag className="w-4 h-4 text-primary/70" />
                 <span>Immigration History</span>
               </div>
               {renderRadioQuestion(
@@ -370,9 +370,9 @@ const PersonalHistorySection: React.FC<PersonalHistorySectionProps> = ({ data, o
             </div>
 
             {/* Military Service */}
-            <div className="space-y-3 pt-4 border-t border-[hsl(var(--section-divider))]">
-              <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground uppercase tracking-wide">
-                <Shield className="w-4 h-4" />
+            <div className="space-y-4 p-5 rounded-xl bg-white/80 border border-[hsl(var(--section-divider))]">
+              <div className="flex items-center gap-2 text-sm font-semibold text-foreground/80 uppercase tracking-wide">
+                <Shield className="w-4 h-4 text-primary/70" />
                 <span>Military Service</span>
               </div>
               {renderRadioQuestion(
