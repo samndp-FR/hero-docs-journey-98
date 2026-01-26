@@ -179,7 +179,7 @@ const PersonalHistorySection: React.FC<PersonalHistorySectionProps> = ({ data, o
 
       {/* Address History Section */}
       <Card className="overflow-hidden border-[hsl(var(--section-divider))] shadow-sm bg-[hsl(var(--section-address-bg))]">
-        <div className="bg-gradient-to-r from-[hsl(var(--section-header-bg))] to-transparent px-6 py-5">
+        <div className="bg-[hsl(var(--section-header-bg))] px-6 py-5">
           <SectionHeader 
             icon={<MapPin className="w-5 h-5" />}
             title="Address History"
@@ -333,7 +333,7 @@ const PersonalHistorySection: React.FC<PersonalHistorySectionProps> = ({ data, o
 
       {/* Background Questions Section */}
       <Card className="overflow-hidden border-[hsl(var(--section-divider))] shadow-sm bg-[hsl(var(--section-background-bg))]">
-        <div className="bg-gradient-to-r from-[hsl(var(--section-header-bg))] to-transparent px-6 py-5">
+        <div className="bg-[hsl(var(--section-header-bg))] px-6 py-5">
           <SectionHeader 
             icon={<Shield className="w-5 h-5" />}
             title="Background Questions"
