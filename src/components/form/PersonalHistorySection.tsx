@@ -31,7 +31,7 @@ const SectionHeader: React.FC<{
   description?: string;
 }> = ({ icon, title, description }) => (
   <div className="flex items-start gap-3 pb-4 mb-6 border-b border-[hsl(var(--section-divider))]">
-    <div className="p-2 rounded-lg bg-primary/10 text-primary shrink-0">
+    <div className="p-2 rounded-lg bg-primary-blue/10 text-primary-blue shrink-0">
       {icon}
     </div>
     <div>

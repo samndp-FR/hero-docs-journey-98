@@ -189,7 +189,7 @@ const TravelHistoryTable: React.FC<TravelHistoryTableProps> = ({ data, onUpdate 
       <Card className="overflow-hidden border-[hsl(var(--section-divider))] shadow-sm bg-[hsl(var(--section-travel-bg))]">
         <div className="bg-[hsl(var(--section-header-bg))] px-6 py-5">
           <div className="flex items-start gap-3 pb-4 mb-0 border-b border-[hsl(var(--section-divider))]">
-            <div className="p-2 rounded-lg bg-primary/10 text-primary shrink-0">
+            <div className="p-2 rounded-lg bg-primary-blue/10 text-primary-blue shrink-0">
               <Plane className="w-5 h-5" />
             </div>
             <div className="flex-1">
