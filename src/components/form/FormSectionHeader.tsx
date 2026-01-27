@@ -9,7 +9,7 @@ interface FormSectionHeaderProps {
 
 const FormSectionHeader: React.FC<FormSectionHeaderProps> = ({ icon: Icon, title, description }) => (
   <div className="flex items-start gap-3 pb-4 mb-6 border-b border-[hsl(var(--section-divider))]">
-    <div className="p-2 rounded-lg bg-primary-blue/10 text-foreground shrink-0">
+    <div className="p-2 rounded-lg bg-primary-blue/10 text-primary-blue shrink-0">
       <Icon className="w-5 h-5" />
     </div>
     <div>
