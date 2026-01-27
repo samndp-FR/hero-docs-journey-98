@@ -13,7 +13,7 @@ const FormSectionHeader: React.FC<FormSectionHeaderProps> = ({ icon: Icon, title
       <Icon className="w-5 h-5" />
     </div>
     <div>
-      <h3 className="text-lg font-semibold text-primary-blue">{title}</h3>
+      <h3 className="text-lg font-semibold text-foreground">{title}</h3>
       {description && (
         <p className="text-sm text-muted-foreground mt-0.5">{description}</p>
       )}
