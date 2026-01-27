@@ -195,7 +195,7 @@ const TravelHistoryTable: React.FC<TravelHistoryTableProps> = ({ data, onUpdate 
             <div className="flex-1">
               <div className="flex items-start justify-between">
                 <div>
-                  <h3 className="text-lg font-semibold text-primary">Travel History</h3>
+                  <h3 className="text-lg font-semibold text-foreground">Travel History</h3>
                   <p className="text-sm text-muted-foreground mt-0.5">
                     List all countries you've visited in the past 10 years
                   </p>
