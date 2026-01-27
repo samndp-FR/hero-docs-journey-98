@@ -5,6 +5,9 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { IdCard, BookOpen, Globe, Users, UserX, Plus, Trash2 } from 'lucide-react';
+import FormSectionHeader from './FormSectionHeader';
 
 interface PersonalDetailsSectionProps {
   data: any;
@@ -26,7 +29,11 @@ const PersonalDetailsSection: React.FC<PersonalDetailsSectionProps> = ({ data, o
     heightFeet: data.heightFeet || '',
     heightInches: data.heightInches || '',
     eyeColor: data.eyeColor || '',
-    hairColor: data.hairColor || ''
+    hairColor: data.hairColor || '',
+    countryOfResidence: data.countryOfResidence || '',
+    immigrationStatus: data.immigrationStatus || '',
+    familyMembers: data.familyMembers || [],
+    unidentifiedFamily: data.unidentifiedFamily || ''
   });
 
   const handleChange = (field: string, value: string) => {
@@ -35,16 +42,40 @@ const PersonalDetailsSection: React.FC<PersonalDetailsSectionProps> = ({ data, o
     onUpdate(newData);
   };
 
+  const addFamilyMember = () => {
+    const newMembers = [...personalData.familyMembers, { name: '', relationship: '', location: '' }];
+    const newData = { ...personalData, familyMembers: newMembers };
+    setPersonalData(newData);
+    onUpdate(newData);
+  };
+
+  const removeFamilyMember = (index: number) => {
+    const newMembers = personalData.familyMembers.filter((_: any, i: number) => i !== index);
+    const newData = { ...personalData, familyMembers: newMembers };
+    setPersonalData(newData);
+    onUpdate(newData);
+  };
+
+  const updateFamilyMember = (index: number, field: string, value: string) => {
+    const newMembers = [...personalData.familyMembers];
+    newMembers[index] = { ...newMembers[index], [field]: value };
+    const newData = { ...personalData, familyMembers: newMembers };
+    setPersonalData(newData);
+    onUpdate(newData);
+  };
+
   return (
     <div className="space-y-6">
-      <div className="text-center text-muted-foreground">
-        <p>Provide your personal information as it appears on official documents.</p>
-      </div>
-
-      <Card>
+      {/* Identification */}
+      <Card className="overflow-hidden border-[hsl(var(--section-divider))] shadow-sm">
+        <div className="bg-[hsl(var(--section-header-bg))] px-6 py-5">
+          <FormSectionHeader 
+            icon={IdCard} 
+            title="Identification" 
+            description="Basic identifying information as it appears on official documents"
+          />
+        </div>
         <CardContent className="p-6">
-          <h3 className="text-lg font-medium mb-4">Basic Information</h3>
-          
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <Label htmlFor="nationality">Nationality *</Label>
@@ -64,7 +95,6 @@ const PersonalDetailsSection: React.FC<PersonalDetailsSectionProps> = ({ data, o
                 </SelectContent>
               </Select>
             </div>
-
             <div>
               <Label htmlFor="countryOfBirth">Country of Birth *</Label>
               <Select
@@ -83,7 +113,6 @@ const PersonalDetailsSection: React.FC<PersonalDetailsSectionProps> = ({ data, o
                 </SelectContent>
               </Select>
             </div>
-
             <div>
               <Label htmlFor="cityOfBirth">City of Birth *</Label>
               <Input
@@ -94,55 +123,41 @@ const PersonalDetailsSection: React.FC<PersonalDetailsSectionProps> = ({ data, o
                 required
               />
             </div>
-
             <div>
-              <Label htmlFor="maritalStatus">Marital Status *</Label>
-              <Select
-                value={personalData.maritalStatus}
-                onValueChange={(value) => handleChange('maritalStatus', value)}
+              <Label className="text-base font-medium">Gender *</Label>
+              <RadioGroup
+                value={personalData.gender}
+                onValueChange={(value) => handleChange('gender', value)}
+                className="flex space-x-6 mt-2"
               >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select status" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="single">Single</SelectItem>
-                  <SelectItem value="married">Married</SelectItem>
-                  <SelectItem value="divorced">Divorced</SelectItem>
-                  <SelectItem value="widowed">Widowed</SelectItem>
-                  <SelectItem value="separated">Separated</SelectItem>
-                </SelectContent>
-              </Select>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="male" id="male" />
+                  <Label htmlFor="male">Male</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="female" id="female" />
+                  <Label htmlFor="female">Female</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="other" id="other" />
+                  <Label htmlFor="other">Other</Label>
+                </div>
+              </RadioGroup>
             </div>
-          </div>
-
-          <div className="mt-4">
-            <Label className="text-base font-medium">Gender *</Label>
-            <RadioGroup
-              value={personalData.gender}
-              onValueChange={(value) => handleChange('gender', value)}
-              className="flex space-x-6 mt-2"
-            >
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="male" id="male" />
-                <Label htmlFor="male">Male</Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="female" id="female" />
-                <Label htmlFor="female">Female</Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="other" id="other" />
-                <Label htmlFor="other">Other</Label>
-              </div>
-            </RadioGroup>
           </div>
         </CardContent>
       </Card>
 
-      <Card>
+      {/* Passports */}
+      <Card className="overflow-hidden border-[hsl(var(--section-divider))] shadow-sm">
+        <div className="bg-[hsl(var(--section-header-bg))] px-6 py-5">
+          <FormSectionHeader 
+            icon={BookOpen} 
+            title="Passports" 
+            description="Current passport information"
+          />
+        </div>
         <CardContent className="p-6">
-          <h3 className="text-lg font-medium mb-4">Passport Information</h3>
-          
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <Label htmlFor="passportNumber">Passport Number *</Label>
@@ -154,7 +169,6 @@ const PersonalDetailsSection: React.FC<PersonalDetailsSectionProps> = ({ data, o
                 required
               />
             </div>
-
             <div>
               <Label htmlFor="passportIssuingCountry">Issuing Country *</Label>
               <Select
@@ -173,7 +187,6 @@ const PersonalDetailsSection: React.FC<PersonalDetailsSectionProps> = ({ data, o
                 </SelectContent>
               </Select>
             </div>
-
             <div>
               <Label htmlFor="passportIssueDate">Issue Date *</Label>
               <Input
@@ -184,7 +197,6 @@ const PersonalDetailsSection: React.FC<PersonalDetailsSectionProps> = ({ data, o
                 required
               />
             </div>
-
             <div>
               <Label htmlFor="passportExpiryDate">Expiry Date *</Label>
               <Input
@@ -199,84 +211,155 @@ const PersonalDetailsSection: React.FC<PersonalDetailsSectionProps> = ({ data, o
         </CardContent>
       </Card>
 
-      <Card>
+      {/* Immigration and Residency */}
+      <Card className="overflow-hidden border-[hsl(var(--section-divider))] shadow-sm">
+        <div className="bg-[hsl(var(--section-header-bg))] px-6 py-5">
+          <FormSectionHeader 
+            icon={Globe} 
+            title="Immigration and Residency" 
+            description="Your current immigration and residency status"
+          />
+        </div>
         <CardContent className="p-6">
-          <h3 className="text-lg font-medium mb-4">Physical Description</h3>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="heightFeet">Height (Feet)</Label>
+              <Label htmlFor="countryOfResidence">Country of Residence *</Label>
               <Select
-                value={personalData.heightFeet}
-                onValueChange={(value) => handleChange('heightFeet', value)}
+                value={personalData.countryOfResidence}
+                onValueChange={(value) => handleChange('countryOfResidence', value)}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Feet" />
+                  <SelectValue placeholder="Select country" />
                 </SelectTrigger>
                 <SelectContent>
-                  {[4, 5, 6, 7].map(num => (
-                    <SelectItem key={num} value={num.toString()}>{num} ft</SelectItem>
-                  ))}
+                  <SelectItem value="US">United States</SelectItem>
+                  <SelectItem value="CA">Canada</SelectItem>
+                  <SelectItem value="UK">United Kingdom</SelectItem>
+                  <SelectItem value="AU">Australia</SelectItem>
+                  <SelectItem value="other">Other</SelectItem>
                 </SelectContent>
               </Select>
             </div>
+            <div>
+              <Label htmlFor="immigrationStatus">Immigration Status</Label>
+              <Select
+                value={personalData.immigrationStatus}
+                onValueChange={(value) => handleChange('immigrationStatus', value)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="citizen">Citizen</SelectItem>
+                  <SelectItem value="permanent-resident">Permanent Resident</SelectItem>
+                  <SelectItem value="work-permit">Work Permit</SelectItem>
+                  <SelectItem value="student-visa">Student Visa</SelectItem>
+                  <SelectItem value="visitor">Visitor</SelectItem>
+                  <SelectItem value="other">Other</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
-            <div>
-              <Label htmlFor="heightInches">Height (Inches)</Label>
-              <Select
-                value={personalData.heightInches}
-                onValueChange={(value) => handleChange('heightInches', value)}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Inches" />
-                </SelectTrigger>
-                <SelectContent>
-                  {Array.from({length: 12}, (_, i) => (
-                    <SelectItem key={i} value={i.toString()}>{i} in</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+      {/* Family and Relatives */}
+      <Card className="overflow-hidden border-[hsl(var(--section-divider))] shadow-sm">
+        <div className="bg-[hsl(var(--section-header-bg))] px-6 py-5">
+          <FormSectionHeader 
+            icon={Users} 
+            title="Family and Relatives" 
+            description="Immediate family members (parents, siblings, spouse, children)"
+          />
+        </div>
+        <CardContent className="p-6">
+          {personalData.familyMembers.length === 0 ? (
+            <p className="text-muted-foreground text-center py-4">
+              No family members added yet.
+            </p>
+          ) : (
+            <div className="space-y-4 mb-4">
+              {personalData.familyMembers.map((member: any, index: number) => (
+                <div key={index} className="p-4 border rounded-lg bg-muted/30">
+                  <div className="flex justify-between items-center mb-3">
+                    <h4 className="font-medium text-primary-blue">Family Member {index + 1}</h4>
+                    <Button
+                      variant="destructive"
+                      size="sm"
+                      onClick={() => removeFamilyMember(index)}
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                      <Label>Full Name</Label>
+                      <Input
+                        value={member.name}
+                        onChange={(e) => updateFamilyMember(index, 'name', e.target.value)}
+                        placeholder="Full name"
+                      />
+                    </div>
+                    <div>
+                      <Label>Relationship</Label>
+                      <Select
+                        value={member.relationship}
+                        onValueChange={(value) => updateFamilyMember(index, 'relationship', value)}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="parent">Parent</SelectItem>
+                          <SelectItem value="sibling">Sibling</SelectItem>
+                          <SelectItem value="spouse">Spouse</SelectItem>
+                          <SelectItem value="child">Child</SelectItem>
+                          <SelectItem value="other">Other</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <Label>Location/Country</Label>
+                      <Input
+                        value={member.location}
+                        onChange={(e) => updateFamilyMember(index, 'location', e.target.value)}
+                        placeholder="City, Country"
+                      />
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
+          )}
+          <Button
+            variant="outline"
+            onClick={addFamilyMember}
+            className="flex items-center space-x-2 border-dashed"
+          >
+            <Plus className="w-4 h-4" />
+            <span>Add Family Member</span>
+          </Button>
+        </CardContent>
+      </Card>
 
-            <div>
-              <Label htmlFor="eyeColor">Eye Color</Label>
-              <Select
-                value={personalData.eyeColor}
-                onValueChange={(value) => handleChange('eyeColor', value)}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="brown">Brown</SelectItem>
-                  <SelectItem value="blue">Blue</SelectItem>
-                  <SelectItem value="green">Green</SelectItem>
-                  <SelectItem value="hazel">Hazel</SelectItem>
-                  <SelectItem value="gray">Gray</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div>
-              <Label htmlFor="hairColor">Hair Color</Label>
-              <Select
-                value={personalData.hairColor}
-                onValueChange={(value) => handleChange('hairColor', value)}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="black">Black</SelectItem>
-                  <SelectItem value="brown">Brown</SelectItem>
-                  <SelectItem value="blonde">Blonde</SelectItem>
-                  <SelectItem value="red">Red</SelectItem>
-                  <SelectItem value="gray">Gray</SelectItem>
-                  <SelectItem value="white">White</SelectItem>
-                  <SelectItem value="bald">Bald</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+      {/* Immediate Family Members Not Identified */}
+      <Card className="overflow-hidden border-[hsl(var(--section-divider))] shadow-sm">
+        <div className="bg-[hsl(var(--section-header-bg))] px-6 py-5">
+          <FormSectionHeader 
+            icon={UserX} 
+            title="Immediate Family Members Not Identified" 
+            description="Family members whose whereabouts are unknown or contact has been lost"
+          />
+        </div>
+        <CardContent className="p-6">
+          <div>
+            <Label htmlFor="unidentifiedFamily">Details (if applicable)</Label>
+            <Input
+              id="unidentifiedFamily"
+              value={personalData.unidentifiedFamily}
+              onChange={(e) => handleChange('unidentifiedFamily', e.target.value)}
+              placeholder="Describe any family members with unknown whereabouts..."
+            />
           </div>
         </CardContent>
       </Card>

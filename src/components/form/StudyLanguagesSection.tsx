@@ -6,7 +6,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Plus, Trash2 } from 'lucide-react';
+import { Plus, Trash2, GraduationCap, MessageSquare, FileText } from 'lucide-react';
+import FormSectionHeader from './FormSectionHeader';
 
 interface Education {
   institution: string;
@@ -49,6 +50,8 @@ const StudyLanguagesSection: React.FC<StudyLanguagesSectionProps> = ({ data, onU
       canWrite: false,
       canSpeak: false
     }],
+    englishTest: data.englishTest || { type: '', score: '', dateOfTest: '' },
+    frenchTest: data.frenchTest || { type: '', score: '', dateOfTest: '' },
     additionalSkills: data.additionalSkills || '',
     certifications: data.certifications || ''
   });
@@ -70,7 +73,7 @@ const StudyLanguagesSection: React.FC<StudyLanguagesSectionProps> = ({ data, onU
   };
 
   const removeEducation = (index: number) => {
-    const newEducationList = studyData.education.filter((_, i) => i !== index);
+    const newEducationList = studyData.education.filter((_: any, i: number) => i !== index);
     const newData = { ...studyData, education: newEducationList };
     setStudyData(newData);
     onUpdate(newData);
@@ -100,7 +103,7 @@ const StudyLanguagesSection: React.FC<StudyLanguagesSectionProps> = ({ data, onU
 
   const removeLanguage = (index: number) => {
     if (studyData.languages.length > 1) {
-      const newLanguageList = studyData.languages.filter((_, i) => i !== index);
+      const newLanguageList = studyData.languages.filter((_: any, i: number) => i !== index);
       const newData = { ...studyData, languages: newLanguageList };
       setStudyData(newData);
       onUpdate(newData);
@@ -121,20 +124,31 @@ const StudyLanguagesSection: React.FC<StudyLanguagesSectionProps> = ({ data, onU
     onUpdate(newData);
   };
 
+  const handleTestChange = (testType: 'englishTest' | 'frenchTest', field: string, value: string) => {
+    const newData = { 
+      ...studyData, 
+      [testType]: { ...studyData[testType], [field]: value }
+    };
+    setStudyData(newData);
+    onUpdate(newData);
+  };
+
   return (
     <div className="space-y-6">
-      <div className="text-center text-muted-foreground">
-        <p>Provide information about your educational background and language skills.</p>
-      </div>
-
-      <Card>
+      {/* Education History */}
+      <Card className="overflow-hidden border-[hsl(var(--section-divider))] shadow-sm">
+        <div className="bg-[hsl(var(--section-header-bg))] px-6 py-5">
+          <FormSectionHeader 
+            icon={GraduationCap} 
+            title="Education History" 
+            description="Your educational background starting with the most recent"
+          />
+        </div>
         <CardContent className="p-6">
-          <h3 className="text-lg font-medium mb-4">Education History</h3>
-          
-          {studyData.education.map((edu, index) => (
-            <div key={index} className="mb-6 p-4 border rounded-lg">
+          {studyData.education.map((edu: Education, index: number) => (
+            <div key={index} className="mb-6 p-4 border rounded-lg bg-muted/30">
               <div className="flex justify-between items-center mb-4">
-                <h4 className="font-medium">Education {index + 1}</h4>
+                <h4 className="font-medium text-primary-blue">Education {index + 1}</h4>
                 {studyData.education.length > 1 && (
                   <Button
                     variant="destructive"
@@ -145,7 +159,6 @@ const StudyLanguagesSection: React.FC<StudyLanguagesSectionProps> = ({ data, onU
                   </Button>
                 )}
               </div>
-
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor={`institution-${index}`}>Institution Name</Label>
@@ -156,7 +169,6 @@ const StudyLanguagesSection: React.FC<StudyLanguagesSectionProps> = ({ data, onU
                     placeholder="University of Example"
                   />
                 </div>
-
                 <div>
                   <Label htmlFor={`degree-${index}`}>Degree/Diploma</Label>
                   <Select
@@ -177,7 +189,6 @@ const StudyLanguagesSection: React.FC<StudyLanguagesSectionProps> = ({ data, onU
                     </SelectContent>
                   </Select>
                 </div>
-
                 <div>
                   <Label htmlFor={`fieldOfStudy-${index}`}>Field of Study</Label>
                   <Input
@@ -187,7 +198,6 @@ const StudyLanguagesSection: React.FC<StudyLanguagesSectionProps> = ({ data, onU
                     placeholder="Computer Science"
                   />
                 </div>
-
                 <div>
                   <Label htmlFor={`gpa-${index}`}>GPA/Grade</Label>
                   <Input
@@ -197,7 +207,6 @@ const StudyLanguagesSection: React.FC<StudyLanguagesSectionProps> = ({ data, onU
                     placeholder="3.8"
                   />
                 </div>
-
                 <div>
                   <Label htmlFor={`startDate-${index}`}>Start Date</Label>
                   <Input
@@ -207,7 +216,6 @@ const StudyLanguagesSection: React.FC<StudyLanguagesSectionProps> = ({ data, onU
                     onChange={(e) => updateEducation(index, 'startDate', e.target.value)}
                   />
                 </div>
-
                 <div>
                   <Label htmlFor={`endDate-${index}`}>End Date</Label>
                   <Input
@@ -233,11 +241,10 @@ const StudyLanguagesSection: React.FC<StudyLanguagesSectionProps> = ({ data, onU
               </div>
             </div>
           ))}
-
           <Button
             variant="outline"
             onClick={addEducation}
-            className="flex items-center space-x-2"
+            className="flex items-center space-x-2 border-dashed"
           >
             <Plus className="w-4 h-4" />
             <span>Add Education</span>
@@ -245,14 +252,20 @@ const StudyLanguagesSection: React.FC<StudyLanguagesSectionProps> = ({ data, onU
         </CardContent>
       </Card>
 
-      <Card>
+      {/* Language Comfort/Profile */}
+      <Card className="overflow-hidden border-[hsl(var(--section-divider))] shadow-sm">
+        <div className="bg-[hsl(var(--section-header-bg))] px-6 py-5">
+          <FormSectionHeader 
+            icon={MessageSquare} 
+            title="Language Comfort / Profile" 
+            description="Languages you speak and your proficiency level"
+          />
+        </div>
         <CardContent className="p-6">
-          <h3 className="text-lg font-medium mb-4">Language Skills</h3>
-          
-          {studyData.languages.map((lang, index) => (
-            <div key={index} className="mb-6 p-4 border rounded-lg">
+          {studyData.languages.map((lang: Language, index: number) => (
+            <div key={index} className="mb-6 p-4 border rounded-lg bg-muted/30">
               <div className="flex justify-between items-center mb-4">
-                <h4 className="font-medium">Language {index + 1}</h4>
+                <h4 className="font-medium text-primary-blue">Language {index + 1}</h4>
                 {studyData.languages.length > 1 && (
                   <Button
                     variant="destructive"
@@ -263,7 +276,6 @@ const StudyLanguagesSection: React.FC<StudyLanguagesSectionProps> = ({ data, onU
                   </Button>
                 )}
               </div>
-
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                 <div>
                   <Label htmlFor={`language-${index}`}>Language</Label>
@@ -274,7 +286,6 @@ const StudyLanguagesSection: React.FC<StudyLanguagesSectionProps> = ({ data, onU
                     placeholder="Spanish"
                   />
                 </div>
-
                 <div>
                   <Label htmlFor={`proficiency-${index}`}>Proficiency Level</Label>
                   <Select
@@ -294,7 +305,6 @@ const StudyLanguagesSection: React.FC<StudyLanguagesSectionProps> = ({ data, onU
                   </Select>
                 </div>
               </div>
-
               <div>
                 <Label className="text-base font-medium mb-2 block">Skills</Label>
                 <div className="flex flex-wrap gap-4">
@@ -332,11 +342,10 @@ const StudyLanguagesSection: React.FC<StudyLanguagesSectionProps> = ({ data, onU
               </div>
             </div>
           ))}
-
           <Button
             variant="outline"
             onClick={addLanguage}
-            className="flex items-center space-x-2"
+            className="flex items-center space-x-2 border-dashed"
           >
             <Plus className="w-4 h-4" />
             <span>Add Language</span>
@@ -344,30 +353,96 @@ const StudyLanguagesSection: React.FC<StudyLanguagesSectionProps> = ({ data, onU
         </CardContent>
       </Card>
 
-      <Card>
+      {/* English Language Test */}
+      <Card className="overflow-hidden border-[hsl(var(--section-divider))] shadow-sm">
+        <div className="bg-[hsl(var(--section-header-bg))] px-6 py-5">
+          <FormSectionHeader 
+            icon={FileText} 
+            title="English Language Test" 
+            description="Results from official English proficiency tests (IELTS, CELPIP, etc.)"
+          />
+        </div>
         <CardContent className="p-6">
-          <h3 className="text-lg font-medium mb-4">Additional Information</h3>
-          
-          <div className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
-              <Label htmlFor="certifications">Professional Certifications</Label>
-              <Textarea
-                id="certifications"
-                value={studyData.certifications}
-                onChange={(e) => handleChange('certifications', e.target.value)}
-                placeholder="List any professional certifications, licenses, or credentials..."
-                rows={3}
+              <Label>Test Type</Label>
+              <Select
+                value={studyData.englishTest.type}
+                onValueChange={(value) => handleTestChange('englishTest', 'type', value)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select test" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="ielts-general">IELTS General</SelectItem>
+                  <SelectItem value="ielts-academic">IELTS Academic</SelectItem>
+                  <SelectItem value="celpip">CELPIP</SelectItem>
+                  <SelectItem value="pte">PTE Academic</SelectItem>
+                  <SelectItem value="none">No test taken</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label>Overall Score</Label>
+              <Input
+                value={studyData.englishTest.score}
+                onChange={(e) => handleTestChange('englishTest', 'score', e.target.value)}
+                placeholder="e.g., 7.5"
               />
             </div>
-
             <div>
-              <Label htmlFor="additionalSkills">Additional Skills & Qualifications</Label>
-              <Textarea
-                id="additionalSkills"
-                value={studyData.additionalSkills}
-                onChange={(e) => handleChange('additionalSkills', e.target.value)}
-                placeholder="Describe any additional skills, technical abilities, or relevant qualifications..."
-                rows={4}
+              <Label>Date of Test</Label>
+              <Input
+                type="date"
+                value={studyData.englishTest.dateOfTest}
+                onChange={(e) => handleTestChange('englishTest', 'dateOfTest', e.target.value)}
+              />
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* French Language Test */}
+      <Card className="overflow-hidden border-[hsl(var(--section-divider))] shadow-sm">
+        <div className="bg-[hsl(var(--section-header-bg))] px-6 py-5">
+          <FormSectionHeader 
+            icon={FileText} 
+            title="French Language Test" 
+            description="Results from official French proficiency tests (TEF, TCF, etc.)"
+          />
+        </div>
+        <CardContent className="p-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+              <Label>Test Type</Label>
+              <Select
+                value={studyData.frenchTest.type}
+                onValueChange={(value) => handleTestChange('frenchTest', 'type', value)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select test" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="tef">TEF Canada</SelectItem>
+                  <SelectItem value="tcf">TCF Canada</SelectItem>
+                  <SelectItem value="none">No test taken</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label>Overall Score</Label>
+              <Input
+                value={studyData.frenchTest.score}
+                onChange={(e) => handleTestChange('frenchTest', 'score', e.target.value)}
+                placeholder="e.g., CLB 7"
+              />
+            </div>
+            <div>
+              <Label>Date of Test</Label>
+              <Input
+                type="date"
+                value={studyData.frenchTest.dateOfTest}
+                onChange={(e) => handleTestChange('frenchTest', 'dateOfTest', e.target.value)}
               />
             </div>
           </div>
