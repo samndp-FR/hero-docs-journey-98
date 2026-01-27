@@ -40,12 +40,12 @@ const ApplicationForm = ({ validationMode = false, onValidationComplete }: Appli
 
   const steps = [
     { title: 'Applicants', component: ApplicantsSection, freeAccess: true },
-    { title: 'Contact Details', component: ContactDetailsSection, freeAccess: false },
-    { title: 'Work History', component: WorkHistorySection, freeAccess: false },
-    { title: 'Representative', component: RepresentativeSection, freeAccess: false },
     { title: 'Personal Details', component: PersonalDetailsSection, freeAccess: false },
-    { title: 'Personal History', component: PersonalHistorySection, freeAccess: false },
+    { title: 'Contact Details', component: ContactDetailsSection, freeAccess: false },
     { title: 'Study & Languages', component: StudyLanguagesSection, freeAccess: false },
+    { title: 'Application Details', component: RepresentativeSection, freeAccess: false },
+    { title: 'Work History', component: WorkHistorySection, freeAccess: false },
+    { title: 'Personal History', component: PersonalHistorySection, freeAccess: false },
   ];
 
   const validatedCount = Object.values(validatedSections).filter(Boolean).length;
