@@ -32,6 +32,11 @@ interface Gap {
   fromMonth: string;
   toYear: string;
   toMonth: string;
+  // Boundary dates for display (actual row end/start dates)
+  boundaryFromYear: string;
+  boundaryFromMonth: string;
+  boundaryToYear: string;
+  boundaryToMonth: string;
 }
 
 interface PersonalActivitiesTableProps {
@@ -140,7 +145,7 @@ const PersonalActivitiesTable: React.FC<PersonalActivitiesTableProps> = ({ data,
         const gapToDate = new Date(currentStartDate);
         gapToDate.setMonth(gapToDate.getMonth() - 1); // End of gap is month before current starts
         
-        // Add the gap
+        // Add the gap - store both the fill dates and boundary dates for display
         const gapFromYear = gapFromDate.getFullYear().toString();
         const gapFromMonth = (gapFromDate.getMonth() + 1).toString().padStart(2, '0');
         const gapToYear = gapToDate.getFullYear().toString();
@@ -155,6 +160,11 @@ const PersonalActivitiesTable: React.FC<PersonalActivitiesTableProps> = ({ data,
             fromMonth: gapFromMonth,
             toYear: gapToYear,
             toMonth: gapToMonth,
+            // Store boundary dates (the actual end/start of surrounding rows)
+            boundaryFromYear: nextEndYear,
+            boundaryFromMonth: nextEndMonth,
+            boundaryToYear: current.fromYear,
+            boundaryToMonth: current.fromMonth,
           });
         }
       }
@@ -246,11 +256,8 @@ const PersonalActivitiesTable: React.FC<PersonalActivitiesTableProps> = ({ data,
   };
 
   const formatGapRange = (gap: Gap) => {
-    const isSameMonth = gap.fromYear === gap.toYear && gap.fromMonth === gap.toMonth;
-    if (isSameMonth) {
-      return formatDate(gap.fromYear, gap.fromMonth);
-    }
-    return `${formatDate(gap.fromYear, gap.fromMonth)} – ${formatDate(gap.toYear, gap.toMonth)}`;
+    // Use boundary dates (the actual end of previous row and start of next row)
+    return `${formatDate(gap.boundaryFromYear, gap.boundaryFromMonth)} – ${formatDate(gap.boundaryToYear, gap.boundaryToMonth)}`;
   };
 
   const hasGapAfterIndex = (index: number) => {
@@ -448,7 +455,7 @@ const PersonalActivitiesTable: React.FC<PersonalActivitiesTableProps> = ({ data,
             No personal activities yet. Add one using the form above.
           </p>
         ) : (
-          <div className="px-4">
+          <div className="px-8">
             <div className="relative rounded-lg border border-[hsl(var(--section-divider))] overflow-visible">
             <Table>
               <TableHeader>
@@ -490,12 +497,32 @@ const PersonalActivitiesTable: React.FC<PersonalActivitiesTableProps> = ({ data,
                         </TableCell>
                       </TableRow>
                       
-                      {/* Gap Indicator - rendered outside table via portal-like positioning */}
+                      {/* Gap Indicator Row with line and buttons */}
                       {gap && (
                         <TableRow className="border-0 hover:bg-transparent">
-                          <TableCell colSpan={6} className="p-0 border-0 h-1 relative">
+                          <TableCell colSpan={6} className="p-0 border-0 h-0 relative overflow-visible">
+                            {/* Left plus button - positioned outside table */}
+                            <Button
+                              variant="outline"
+                              size="icon"
+                              onClick={() => fillGap(gap)}
+                              className="absolute -left-7 top-1/2 -translate-y-1/2 h-6 w-6 rounded-full border-destructive bg-white hover:bg-destructive/10 text-destructive hover:text-destructive z-10"
+                            >
+                              <Plus className="w-3 h-3" />
+                            </Button>
+                            
                             {/* Thin red line spanning full width */}
-                            <div className="absolute inset-x-0 top-1/2 h-px bg-destructive" />
+                            <div className="absolute inset-x-0 top-1/2 h-px bg-destructive -translate-y-1/2" />
+                            
+                            {/* Right plus button - positioned outside table */}
+                            <Button
+                              variant="outline"
+                              size="icon"
+                              onClick={() => fillGap(gap)}
+                              className="absolute -right-7 top-1/2 -translate-y-1/2 h-6 w-6 rounded-full border-destructive bg-white hover:bg-destructive/10 text-destructive hover:text-destructive z-10"
+                            >
+                              <Plus className="w-3 h-3" />
+                            </Button>
                           </TableCell>
                         </TableRow>
                       )}
@@ -504,41 +531,6 @@ const PersonalActivitiesTable: React.FC<PersonalActivitiesTableProps> = ({ data,
                 })}
               </TableBody>
             </Table>
-
-            {/* Gap plus buttons positioned outside the table */}
-            {gaps.map((gap, gapIndex) => {
-              // Calculate vertical position based on row heights
-              // Each row is roughly 53px, header is ~45px
-              const rowsBefore = gap.afterIndex + 1;
-              const gapRowsBefore = gaps.filter((g, i) => i < gapIndex).length;
-              const topPosition = 45 + (rowsBefore * 53) + (gapRowsBefore * 4); // 4px for each gap line
-              
-              return (
-                <React.Fragment key={`gap-buttons-${gapIndex}`}>
-                  {/* Left plus button */}
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    onClick={() => fillGap(gap)}
-                    className="absolute -left-3 h-6 w-6 rounded-full border-destructive bg-white hover:bg-destructive/10 text-destructive hover:text-destructive z-10"
-                    style={{ top: `${topPosition}px`, transform: 'translateY(-50%)' }}
-                  >
-                    <Plus className="w-3 h-3" />
-                  </Button>
-                  
-                  {/* Right plus button */}
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    onClick={() => fillGap(gap)}
-                    className="absolute -right-3 h-6 w-6 rounded-full border-destructive bg-white hover:bg-destructive/10 text-destructive hover:text-destructive z-10"
-                    style={{ top: `${topPosition}px`, transform: 'translateY(-50%)' }}
-                  >
-                    <Plus className="w-3 h-3" />
-                  </Button>
-                </React.Fragment>
-              );
-            })}
             </div>
           </div>
         )}
