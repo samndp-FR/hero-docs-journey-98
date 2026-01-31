@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Plus, Trash2, MapPin, Plane, Scale, Flag, Shield, ChevronDown } from 'lucide-react';
 import TravelHistoryTable from './TravelHistoryTable';
-
+import PersonalActivitiesTable from './PersonalActivitiesTable';
 interface Address {
   street: string;
   city: string;
@@ -170,6 +170,12 @@ const PersonalHistorySection: React.FC<PersonalHistorySectionProps> = ({ data, o
     </QuestionGroup>
   );
 
+  const handlePersonalActivitiesUpdate = (activitiesData: any) => {
+    const newData = { ...historyData, ...activitiesData };
+    setHistoryData(newData);
+    onUpdate(newData);
+  };
+
   return (
     <div className="space-y-8">
       {/* Intro Text */}
@@ -177,6 +183,11 @@ const PersonalHistorySection: React.FC<PersonalHistorySectionProps> = ({ data, o
         <p>Provide information about your personal history including addresses, travel, legal, and immigration background.</p>
       </div>
 
+      {/* Personal Activities Section (10 Year History) */}
+      <PersonalActivitiesTable
+        data={historyData}
+        onUpdate={handlePersonalActivitiesUpdate}
+      />
       {/* Address History Section */}
       <Card className="overflow-hidden border-[hsl(var(--section-divider))] shadow-sm bg-[hsl(var(--section-address-bg))]">
         <div className="bg-[hsl(var(--section-header-bg))] px-6 py-5">
