@@ -140,15 +140,13 @@ const PersonalActivitiesTable: React.FC<PersonalActivitiesTableProps> = ({ data,
         const gapToDate = new Date(currentStartDate);
         gapToDate.setMonth(gapToDate.getMonth() - 1); // End of gap is month before current starts
         
-        // Only add gap if it spans more than a single month
+        // Add the gap
         const gapFromYear = gapFromDate.getFullYear().toString();
         const gapFromMonth = (gapFromDate.getMonth() + 1).toString().padStart(2, '0');
         const gapToYear = gapToDate.getFullYear().toString();
         const gapToMonth = (gapToDate.getMonth() + 1).toString().padStart(2, '0');
         
-        const isSameMonth = gapFromYear === gapToYear && gapFromMonth === gapToMonth;
-        
-        if (gapFromDate <= gapToDate && !isSameMonth) {
+        if (gapFromDate <= gapToDate) {
           detectedGaps.push({
             afterIndex: i,
             fromDate: gapFromDate,
@@ -245,6 +243,14 @@ const PersonalActivitiesTable: React.FC<PersonalActivitiesTableProps> = ({ data,
 
   const getActivityLabel = (type: string) => {
     return ACTIVITY_TYPES.find(t => t.value === type)?.label || type;
+  };
+
+  const formatGapRange = (gap: Gap) => {
+    const isSameMonth = gap.fromYear === gap.toYear && gap.fromMonth === gap.toMonth;
+    if (isSameMonth) {
+      return formatDate(gap.fromYear, gap.fromMonth);
+    }
+    return `${formatDate(gap.fromYear, gap.fromMonth)} – ${formatDate(gap.toYear, gap.toMonth)}`;
   };
 
   const hasGapAfterIndex = (index: number) => {
