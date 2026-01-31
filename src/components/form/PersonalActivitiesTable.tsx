@@ -497,33 +497,10 @@ const PersonalActivitiesTable: React.FC<PersonalActivitiesTableProps> = ({ data,
                         </TableCell>
                       </TableRow>
                       
-                      {/* Gap Indicator Row with line and buttons */}
+                      {/* Gap Indicator Row - just the line */}
                       {gap && (
-                        <TableRow className="border-0 hover:bg-transparent">
-                          <TableCell colSpan={6} className="p-0 border-0 h-0 relative overflow-visible">
-                            {/* Left plus button - positioned outside table */}
-                            <Button
-                              variant="outline"
-                              size="icon"
-                              onClick={() => fillGap(gap)}
-                              className="absolute -left-7 top-1/2 -translate-y-1/2 h-6 w-6 rounded-full border-destructive bg-white hover:bg-destructive/10 text-destructive hover:text-destructive z-10"
-                            >
-                              <Plus className="w-3 h-3" />
-                            </Button>
-                            
-                            {/* Thin red line spanning full width */}
-                            <div className="absolute inset-x-0 top-1/2 h-px bg-destructive -translate-y-1/2" />
-                            
-                            {/* Right plus button - positioned outside table */}
-                            <Button
-                              variant="outline"
-                              size="icon"
-                              onClick={() => fillGap(gap)}
-                              className="absolute -right-7 top-1/2 -translate-y-1/2 h-6 w-6 rounded-full border-destructive bg-white hover:bg-destructive/10 text-destructive hover:text-destructive z-10"
-                            >
-                              <Plus className="w-3 h-3" />
-                            </Button>
-                          </TableCell>
+                        <TableRow className="border-0 hover:bg-transparent" data-gap-index={index}>
+                          <TableCell colSpan={6} className="p-0 border-0 h-px bg-destructive" />
                         </TableRow>
                       )}
                     </React.Fragment>
@@ -531,6 +508,37 @@ const PersonalActivitiesTable: React.FC<PersonalActivitiesTableProps> = ({ data,
                 })}
               </TableBody>
             </Table>
+            
+            {/* Gap plus buttons rendered outside the table for proper overflow */}
+            {gaps.map((gap) => (
+              <React.Fragment key={`gap-buttons-${gap.afterIndex}`}>
+                {/* Left plus button */}
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={() => fillGap(gap)}
+                  className="absolute -left-3 h-6 w-6 rounded-full border-destructive bg-white hover:bg-destructive/10 text-destructive hover:text-destructive z-20"
+                  style={{ 
+                    top: `calc(45px + ${(gap.afterIndex + 1) * 53}px + ${gaps.filter(g => g.afterIndex < gap.afterIndex).length}px)`,
+                  }}
+                >
+                  <Plus className="w-3 h-3" />
+                </Button>
+                
+                {/* Right plus button */}
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={() => fillGap(gap)}
+                  className="absolute -right-3 h-6 w-6 rounded-full border-destructive bg-white hover:bg-destructive/10 text-destructive hover:text-destructive z-20"
+                  style={{ 
+                    top: `calc(45px + ${(gap.afterIndex + 1) * 53}px + ${gaps.filter(g => g.afterIndex < gap.afterIndex).length}px)`,
+                  }}
+                >
+                  <Plus className="w-3 h-3" />
+                </Button>
+              </React.Fragment>
+            ))}
             </div>
           </div>
         )}
