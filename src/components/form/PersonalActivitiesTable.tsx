@@ -140,15 +140,23 @@ const PersonalActivitiesTable: React.FC<PersonalActivitiesTableProps> = ({ data,
         const gapToDate = new Date(currentStartDate);
         gapToDate.setMonth(gapToDate.getMonth() - 1); // End of gap is month before current starts
         
-        if (gapFromDate <= gapToDate) {
+        // Only add gap if it spans more than a single month
+        const gapFromYear = gapFromDate.getFullYear().toString();
+        const gapFromMonth = (gapFromDate.getMonth() + 1).toString().padStart(2, '0');
+        const gapToYear = gapToDate.getFullYear().toString();
+        const gapToMonth = (gapToDate.getMonth() + 1).toString().padStart(2, '0');
+        
+        const isSameMonth = gapFromYear === gapToYear && gapFromMonth === gapToMonth;
+        
+        if (gapFromDate <= gapToDate && !isSameMonth) {
           detectedGaps.push({
             afterIndex: i,
             fromDate: gapFromDate,
             toDate: gapToDate,
-            fromYear: gapFromDate.getFullYear().toString(),
-            fromMonth: (gapFromDate.getMonth() + 1).toString().padStart(2, '0'),
-            toYear: gapToDate.getFullYear().toString(),
-            toMonth: (gapToDate.getMonth() + 1).toString().padStart(2, '0'),
+            fromYear: gapFromYear,
+            fromMonth: gapFromMonth,
+            toYear: gapToYear,
+            toMonth: gapToMonth,
           });
         }
       }
@@ -434,7 +442,8 @@ const PersonalActivitiesTable: React.FC<PersonalActivitiesTableProps> = ({ data,
             No personal activities yet. Add one using the form above.
           </p>
         ) : (
-          <div className="rounded-lg border border-[hsl(var(--section-divider))] overflow-hidden">
+          <div className="px-4">
+            <div className="relative rounded-lg border border-[hsl(var(--section-divider))] overflow-visible">
             <Table>
               <TableHeader>
                 <TableRow className="bg-[hsl(var(--section-header-bg))]">
@@ -475,46 +484,12 @@ const PersonalActivitiesTable: React.FC<PersonalActivitiesTableProps> = ({ data,
                         </TableCell>
                       </TableRow>
                       
-                      {/* Gap Indicator Row */}
+                      {/* Gap Indicator - rendered outside table via portal-like positioning */}
                       {gap && (
-                        <TableRow className="h-0 border-0">
-                          <TableCell colSpan={6} className="p-0 border-0">
-                            <div className="relative flex items-center justify-center py-0">
-                              {/* Red gap line */}
-                              <div className="absolute inset-x-0 top-1/2 h-[2px] bg-destructive" />
-                              
-                              {/* Left plus button */}
-                              <div className="absolute left-2 z-10">
-                                <Button
-                                  variant="outline"
-                                  size="icon"
-                                  onClick={() => fillGap(gap)}
-                                  className="h-6 w-6 rounded-full border-destructive bg-white hover:bg-destructive/10 text-destructive hover:text-destructive"
-                                >
-                                  <Plus className="w-3 h-3" />
-                                </Button>
-                              </div>
-                              
-                              {/* Center gap info */}
-                              <div className="z-10 px-3 py-0.5 bg-destructive/10 border border-destructive rounded-full flex items-center gap-1.5">
-                                <AlertCircle className="w-3 h-3 text-destructive" />
-                                <span className="text-xs font-medium text-destructive">
-                                  Gap: {formatDate(gap.fromYear, gap.fromMonth)} – {formatDate(gap.toYear, gap.toMonth)}
-                                </span>
-                              </div>
-                              
-                              {/* Right plus button */}
-                              <div className="absolute right-2 z-10">
-                                <Button
-                                  variant="outline"
-                                  size="icon"
-                                  onClick={() => fillGap(gap)}
-                                  className="h-6 w-6 rounded-full border-destructive bg-white hover:bg-destructive/10 text-destructive hover:text-destructive"
-                                >
-                                  <Plus className="w-3 h-3" />
-                                </Button>
-                              </div>
-                            </div>
+                        <TableRow className="border-0 hover:bg-transparent">
+                          <TableCell colSpan={6} className="p-0 border-0 h-1 relative">
+                            {/* Thin red line spanning full width */}
+                            <div className="absolute inset-x-0 top-1/2 h-px bg-destructive" />
                           </TableCell>
                         </TableRow>
                       )}
@@ -523,6 +498,42 @@ const PersonalActivitiesTable: React.FC<PersonalActivitiesTableProps> = ({ data,
                 })}
               </TableBody>
             </Table>
+
+            {/* Gap plus buttons positioned outside the table */}
+            {gaps.map((gap, gapIndex) => {
+              // Calculate vertical position based on row heights
+              // Each row is roughly 53px, header is ~45px
+              const rowsBefore = gap.afterIndex + 1;
+              const gapRowsBefore = gaps.filter((g, i) => i < gapIndex).length;
+              const topPosition = 45 + (rowsBefore * 53) + (gapRowsBefore * 4); // 4px for each gap line
+              
+              return (
+                <React.Fragment key={`gap-buttons-${gapIndex}`}>
+                  {/* Left plus button */}
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={() => fillGap(gap)}
+                    className="absolute -left-3 h-6 w-6 rounded-full border-destructive bg-white hover:bg-destructive/10 text-destructive hover:text-destructive z-10"
+                    style={{ top: `${topPosition}px`, transform: 'translateY(-50%)' }}
+                  >
+                    <Plus className="w-3 h-3" />
+                  </Button>
+                  
+                  {/* Right plus button */}
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={() => fillGap(gap)}
+                    className="absolute -right-3 h-6 w-6 rounded-full border-destructive bg-white hover:bg-destructive/10 text-destructive hover:text-destructive z-10"
+                    style={{ top: `${topPosition}px`, transform: 'translateY(-50%)' }}
+                  >
+                    <Plus className="w-3 h-3" />
+                  </Button>
+                </React.Fragment>
+              );
+            })}
+            </div>
           </div>
         )}
 
