@@ -6,7 +6,8 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Plus, Trash2, Briefcase, AlertCircle } from 'lucide-react';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { Plus, Trash2, Briefcase, AlertCircle, ChevronDown, ChevronRight } from 'lucide-react';
 import FormSectionHeader from './FormSectionHeader';
 
 interface Activity {
@@ -264,6 +265,36 @@ const PersonalActivitiesTable: React.FC<PersonalActivitiesTableProps> = ({ data,
     return gaps.find(g => g.afterIndex === index);
   };
 
+  // Track which rows are expanded
+  const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
+
+  const toggleRowExpanded = (id: string) => {
+    setExpandedRows(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
+      return next;
+    });
+  };
+
+  // Check if an activity has missing required detail fields
+  const hasMissingDetails = (activity: Activity) => {
+    return !activity.description || !activity.organization || !activity.country || !activity.city;
+  };
+
+  // Get list of missing fields for tooltip/display
+  const getMissingFields = (activity: Activity) => {
+    const missing: string[] = [];
+    if (!activity.description) missing.push('Description');
+    if (!activity.organization) missing.push('Organization');
+    if (!activity.country) missing.push('Country');
+    if (!activity.city) missing.push('City');
+    return missing;
+  };
+
   return (
     <Card className="overflow-hidden border-[hsl(var(--section-divider))] shadow-sm">
       <div className="bg-[hsl(var(--section-header-bg))] px-6 py-5">
@@ -455,37 +486,72 @@ const PersonalActivitiesTable: React.FC<PersonalActivitiesTableProps> = ({ data,
             No personal activities yet. Add one using the form above.
           </p>
         ) : (
-          <div className="px-8">
+          <div className="px-4 md:px-8">
             <div className="relative rounded-lg border border-[hsl(var(--section-divider))] overflow-visible">
             <Table>
               <TableHeader>
                 <TableRow className="bg-[hsl(var(--section-header-bg))]">
-                  <TableHead className="font-semibold">From</TableHead>
-                  <TableHead className="font-semibold">To</TableHead>
+                  <TableHead className="font-semibold w-[100px]">From</TableHead>
+                  <TableHead className="font-semibold w-[100px]">To</TableHead>
                   <TableHead className="font-semibold">Activity</TableHead>
-                  <TableHead className="font-semibold">Organization</TableHead>
-                  <TableHead className="font-semibold">Location</TableHead>
-                  <TableHead className="w-16"></TableHead>
+                  <TableHead className="font-semibold w-[140px]">Details</TableHead>
+                  <TableHead className="w-[80px]"></TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {sortedActivities.map((activity: Activity, index: number) => {
                   const gap = hasGapAfterIndex(index);
+                  const isExpanded = expandedRows.has(activity.id);
+                  const missingDetails = hasMissingDetails(activity);
+                  const missingFields = getMissingFields(activity);
+                  
                   return (
                     <React.Fragment key={activity.id}>
+                      {/* Main Row */}
                       <TableRow className={index % 2 === 0 ? 'bg-white' : 'bg-[hsl(var(--table-stripe))]'}>
-                        <TableCell className="font-medium">
+                        <TableCell className="font-medium py-3">
                           {formatDate(activity.fromYear, activity.fromMonth)}
                         </TableCell>
-                        <TableCell>
+                        <TableCell className="py-3">
                           {activity.isOngoing ? 'Ongoing' : formatDate(activity.toYear, activity.toMonth)}
                         </TableCell>
-                        <TableCell>{getActivityLabel(activity.activityType)}</TableCell>
-                        <TableCell>{activity.organization || '-'}</TableCell>
-                        <TableCell>
-                          {[activity.city, activity.province, activity.country].filter(Boolean).join(', ') || '-'}
+                        <TableCell className="py-3">
+                          <div className="flex flex-col">
+                            <span className="font-medium">{getActivityLabel(activity.activityType)}</span>
+                            {activity.organization && (
+                              <span className="text-xs text-muted-foreground truncate max-w-[200px]">
+                                {activity.organization}
+                              </span>
+                            )}
+                          </div>
                         </TableCell>
-                        <TableCell>
+                        <TableCell className="py-3">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => toggleRowExpanded(activity.id)}
+                            className={`h-7 px-2 text-xs gap-1 ${
+                              missingDetails 
+                                ? 'text-destructive hover:text-destructive hover:bg-destructive/10' 
+                                : 'text-muted-foreground hover:text-foreground'
+                            }`}
+                          >
+                            {isExpanded ? (
+                              <ChevronDown className="w-3 h-3" />
+                            ) : (
+                              <ChevronRight className="w-3 h-3" />
+                            )}
+                            {missingDetails ? (
+                              <span className="flex items-center gap-1">
+                                <AlertCircle className="w-3 h-3" />
+                                {missingFields.length} missing
+                              </span>
+                            ) : (
+                              'More'
+                            )}
+                          </Button>
+                        </TableCell>
+                        <TableCell className="py-3">
                           <Button
                             variant="ghost"
                             size="icon"
@@ -497,10 +563,60 @@ const PersonalActivitiesTable: React.FC<PersonalActivitiesTableProps> = ({ data,
                         </TableCell>
                       </TableRow>
                       
+                      {/* Expanded Details Row */}
+                      {isExpanded && (
+                        <TableRow className={index % 2 === 0 ? 'bg-white' : 'bg-[hsl(var(--table-stripe))]'}>
+                          <TableCell colSpan={5} className="pt-0 pb-4 border-t-0">
+                            <div className="ml-0 pl-4 border-l-2 border-primary/20">
+                              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 pt-2">
+                                <div>
+                                  <Label className={`text-xs ${!activity.description ? 'text-destructive' : 'text-muted-foreground'}`}>
+                                    Description {!activity.description && '*'}
+                                  </Label>
+                                  <p className={`text-sm mt-0.5 ${!activity.description ? 'text-destructive italic' : ''}`}>
+                                    {activity.description || 'Missing'}
+                                  </p>
+                                </div>
+                                <div>
+                                  <Label className={`text-xs ${!activity.organization ? 'text-destructive' : 'text-muted-foreground'}`}>
+                                    Organization {!activity.organization && '*'}
+                                  </Label>
+                                  <p className={`text-sm mt-0.5 ${!activity.organization ? 'text-destructive italic' : ''}`}>
+                                    {activity.organization || 'Missing'}
+                                  </p>
+                                </div>
+                                <div>
+                                  <Label className={`text-xs ${!activity.country ? 'text-destructive' : 'text-muted-foreground'}`}>
+                                    Country {!activity.country && '*'}
+                                  </Label>
+                                  <p className={`text-sm mt-0.5 ${!activity.country ? 'text-destructive italic' : ''}`}>
+                                    {activity.country || 'Missing'}
+                                  </p>
+                                </div>
+                                <div>
+                                  <Label className={`text-xs ${!activity.city ? 'text-destructive' : 'text-muted-foreground'}`}>
+                                    City {!activity.city && '*'}
+                                  </Label>
+                                  <p className={`text-sm mt-0.5 ${!activity.city ? 'text-destructive italic' : ''}`}>
+                                    {activity.city || 'Missing'}
+                                  </p>
+                                </div>
+                                {activity.province && (
+                                  <div>
+                                    <Label className="text-xs text-muted-foreground">Province/State</Label>
+                                    <p className="text-sm mt-0.5">{activity.province}</p>
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      )}
+                      
                       {/* Gap Indicator Row - just the line */}
                       {gap && (
                         <TableRow className="border-0 hover:bg-transparent" data-gap-index={index}>
-                          <TableCell colSpan={6} className="p-0 border-0 h-px bg-destructive" />
+                          <TableCell colSpan={5} className="p-0 border-0 h-px bg-destructive" />
                         </TableRow>
                       )}
                     </React.Fragment>
@@ -510,35 +626,46 @@ const PersonalActivitiesTable: React.FC<PersonalActivitiesTableProps> = ({ data,
             </Table>
             
             {/* Gap plus buttons rendered outside the table for proper overflow */}
-            {gaps.map((gap) => (
-              <React.Fragment key={`gap-buttons-${gap.afterIndex}`}>
-                {/* Left plus button */}
-                <Button
-                  variant="outline"
-                  size="icon"
-                  onClick={() => fillGap(gap)}
-                  className="absolute -left-3 h-6 w-6 rounded-full border-destructive bg-white hover:bg-destructive/10 text-destructive hover:text-destructive z-20"
-                  style={{ 
-                    top: `calc(45px + ${(gap.afterIndex + 1) * 53}px + ${gaps.filter(g => g.afterIndex < gap.afterIndex).length}px)`,
-                  }}
-                >
-                  <Plus className="w-3 h-3" />
-                </Button>
-                
-                {/* Right plus button */}
-                <Button
-                  variant="outline"
-                  size="icon"
-                  onClick={() => fillGap(gap)}
-                  className="absolute -right-3 h-6 w-6 rounded-full border-destructive bg-white hover:bg-destructive/10 text-destructive hover:text-destructive z-20"
-                  style={{ 
-                    top: `calc(45px + ${(gap.afterIndex + 1) * 53}px + ${gaps.filter(g => g.afterIndex < gap.afterIndex).length}px)`,
-                  }}
-                >
-                  <Plus className="w-3 h-3" />
-                </Button>
-              </React.Fragment>
-            ))}
+            {gaps.map((gap, gapIdx) => {
+              // Calculate row heights including expanded rows
+              let topOffset = 45; // header height
+              for (let i = 0; i <= gap.afterIndex; i++) {
+                topOffset += 53; // base row height
+                if (expandedRows.has(sortedActivities[i]?.id)) {
+                  topOffset += 100; // expanded content height (approximate)
+                }
+                // Add gap line heights for gaps before this one
+                if (gaps.some(g => g.afterIndex === i - 1)) {
+                  topOffset += 1;
+                }
+              }
+              
+              return (
+                <React.Fragment key={`gap-buttons-${gap.afterIndex}`}>
+                  {/* Left plus button */}
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={() => fillGap(gap)}
+                    className="absolute -left-3 h-6 w-6 rounded-full border-destructive bg-white hover:bg-destructive/10 text-destructive hover:text-destructive z-20"
+                    style={{ top: `${topOffset}px` }}
+                  >
+                    <Plus className="w-3 h-3" />
+                  </Button>
+                  
+                  {/* Right plus button */}
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={() => fillGap(gap)}
+                    className="absolute -right-3 h-6 w-6 rounded-full border-destructive bg-white hover:bg-destructive/10 text-destructive hover:text-destructive z-20"
+                    style={{ top: `${topOffset}px` }}
+                  >
+                    <Plus className="w-3 h-3" />
+                  </Button>
+                </React.Fragment>
+              );
+            })}
             </div>
           </div>
         )}
