@@ -6,7 +6,8 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { Plus, Trash2, MapPin, Plane, Scale, Flag, Shield, ChevronDown } from 'lucide-react';
+import { Plus, Trash2, MapPin, Plane, Scale, Flag, Shield, ChevronDown, AlertCircle } from 'lucide-react';
+import { cn } from '@/lib/utils';
 import TravelHistoryTable from './TravelHistoryTable';
 import PersonalActivitiesTable from './PersonalActivitiesTable';
 interface Address {
@@ -65,11 +66,11 @@ const PersonalHistorySection: React.FC<PersonalHistorySectionProps> = ({ data, o
       current: true
     }],
     travelHistory: data.travelHistory || [],
-    criminalHistory: data.criminalHistory || 'no',
+    criminalHistory: data.criminalHistory || '',
     criminalDetails: data.criminalDetails || '',
-    immigrationHistory: data.immigrationHistory || 'no',
+    immigrationHistory: data.immigrationHistory || '',
     immigrationDetails: data.immigrationDetails || '',
-    militaryService: data.militaryService || 'no',
+    militaryService: data.militaryService || '',
     militaryDetails: data.militaryDetails || ''
   });
 
@@ -123,52 +124,69 @@ const PersonalHistorySection: React.FC<PersonalHistorySectionProps> = ({ data, o
     field: string, 
     question: string, 
     detailsField?: string,
-    detailsPlaceholder?: string
-  ) => (
-    <QuestionGroup className="space-y-3">
-      <div className="flex items-start justify-between gap-4">
-        <Label className="text-sm font-medium leading-relaxed flex-1 pt-1">
-          {question}
-        </Label>
-        <RadioGroup
-          value={historyData[field]}
-          onValueChange={(value) => handleChange(field, value)}
-          className="flex items-center gap-4 shrink-0"
-        >
-          <Label 
-            htmlFor={`${field}-no`} 
-            className="flex items-center gap-2 cursor-pointer text-sm font-normal"
-          >
-            <RadioGroupItem value="no" id={`${field}-no`} />
-            <span>No</span>
+    detailsPlaceholder?: string,
+    isRequired: boolean = true
+  ) => {
+    const isUnanswered = isRequired && !historyData[field];
+    
+    return (
+      <QuestionGroup className={cn(
+        "space-y-3 transition-colors",
+        isUnanswered && "border-destructive/50 bg-destructive/5"
+      )}>
+        <div className="flex items-start justify-between gap-4">
+          <Label className={cn(
+            "text-sm font-medium leading-relaxed flex-1 pt-1",
+            isUnanswered && "text-destructive"
+          )}>
+            {question}
+            {isRequired && <span className="text-destructive ml-1">*</span>}
           </Label>
-          <Label 
-            htmlFor={`${field}-yes`} 
-            className="flex items-center gap-2 cursor-pointer text-sm font-normal"
-          >
-            <RadioGroupItem value="yes" id={`${field}-yes`} />
-            <span>Yes</span>
-          </Label>
-        </RadioGroup>
-      </div>
-      
-      {detailsField && historyData[field] === 'yes' && (
-        <div className="pt-2 border-t border-[hsl(var(--section-divider))]">
-          <Label htmlFor={detailsField} className="text-sm text-muted-foreground">
-            Please provide details
-          </Label>
-          <Textarea
-            id={detailsField}
-            value={historyData[detailsField] || ''}
-            onChange={(e) => handleChange(detailsField, e.target.value)}
-            placeholder={detailsPlaceholder}
-            rows={3}
-            className="mt-2"
-          />
+          <div className="flex items-center gap-3 shrink-0">
+            {isUnanswered && (
+              <AlertCircle className="w-4 h-4 text-destructive" />
+            )}
+            <RadioGroup
+              value={historyData[field]}
+              onValueChange={(value) => handleChange(field, value)}
+              className="flex items-center gap-4"
+            >
+              <Label 
+                htmlFor={`${field}-no`} 
+                className="flex items-center gap-2 cursor-pointer text-sm font-normal"
+              >
+                <RadioGroupItem value="no" id={`${field}-no`} />
+                <span>No</span>
+              </Label>
+              <Label 
+                htmlFor={`${field}-yes`} 
+                className="flex items-center gap-2 cursor-pointer text-sm font-normal"
+              >
+                <RadioGroupItem value="yes" id={`${field}-yes`} />
+                <span>Yes</span>
+              </Label>
+            </RadioGroup>
+          </div>
         </div>
-      )}
-    </QuestionGroup>
-  );
+        
+        {detailsField && historyData[field] === 'yes' && (
+          <div className="pt-2 border-t border-[hsl(var(--section-divider))]">
+            <Label htmlFor={detailsField} className="text-sm text-muted-foreground">
+              Please provide details
+            </Label>
+            <Textarea
+              id={detailsField}
+              value={historyData[detailsField] || ''}
+              onChange={(e) => handleChange(detailsField, e.target.value)}
+              placeholder={detailsPlaceholder}
+              rows={3}
+              className="mt-2"
+            />
+          </div>
+        )}
+      </QuestionGroup>
+    );
+  };
 
   const handlePersonalActivitiesUpdate = (activitiesData: any) => {
     const newData = { ...historyData, ...activitiesData };
