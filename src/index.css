@@ -56,6 +56,13 @@
     --success: 160 84% 39%;
     --success-foreground: 160 100% 97%;
     --success-muted: 160 40% 95%;
+    
+    /* Validation mode tokens */
+    --validation-bg: 225 60% 15%;
+    --validation-bg-light: 225 50% 25%;
+    --validation-card: 225 45% 20%;
+    --validation-border: 225 40% 35%;
+    --validation-accent: 45 100% 60%;
 
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
