@@ -1,15 +1,22 @@
 import { DashboardLayout } from '@/components/DashboardLayout';
 import { Button } from '@/components/ui/button';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useEffect } from 'react';
 
 const DashboardForm = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const isValidationMode = searchParams.get('validate') === 'true';
 
-  // If validation mode, redirect to the application form with validate param
+  // Redirect to application form in validation mode using useEffect
+  useEffect(() => {
+    if (isValidationMode) {
+      navigate('/application-form?validate=true', { replace: true });
+    }
+  }, [isValidationMode, navigate]);
+
+  // Show nothing while redirecting
   if (isValidationMode) {
-    navigate('/application-form?validate=true', { replace: true });
     return null;
   }
 
