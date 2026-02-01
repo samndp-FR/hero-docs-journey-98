@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import { ChevronLeft, ChevronRight, CheckCircle2, Circle, ShieldCheck } from 'lucide-react';
+import { ChevronLeft, ChevronRight, CheckCircle2, Circle, ShieldCheck, AlertCircle } from 'lucide-react';
+import { cn } from '@/lib/utils';
 import ApplicantsSection from '@/components/form/ApplicantsSection';
 import ContactDetailsSection from '@/components/form/ContactDetailsSection';
 import WorkHistorySection from '@/components/form/WorkHistorySection';
@@ -47,6 +48,13 @@ const ApplicationForm = ({ validationMode = false, onValidationComplete }: Appli
     { title: 'Work History', component: WorkHistorySection, freeAccess: false },
     { title: 'Personal History', component: PersonalHistorySection, freeAccess: false },
   ];
+
+  // Mock: sections with missing required fields (replace with real validation logic)
+  const [sectionsWithMissingFields] = useState<Record<string, number>>({
+    'Personal Details': 3,
+    'Contact Details': 1,
+    'Work History': 2,
+  });
 
   const validatedCount = Object.values(validatedSections).filter(Boolean).length;
   const allValidated = validatedCount === steps.length;
@@ -152,28 +160,43 @@ const ApplicationForm = ({ validationMode = false, onValidationComplete }: Appli
             {/* Step Navigation with Validation Checkboxes */}
             <div className="flex justify-center mb-8">
               <div className="flex space-x-2 overflow-x-auto">
-                {steps.map((step, index) => (
-                  <button
-                    key={index}
-                    onClick={() => goToStep(index)}
-                    className={`px-3 py-1 rounded-full text-xs whitespace-nowrap transition-colors flex items-center gap-1.5 ${
-                      index === currentStep
-                        ? 'bg-primary text-primary-foreground'
-                        : validatedSections[step.title]
-                        ? 'bg-green-100 text-green-700 hover:bg-green-200'
-                        : index < currentStep
-                        ? 'bg-muted text-muted-foreground hover:bg-muted/80'
-                        : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
-                    }`}
-                  >
-                    {isValidating && (
-                      validatedSections[step.title] 
-                        ? <CheckCircle2 className="w-3 h-3" />
-                        : <Circle className="w-3 h-3" />
-                    )}
-                    {step.title}
-                  </button>
-                ))}
+                {steps.map((step, index) => {
+                  const missingCount = sectionsWithMissingFields[step.title] || 0;
+                  const hasMissing = missingCount > 0;
+                  
+                  return (
+                    <button
+                      key={index}
+                      onClick={() => goToStep(index)}
+                      className={cn(
+                        "px-3 py-1 rounded-full text-xs whitespace-nowrap transition-colors flex items-center gap-1.5 relative",
+                        index === currentStep
+                          ? 'bg-primary text-primary-foreground'
+                          : validatedSections[step.title]
+                          ? 'bg-green-100 text-green-700 hover:bg-green-200'
+                          : hasMissing
+                          ? 'bg-destructive/10 text-destructive border border-destructive/30 hover:bg-destructive/20'
+                          : index < currentStep
+                          ? 'bg-muted text-muted-foreground hover:bg-muted/80'
+                          : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                      )}
+                    >
+                      {isValidating ? (
+                        validatedSections[step.title] 
+                          ? <CheckCircle2 className="w-3 h-3" />
+                          : <Circle className="w-3 h-3" />
+                      ) : hasMissing && !validatedSections[step.title] ? (
+                        <AlertCircle className="w-3 h-3" />
+                      ) : null}
+                      {step.title}
+                      {hasMissing && !validatedSections[step.title] && index !== currentStep && (
+                        <span className="ml-1 bg-destructive text-destructive-foreground text-[10px] px-1.5 py-0.5 rounded-full font-medium">
+                          {missingCount}
+                        </span>
+                      )}
+                    </button>
+                  );
+                })}
               </div>
             </div>
 
