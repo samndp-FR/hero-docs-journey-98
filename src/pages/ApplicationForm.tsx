@@ -196,7 +196,7 @@ const ApplicationForm = ({ validationMode = false, onValidationComplete }: Appli
                         {step.title}
                       </span>
                       {missingCount > 0 && !isValidated && (
-                        <span className="text-[10px] text-red-400 flex items-center gap-1">
+                        <span className="text-[10px] text-white flex items-center gap-1">
                           <AlertCircle className="w-2.5 h-2.5" />
                           {missingCount} missing
                         </span>
