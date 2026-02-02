@@ -140,15 +140,15 @@ const ApplicationForm = ({ validationMode = false, onValidationComplete }: Appli
       <div className="min-h-screen bg-[hsl(var(--validation-blue-darker))] py-6">
         <div className="max-w-5xl mx-auto px-4">
           {/* Validation Mode Header */}
-          <div className="mb-6 bg-[hsl(var(--validation-blue-dark))] border border-[hsl(var(--validation-border))] rounded-xl p-5">
+          <div className="mb-6 bg-white border border-border rounded-xl p-5 shadow-sm">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-[hsl(var(--validation-gold))]/20">
-                  <ShieldCheck className="w-6 h-6 text-[hsl(var(--validation-gold))]" />
+                <div className="p-2 rounded-lg bg-[hsl(var(--validation-blue))]/10">
+                  <ShieldCheck className="w-6 h-6 text-[hsl(var(--validation-blue))]" />
                 </div>
                 <div>
-                  <h1 className="text-xl font-bold text-white">Validation Mode</h1>
-                  <p className="text-sm text-white/60">
+                  <h1 className="text-xl font-bold text-foreground">Validation Mode</h1>
+                  <p className="text-sm text-muted-foreground">
                     Review your profile data and mark each section as validated
                   </p>
                 </div>
@@ -157,7 +157,7 @@ const ApplicationForm = ({ validationMode = false, onValidationComplete }: Appli
                 variant="outline" 
                 size="sm" 
                 onClick={exitValidationMode}
-                className="bg-white/10 border-white/20 text-white hover:bg-white/20 hover:text-white"
+                className="border-border text-foreground hover:bg-muted"
               >
                 Exit
               </Button>
@@ -176,14 +176,14 @@ const ApplicationForm = ({ validationMode = false, onValidationComplete }: Appli
                     className={cn(
                       "flex items-center gap-2 p-2 rounded-lg text-left transition-all text-xs",
                       isCurrent
-                        ? "bg-[hsl(var(--validation-gold))]/20 border border-[hsl(var(--validation-gold))]/50"
-                        : "bg-white/5 hover:bg-white/10 border border-transparent"
+                        ? "bg-[hsl(var(--validation-blue))]/10 border border-[hsl(var(--validation-blue))]/30"
+                        : "bg-muted/50 hover:bg-muted border border-transparent"
                     )}
                   >
                     <Checkbox
                       checked={isValidated}
                       onCheckedChange={() => toggleSectionValidation(step.title)}
-                      className="border-white/40 data-[state=checked]:bg-[hsl(var(--validation-gold))] data-[state=checked]:border-[hsl(var(--validation-gold))] data-[state=checked]:text-[hsl(var(--validation-blue-darker))]"
+                      className="border-border data-[state=checked]:bg-[hsl(var(--validation-blue))] data-[state=checked]:border-[hsl(var(--validation-blue))] data-[state=checked]:text-white"
                     />
                     <button
                       onClick={() => goToStep(index)}
@@ -191,12 +191,12 @@ const ApplicationForm = ({ validationMode = false, onValidationComplete }: Appli
                     >
                       <span className={cn(
                         "block truncate",
-                        isValidated ? "text-[hsl(var(--validation-gold))]" : "text-white/80"
+                        isValidated ? "text-[hsl(var(--validation-blue))] font-medium" : "text-foreground/80"
                       )}>
                         {step.title}
                       </span>
                       {missingCount > 0 && !isValidated && (
-                        <span className="text-[10px] text-red-400 flex items-center gap-1">
+                        <span className="text-[10px] text-destructive flex items-center gap-1">
                           <AlertCircle className="w-2.5 h-2.5" />
                           {missingCount} missing
                         </span>
@@ -209,13 +209,13 @@ const ApplicationForm = ({ validationMode = false, onValidationComplete }: Appli
 
             {/* Progress Bar */}
             <div className="space-y-2">
-              <div className="flex justify-between text-xs text-white/60">
+              <div className="flex justify-between text-xs text-muted-foreground">
                 <span>Validation Progress</span>
                 <span>{validatedCount} of {steps.length} sections validated</span>
               </div>
-              <div className="h-2 bg-white/10 rounded-full overflow-hidden">
+              <div className="h-2 bg-muted rounded-full overflow-hidden">
                 <div 
-                  className="h-full bg-[hsl(var(--validation-gold))] transition-all duration-500"
+                  className="h-full bg-[hsl(var(--validation-blue))] transition-all duration-500"
                   style={{ width: `${validationProgress}%` }}
                 />
               </div>
@@ -223,14 +223,14 @@ const ApplicationForm = ({ validationMode = false, onValidationComplete }: Appli
           </div>
 
           {/* Form Content Card */}
-          <Card className="bg-[hsl(var(--validation-blue-dark))] border-[hsl(var(--validation-border))]">
-            <CardHeader className="border-b border-[hsl(var(--validation-border))]">
+          <Card className="bg-white border-border shadow-sm">
+            <CardHeader className="border-b border-border">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="flex items-center justify-center w-8 h-8 rounded-full bg-[hsl(var(--validation-gold))]/20 text-[hsl(var(--validation-gold))] font-bold text-sm">
+                  <div className="flex items-center justify-center w-8 h-8 rounded-full bg-[hsl(var(--validation-blue))]/10 text-[hsl(var(--validation-blue))] font-bold text-sm">
                     {currentStep + 1}
                   </div>
-                  <CardTitle className="text-xl text-white">
+                  <CardTitle className="text-xl text-foreground">
                     {steps[currentStep].title}
                   </CardTitle>
                 </div>
@@ -239,11 +239,11 @@ const ApplicationForm = ({ validationMode = false, onValidationComplete }: Appli
                     id={`validate-header-${currentStep}`}
                     checked={validatedSections[steps[currentStep].title] || false}
                     onCheckedChange={() => toggleSectionValidation(steps[currentStep].title)}
-                    className="border-white/40 data-[state=checked]:bg-[hsl(var(--validation-gold))] data-[state=checked]:border-[hsl(var(--validation-gold))] data-[state=checked]:text-[hsl(var(--validation-blue-darker))]"
+                    className="border-border data-[state=checked]:bg-[hsl(var(--validation-blue))] data-[state=checked]:border-[hsl(var(--validation-blue))] data-[state=checked]:text-white"
                   />
                   <label 
                     htmlFor={`validate-header-${currentStep}`}
-                    className="text-sm font-medium text-white/80 cursor-pointer"
+                    className="text-sm font-medium text-muted-foreground cursor-pointer"
                   >
                     Mark Complete
                   </label>
@@ -252,8 +252,8 @@ const ApplicationForm = ({ validationMode = false, onValidationComplete }: Appli
             </CardHeader>
             
             <CardContent className="p-6">
-              {/* Current Step Content - white background for readability */}
-              <div className="bg-white rounded-lg p-6 min-h-[400px]">
+              {/* Current Step Content */}
+              <div className="min-h-[400px]">
                 <CurrentStepComponent 
                   data={formData[steps[currentStep].title] || {}}
                   onUpdate={updateFormData}
@@ -261,12 +261,12 @@ const ApplicationForm = ({ validationMode = false, onValidationComplete }: Appli
               </div>
 
               {/* Navigation Buttons */}
-              <div className="flex justify-between pt-6 mt-6 border-t border-[hsl(var(--validation-border))]">
+              <div className="flex justify-between pt-6 mt-6 border-t border-border">
                 <Button
                   variant="outline"
                   onClick={prevStep}
                   disabled={currentStep === 0}
-                  className="flex items-center gap-2 bg-white/10 border-white/20 text-white hover:bg-white/20 hover:text-white disabled:opacity-30"
+                  className="flex items-center gap-2"
                 >
                   <ChevronLeft className="w-4 h-4" />
                   <span>Previous</span>
@@ -279,8 +279,8 @@ const ApplicationForm = ({ validationMode = false, onValidationComplete }: Appli
                     className={cn(
                       "flex items-center gap-2",
                       allValidated 
-                        ? "bg-[hsl(var(--validation-gold))] hover:bg-[hsl(var(--validation-gold))]/90 text-[hsl(var(--validation-blue-darker))]"
-                        : "bg-white/20 text-white/50"
+                        ? "bg-[hsl(var(--validation-blue))] hover:bg-[hsl(var(--validation-blue))]/90 text-white"
+                        : "bg-muted text-muted-foreground"
                     )}
                   >
                     <ShieldCheck className="w-4 h-4" />
@@ -289,7 +289,7 @@ const ApplicationForm = ({ validationMode = false, onValidationComplete }: Appli
                 ) : (
                   <Button
                     onClick={nextStep}
-                    className="flex items-center gap-2 bg-[hsl(var(--validation-gold))] hover:bg-[hsl(var(--validation-gold))]/90 text-[hsl(var(--validation-blue-darker))]"
+                    className="flex items-center gap-2 bg-[hsl(var(--validation-blue))] hover:bg-[hsl(var(--validation-blue))]/90 text-white"
                   >
                     <span>Next</span>
                     <ChevronRight className="w-4 h-4" />
