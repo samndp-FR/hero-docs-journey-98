@@ -134,21 +134,21 @@ const ApplicationForm = ({ validationMode = false, onValidationComplete }: Appli
   const progress = ((currentStep + 1) / steps.length) * 100;
   const validationProgress = (validatedCount / steps.length) * 100;
 
-  // Validation mode has deep blue theme
+  // Validation mode - light theme with royal blue & gold accents
   if (isValidating) {
     return (
-      <div className="min-h-screen bg-[hsl(var(--validation-bg))] py-6">
+      <div className="min-h-screen bg-[hsl(var(--validation-blue-light))] py-6">
         <div className="max-w-5xl mx-auto px-4">
           {/* Validation Mode Header */}
-          <div className="mb-6 bg-[hsl(var(--validation-bg-light))] border border-[hsl(var(--validation-border))] rounded-xl p-5">
+          <div className="mb-6 bg-white border-2 border-[hsl(var(--validation-blue))] rounded-xl p-5 shadow-lg">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-[hsl(var(--validation-accent))]/20">
-                  <ShieldCheck className="w-6 h-6 text-[hsl(var(--validation-accent))]" />
+                <div className="p-2 rounded-lg bg-[hsl(var(--validation-blue))]/10">
+                  <ShieldCheck className="w-6 h-6 text-[hsl(var(--validation-blue))]" />
                 </div>
                 <div>
-                  <h1 className="text-xl font-bold text-white">Validation Mode</h1>
-                  <p className="text-sm text-white/60">
+                  <h1 className="text-xl font-bold text-[hsl(var(--validation-blue))]">Validation Mode</h1>
+                  <p className="text-sm text-muted-foreground">
                     Review your profile data and mark each section as validated
                   </p>
                 </div>
@@ -157,7 +157,7 @@ const ApplicationForm = ({ validationMode = false, onValidationComplete }: Appli
                 variant="outline" 
                 size="sm" 
                 onClick={exitValidationMode}
-                className="bg-white/10 border-white/20 text-white hover:bg-white/20 hover:text-white"
+                className="border-[hsl(var(--validation-blue))] text-[hsl(var(--validation-blue))] hover:bg-[hsl(var(--validation-blue))]/10"
               >
                 Exit
               </Button>
@@ -176,27 +176,27 @@ const ApplicationForm = ({ validationMode = false, onValidationComplete }: Appli
                     className={cn(
                       "flex items-center gap-2 p-2 rounded-lg text-left transition-all text-xs",
                       isCurrent
-                        ? "bg-[hsl(var(--validation-accent))]/20 border border-[hsl(var(--validation-accent))]/50"
-                        : "bg-white/5 hover:bg-white/10 border border-transparent"
+                        ? "bg-[hsl(var(--validation-gold))]/20 border border-[hsl(var(--validation-gold))]"
+                        : "bg-[hsl(var(--validation-blue))]/5 hover:bg-[hsl(var(--validation-blue))]/10 border border-[hsl(var(--validation-blue))]/20"
                     )}
                   >
                     <Checkbox
                       checked={isValidated}
                       onCheckedChange={() => toggleSectionValidation(step.title)}
-                      className="border-white/40 data-[state=checked]:bg-[hsl(var(--validation-accent))] data-[state=checked]:border-[hsl(var(--validation-accent))] data-[state=checked]:text-[hsl(var(--validation-bg))]"
+                      className="border-[hsl(var(--validation-blue))]/40 data-[state=checked]:bg-[hsl(var(--validation-gold))] data-[state=checked]:border-[hsl(var(--validation-gold))] data-[state=checked]:text-foreground"
                     />
                     <button
                       onClick={() => goToStep(index)}
                       className="flex-1 min-w-0 text-left"
                     >
                       <span className={cn(
-                        "block truncate",
-                        isValidated ? "text-[hsl(var(--validation-accent))]" : "text-white/80"
+                        "block truncate font-medium",
+                        isValidated ? "text-[hsl(var(--validation-blue))]" : "text-foreground"
                       )}>
                         {step.title}
                       </span>
                       {missingCount > 0 && !isValidated && (
-                        <span className="text-[10px] text-red-400 flex items-center gap-1">
+                        <span className="text-[10px] text-destructive flex items-center gap-1">
                           <AlertCircle className="w-2.5 h-2.5" />
                           {missingCount} missing
                         </span>
@@ -209,13 +209,13 @@ const ApplicationForm = ({ validationMode = false, onValidationComplete }: Appli
 
             {/* Progress Bar */}
             <div className="space-y-2">
-              <div className="flex justify-between text-xs text-white/60">
+              <div className="flex justify-between text-xs text-muted-foreground">
                 <span>Validation Progress</span>
                 <span>{validatedCount} of {steps.length} sections validated</span>
               </div>
-              <div className="h-2 bg-white/10 rounded-full overflow-hidden">
+              <div className="h-2 bg-[hsl(var(--validation-blue))]/10 rounded-full overflow-hidden">
                 <div 
-                  className="h-full bg-[hsl(var(--validation-accent))] transition-all duration-500"
+                  className="h-full bg-[hsl(var(--validation-gold))] transition-all duration-500"
                   style={{ width: `${validationProgress}%` }}
                 />
               </div>
@@ -223,14 +223,14 @@ const ApplicationForm = ({ validationMode = false, onValidationComplete }: Appli
           </div>
 
           {/* Form Content Card */}
-          <Card className="bg-[hsl(var(--validation-card))] border-[hsl(var(--validation-border))]">
-            <CardHeader className="border-b border-[hsl(var(--validation-border))]">
+          <Card className="bg-white border-2 border-[hsl(var(--validation-blue))]/30 shadow-lg">
+            <CardHeader className="border-b border-[hsl(var(--validation-blue))]/20">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="flex items-center justify-center w-8 h-8 rounded-full bg-[hsl(var(--validation-accent))]/20 text-[hsl(var(--validation-accent))] font-bold text-sm">
+                  <div className="flex items-center justify-center w-8 h-8 rounded-full bg-[hsl(var(--validation-blue))] text-white font-bold text-sm">
                     {currentStep + 1}
                   </div>
-                  <CardTitle className="text-xl text-white">
+                  <CardTitle className="text-xl text-[hsl(var(--validation-blue))]">
                     {steps[currentStep].title}
                   </CardTitle>
                 </div>
@@ -239,11 +239,11 @@ const ApplicationForm = ({ validationMode = false, onValidationComplete }: Appli
                     id={`validate-header-${currentStep}`}
                     checked={validatedSections[steps[currentStep].title] || false}
                     onCheckedChange={() => toggleSectionValidation(steps[currentStep].title)}
-                    className="border-white/40 data-[state=checked]:bg-[hsl(var(--validation-accent))] data-[state=checked]:border-[hsl(var(--validation-accent))] data-[state=checked]:text-[hsl(var(--validation-bg))]"
+                    className="border-[hsl(var(--validation-blue))]/40 data-[state=checked]:bg-[hsl(var(--validation-gold))] data-[state=checked]:border-[hsl(var(--validation-gold))] data-[state=checked]:text-foreground"
                   />
                   <label 
                     htmlFor={`validate-header-${currentStep}`}
-                    className="text-sm font-medium text-white/80 cursor-pointer"
+                    className="text-sm font-medium text-[hsl(var(--validation-blue))] cursor-pointer"
                   >
                     Mark Complete
                   </label>
@@ -252,8 +252,8 @@ const ApplicationForm = ({ validationMode = false, onValidationComplete }: Appli
             </CardHeader>
             
             <CardContent className="p-6">
-              {/* Current Step Content - with white background for readability */}
-              <div className="bg-white rounded-lg p-6 min-h-[400px]">
+              {/* Current Step Content */}
+              <div className="min-h-[400px]">
                 <CurrentStepComponent 
                   data={formData[steps[currentStep].title] || {}}
                   onUpdate={updateFormData}
@@ -261,12 +261,12 @@ const ApplicationForm = ({ validationMode = false, onValidationComplete }: Appli
               </div>
 
               {/* Navigation Buttons */}
-              <div className="flex justify-between pt-6 mt-6 border-t border-[hsl(var(--validation-border))]">
+              <div className="flex justify-between pt-6 mt-6 border-t border-[hsl(var(--validation-blue))]/20">
                 <Button
                   variant="outline"
                   onClick={prevStep}
                   disabled={currentStep === 0}
-                  className="flex items-center gap-2 bg-white/10 border-white/20 text-white hover:bg-white/20 hover:text-white disabled:opacity-30"
+                  className="flex items-center gap-2 border-[hsl(var(--validation-blue))] text-[hsl(var(--validation-blue))] hover:bg-[hsl(var(--validation-blue))]/10 disabled:opacity-30"
                 >
                   <ChevronLeft className="w-4 h-4" />
                   <span>Previous</span>
@@ -279,8 +279,8 @@ const ApplicationForm = ({ validationMode = false, onValidationComplete }: Appli
                     className={cn(
                       "flex items-center gap-2",
                       allValidated 
-                        ? "bg-[hsl(var(--validation-accent))] hover:bg-[hsl(var(--validation-accent))]/90 text-[hsl(var(--validation-bg))]"
-                        : "bg-white/20 text-white/50"
+                        ? "bg-[hsl(var(--validation-blue))] hover:bg-[hsl(var(--validation-blue))]/90 text-white"
+                        : "bg-muted text-muted-foreground"
                     )}
                   >
                     <ShieldCheck className="w-4 h-4" />
@@ -289,7 +289,7 @@ const ApplicationForm = ({ validationMode = false, onValidationComplete }: Appli
                 ) : (
                   <Button
                     onClick={nextStep}
-                    className="flex items-center gap-2 bg-[hsl(var(--validation-accent))] hover:bg-[hsl(var(--validation-accent))]/90 text-[hsl(var(--validation-bg))]"
+                    className="flex items-center gap-2 bg-[hsl(var(--validation-blue))] hover:bg-[hsl(var(--validation-blue))]/90 text-white"
                   >
                     <span>Next</span>
                     <ChevronRight className="w-4 h-4" />
@@ -302,38 +302,38 @@ const ApplicationForm = ({ validationMode = false, onValidationComplete }: Appli
         
         {/* Confirmation Dialog */}
         <AlertDialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
-          <AlertDialogContent className="bg-[hsl(var(--validation-card))] border-[hsl(var(--validation-border))]">
+          <AlertDialogContent className="bg-white border-2 border-[hsl(var(--validation-blue))]">
             <AlertDialogHeader>
-              <AlertDialogTitle className="text-white flex items-center gap-2">
-                <AlertTriangle className="w-5 h-5 text-[hsl(var(--validation-accent))]" />
+              <AlertDialogTitle className="text-[hsl(var(--validation-blue))] flex items-center gap-2">
+                <AlertTriangle className="w-5 h-5 text-[hsl(var(--validation-gold))]" />
                 Complete Validation?
               </AlertDialogTitle>
-              <AlertDialogDescription className="text-white/70 space-y-3">
+              <AlertDialogDescription className="text-muted-foreground space-y-3">
                 <p>
                   You're about to complete the validation process. 
                 </p>
                 {totalMissingFields > 0 && (
-                  <div className="bg-red-500/20 border border-red-500/30 rounded-lg p-3">
-                    <p className="font-medium text-red-300">
+                  <div className="bg-destructive/10 border border-destructive/30 rounded-lg p-3">
+                    <p className="font-medium text-destructive">
                       ⚠️ {totalMissingFields} fields are still missing across your profile.
                     </p>
                   </div>
                 )}
                 <p className="text-sm">
-                  You can still modify your forms directly on the IRCC website, but <strong className="text-white">missing fields may prevent the extension from working optimally</strong> when auto-filling your application.
+                  You can still modify your forms directly on the IRCC website, but <strong className="text-foreground">missing fields may prevent the extension from working optimally</strong> when auto-filling your application.
                 </p>
-                <p className="text-sm text-white/50">
+                <p className="text-sm text-muted-foreground/70">
                   We recommend filling in all required fields for the best experience.
                 </p>
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel className="bg-white/10 border-white/20 text-white hover:bg-white/20 hover:text-white">
+              <AlertDialogCancel className="border-[hsl(var(--validation-blue))] text-[hsl(var(--validation-blue))] hover:bg-[hsl(var(--validation-blue))]/10">
                 Go Back
               </AlertDialogCancel>
               <AlertDialogAction 
                 onClick={confirmValidation}
-                className="bg-[hsl(var(--validation-accent))] hover:bg-[hsl(var(--validation-accent))]/90 text-[hsl(var(--validation-bg))]"
+                className="bg-[hsl(var(--validation-blue))] hover:bg-[hsl(var(--validation-blue))]/90 text-white"
               >
                 Complete Anyway
               </AlertDialogAction>
