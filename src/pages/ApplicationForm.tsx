@@ -137,7 +137,7 @@ const ApplicationForm = ({ validationMode = false, onValidationComplete }: Appli
   // Validation mode - dark royal blue theme with gold accents
   if (isValidating) {
     return (
-      <div className="min-h-screen bg-[hsl(var(--validation-blue-darker))] py-6">
+      <div className="min-h-screen bg-white py-6">
         <div className="max-w-5xl mx-auto px-4">
           {/* Validation Mode Header */}
           <div className="mb-6 bg-[hsl(var(--validation-blue-dark))] border border-[hsl(var(--validation-border))] rounded-xl p-5">
