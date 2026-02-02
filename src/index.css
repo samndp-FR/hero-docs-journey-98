@@ -59,9 +59,9 @@
     
     /* Validation mode tokens - royal blue (#4169E1) & gold (#F4D03F) */
     --validation-blue: 225 73% 57%;
-    --validation-blue-light: 225 73% 95%;
-    --validation-blue-muted: 225 50% 90%;
-    --validation-border: 225 73% 57%;
+    --validation-blue-dark: 225 73% 35%;
+    --validation-blue-darker: 225 73% 25%;
+    --validation-border: 225 60% 45%;
     --validation-gold: 48 89% 60%;
 
     --sidebar-background: 0 0% 98%;
