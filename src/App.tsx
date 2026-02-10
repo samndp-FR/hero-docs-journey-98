@@ -18,6 +18,7 @@ import Upgrade from "./pages/Upgrade";
 import PricingV2 from "./pages/PricingV2";
 import ExtensionMockup from "./pages/ExtensionMockup";
 import ExtensionOverlayMockup from "./pages/ExtensionOverlayMockup";
+import AdCreative from "./pages/AdCreative";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -44,6 +45,7 @@ const App = () => (
             <Route path="/pricing-v2" element={<PricingV2 />} />
             <Route path="/extension-mockup" element={<ExtensionMockup />} />
             <Route path="/extension-overlay" element={<ExtensionOverlayMockup />} />
+            <Route path="/ad-creative" element={<AdCreative />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
