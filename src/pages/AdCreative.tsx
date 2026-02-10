@@ -147,54 +147,12 @@ const AdCreative = () => {
 
   return (
     <div
-      className="bg-gradient-to-br from-slate-50 to-blue-50 flex items-center justify-center overflow-hidden"
+      className="bg-white flex items-center justify-center overflow-hidden"
       style={{ width: `${width}px`, height: `${height}px` }}
     >
-      {isSquare ? (
-        // 1200x1200 — stacked layout
-        <div className="flex flex-col items-center justify-center gap-8 p-12 w-full h-full">
-          <div className="text-center space-y-3">
-            <h1 className="text-4xl font-bold text-gray-900">
-              Your PR journey,{' '}
-              <span className="text-eldo-blue">organized</span>
-            </h1>
-            <p className="text-lg text-gray-500 max-w-md mx-auto">
-              Track your CRS score, documents, and milestones — all in one dashboard.
-            </p>
-          </div>
-          <div className="w-[520px] flex-shrink-0">
-            <DashboardCard />
-          </div>
-          <div className="flex items-center gap-3">
-            <div className="px-6 py-3 bg-eldo-blue text-white rounded-lg font-semibold text-sm">
-              Get Started Free
-            </div>
-            <span className="text-sm text-gray-400">eldo.ca</span>
-          </div>
-        </div>
-      ) : (
-        // 1200x628 — side by side
-        <div className="flex items-center gap-10 p-10 w-full h-full">
-          <div className="flex-1 space-y-5">
-            <h1 className="text-3xl font-bold text-gray-900 leading-tight">
-              Your PR journey,{' '}
-              <span className="text-eldo-blue">organized</span>
-            </h1>
-            <p className="text-base text-gray-500 leading-relaxed">
-              Track your CRS score, documents, and milestones — all in one dashboard.
-            </p>
-            <div className="flex items-center gap-3">
-              <div className="px-5 py-2.5 bg-eldo-blue text-white rounded-lg font-semibold text-sm">
-                Get Started Free
-              </div>
-              <span className="text-sm text-gray-400">eldo.ca</span>
-            </div>
-          </div>
-          <div className="w-[440px] flex-shrink-0">
-            <DashboardCard />
-          </div>
-        </div>
-      )}
+      <div className={isSquare ? "w-[580px]" : "w-[440px]"}>
+        <DashboardCard />
+      </div>
     </div>
   );
 };
